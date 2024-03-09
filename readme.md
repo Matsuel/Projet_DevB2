@@ -1,5 +1,12 @@
 # Back end
 
+## Démarrage du serveur
+
+```bash
+cd backend
+npm start
+```
+
 *Utilisation de TypeScript plutôt que Ruby car les websockets TS sont plus facile à utiliser, nous utiliserons Ruby si nous faisons une API*
 
 ## 4 types de Tables en db mongo
