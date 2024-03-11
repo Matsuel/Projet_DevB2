@@ -1,0 +1,20 @@
+.button_register{
+    width: 100px;
+    height: 50px;
+};
+
+.oui{
+    flex-direction: column;
+}
+
+.oui2{
+    flex-direction: column;
+}
+
+.oui3{
+    margin-bottom: 100px;
+}
+
+.oui4{
+    display: flex;
+}
