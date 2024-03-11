@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import connectToMongo from './Functions/mongo';
+import {AutoEcoleInterface} from './Interfaces/Users';
+import { registerAutoEcole } from './Functions/mongo';
 
 const app = express();
 app.use(cors());
@@ -35,6 +37,10 @@ io.on('connection', (socket) => {
                 break;
             }
         }
+    });
+
+    socket.on('registerAutoEcole', (data: AutoEcoleInterface ) => {
+        registerAutoEcole(data, socket);
     });
 });
 
@@ -73,3 +79,5 @@ server.listen(3500, () => {
 // synchroneMessages permet de synchroniser les messages d'une conversation entre deux utilisateurs
 
 // voir si les autos écoles en db ont des objets avec les avis et commentaires
+
+//Chiffrer les données entre le front et le back

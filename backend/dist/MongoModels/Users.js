@@ -1,11 +1,16 @@
-import mongoose from "mongoose";
-
-const AutoEcole = mongoose.model("AutoEcole", new mongoose.Schema({
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.User = exports.Student = exports.AutoEcole = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
+const AutoEcole = mongoose_1.default.model("AutoEcole", new mongoose_1.default.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
     address: { type: String, required: true },
-    pics : { type: [String], required: false },
+    pics: { type: [String], required: false },
     monitors: { type: [String], required: true },
     phone: { type: String, required: true },
     card: { type: Boolean, required: true },
@@ -21,21 +26,20 @@ const AutoEcole = mongoose.model("AutoEcole", new mongoose.Schema({
     permis1: { type: Boolean, required: true },
     fin_francetravail: { type: Boolean, required: true },
     formations: { type: [String], required: true },
-
     // subscribeDate: { type: Date, required: true },
 }));
-
-const Student = mongoose.model("Student", new mongoose.Schema({
+exports.AutoEcole = AutoEcole;
+const Student = mongoose_1.default.model("Student", new mongoose_1.default.Schema({
     autoEcoleId: { type: String, required: true },
-    email : { type: String, required: true },
-    password : { type: String, required: true }, // required: true car quand l'ae va créer les comptes, on crééra un mot de passe par défaut qui sera communiqué à l'élève
+    email: { type: String, required: true },
+    password: { type: String, required: true }, // required: true car quand l'ae va créer les comptes, on crééra un mot de passe par défaut qui sera communiqué à l'élève
     acceptNotifications: { type: Boolean, required: true }, // required: true car par défaut on enverra des notifications
 }));
-
-const User = mongoose.model("User", new mongoose.Schema({
+exports.Student = Student;
+const User = mongoose_1.default.model("User", new mongoose_1.default.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     acceptNotifications: { type: Boolean, required: true },
 }));
-
-export { AutoEcole, Student, User }
+exports.User = User;
+//# sourceMappingURL=Users.js.map

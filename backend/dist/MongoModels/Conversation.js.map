@@ -1,0 +1,1 @@
+{"version":3,"file":"Conversation.js","sourceRoot":"","sources":["../../src/MongoModels/Conversation.ts"],"names":[],"mappings":";;;;;;AAAA,wDAAgC;AAEhC,MAAM,YAAY,GAAG,kBAAQ,CAAC,KAAK,CAAC,cAAc,EAAE,IAAI,kBAAQ,CAAC,MAAM,CAAC;IACpE,OAAO,EAAE,EAAE,IAAI,EAAE,CAAC,MAAM,CAAC,EAAE,QAAQ,EAAE,IAAI,EAAE;CAC9C,CAAC,CAAC,CAAC;AAEK,oCAAY"}
