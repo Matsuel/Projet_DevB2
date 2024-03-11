@@ -89,6 +89,10 @@ const Register: React.FC = () => {
               <h1>ancien eleve</h1>
               <input type="email" placeholder='email' id="ancien-eleve-mail" />
               <input type="password" placeholder='password' id="ancien-eleve-password" />
+              <div className={styles.oui4}>
+                  <input type="checkbox" id="ancien-eleve-notifs" />
+                  <label htmlFor="ancien-eleve-notifs">notifs?</label>
+                </div>
               <button type="submit" className={styles.button_register}>Inscription ancien eleve</button>
             </div>
           </form>
@@ -98,6 +102,10 @@ const Register: React.FC = () => {
               <h1>Nouveau</h1>
               <input type="email" placeholder='email' id="nouveau-email" />
               <input type="password" placeholder='password' id="nouveau-password" />
+              <div className={styles.oui4}>
+                  <input type="checkbox" id="nouveau-notifs" />
+                  <label htmlFor="nouveau-notifs">notifs?</label>
+                </div>
               <button type="submit" className={styles.button_register}>Inscription nouveau</button>
             </div>
           </form>
