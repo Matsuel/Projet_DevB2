@@ -10,9 +10,12 @@ const Login: React.FC = () => {
       </Head>
       <main>
         <h1>login</h1>
-        <input placeholder='username'/>
-        <input placeholder='password'/>
-        <button className={styles.button_login}/>
+        <form id="login">
+            <input type="text" placeholder='email' id="login-email"/>
+            <input type="password" placeholder='Password' id="login-password"/>
+            <button type="submit" className={styles.button_login}>Login</button>
+        </form>
+
       </main>
     </div>
   );
