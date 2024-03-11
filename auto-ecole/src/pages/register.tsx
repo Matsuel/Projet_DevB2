@@ -71,19 +71,23 @@ const Register: React.FC = () => {
             </div>
         </form>
 
-
-            <div className={styles.oui3}>
-                <h1>ancien eleve</h1>
-                <input placeholder='email'/>
-                <input placeholder='password'/>
-                <button className={styles.button_register}>Inscription ancien eleve</button>
-            </div>
+        <form id="ancien-eleve">
+          <div className={styles.oui3}>
+              <h1>ancien eleve</h1>
+              <input type="email" placeholder='email' id="ancien-eleve-mail"/>
+              <input type="password" placeholder='password' id="ancien-eleve-password"/>
+              <button type="submit" className={styles.button_register}>Inscription ancien eleve</button>
+          </div>
+        </form>    
+        
+        <form id="nouveau">
             <div className={styles.oui3}>
                 <h1>Nouveau</h1>
-                <input placeholder='email'/>
-                <input placeholder='password'/>
-                <button className={styles.button_register}>Inscription nouveau</button>
+                <input type="email" placeholder='email' id="nouveau-email"/>
+                <input type="password" placeholder='password' id="nouveau-password"/>
+                <button type="submit" className={styles.button_register}>Inscription nouveau</button>
             </div>
+        </form>
         </div>
       </main>
     </div>
