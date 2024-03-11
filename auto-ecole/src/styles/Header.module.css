@@ -1,0 +1,18 @@
+.header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+  }
+  
+  .navLinks {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Set container to flex */
+    justify-content: space-between; /* Space items evenly */
+  }
+  
+  .navLinks li {
+    display: inline;
+  }
+  
