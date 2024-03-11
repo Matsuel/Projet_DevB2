@@ -64,10 +64,12 @@ const registerChercheur = (e: React.FormEvent<HTMLFormElement>) => {
 
     const mail = (document.getElementById('nouveau-email') as HTMLInputElement);
     const password = (document.getElementById('nouveau-password') as HTMLInputElement);
+    const notifs= (document.getElementById('ancien-eleve-notifs') as HTMLInputElement);
 
     const data = {
         mail: mail.value,
         password: password.value,
+        notifs: notifs.checked,
     };
 
     console.log(data);

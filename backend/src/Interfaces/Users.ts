@@ -24,4 +24,5 @@ export interface AutoEcoleInterface {
 export interface UserInterface {
     mail: string;
     password: string;
+    notifs: boolean;
 }

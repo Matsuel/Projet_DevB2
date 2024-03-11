@@ -27,7 +27,8 @@ function connectToMongo() {
 }
 function registerAutoEcole(data, socket) {
     return __awaiter(this, void 0, void 0, function* () {
-        // enregistrer l'auto-école dans la base de données
+        // ajouter champ pour les anciens élèves
+        // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
         const autoEcole = yield Users_1.AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
         if (autoEcole) {
             socket.emit('registerResponse', { register: false });
@@ -71,7 +72,7 @@ function registerChercheur(data, socket) {
             const newUser = new Users_1.User({
                 email: data.mail,
                 password: yield bcrypt_1.default.hash(data.password, 10),
-                acceptNotifications: true,
+                acceptNotifications: data.notifs,
             });
             yield newUser.save();
             socket.emit('registerResponse', { register: true });

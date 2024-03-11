@@ -15,7 +15,8 @@ function connectToMongo() {
 }
 
 async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
-    // enregistrer l'auto-école dans la base de données
+    // ajouter champ pour les anciens élèves
+    // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
         socket.emit('registerResponse', { register : false });
@@ -55,7 +56,7 @@ async function registerChercheur(data: UserInterface, socket: any) {
         const newUser = new User({
             email: data.mail,
             password: await bcrypt.hash(data.password, 10),
-            acceptNotifications: true,
+            acceptNotifications: data.notifs,
         });
         await newUser.save();
         socket.emit('registerResponse', { register : true });
