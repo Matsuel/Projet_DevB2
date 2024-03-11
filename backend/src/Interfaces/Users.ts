@@ -20,3 +20,8 @@ export interface AutoEcoleInterface {
     fin_francetravail: boolean;
     formations: string[];
 }
+
+export interface UserInterface {
+    mail: string;
+    password: string;
+}

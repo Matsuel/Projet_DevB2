@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Head from 'next/head';
 import styles from '@/styles/Register.module.css';
 import { socket } from './_app';
-import { registerAutoEcole } from '@/Functions/Register';
+import { registerAutoEcole, registerChercheur } from '@/Functions/Register';
 
 const Register: React.FC = () => {
 
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
             </div>
           </form>
 
-          <form id="nouveau">
+          <form id="nouveau" onSubmit={registerChercheur}>
             <div className={styles.oui3}>
               <h1>Nouveau</h1>
               <input type="email" placeholder='email' id="nouveau-email" />

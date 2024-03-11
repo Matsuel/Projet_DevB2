@@ -24,6 +24,7 @@ let connectedUsers = {};
 io.on('connection', (socket) => {
     socket.on('join', (data) => {
         connectedUsers[data.userId] = socket;
+        console.log(`New user connected: ${data.userId}`);
     });
     socket.on('disconnect', () => {
         for (let [userId, userSocket] of Object.entries(connectedUsers)) {
@@ -35,6 +36,9 @@ io.on('connection', (socket) => {
     });
     socket.on('registerAutoEcole', (data) => {
         (0, mongo_2.registerAutoEcole)(data, socket);
+    });
+    socket.on('registerChercheur', (data) => {
+        (0, mongo_2.registerChercheur)(data, socket);
     });
 });
 (0, mongo_1.default)();

@@ -6,8 +6,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import connectToMongo from './Functions/mongo';
-import {AutoEcoleInterface} from './Interfaces/Users';
-import { registerAutoEcole } from './Functions/mongo';
+import {AutoEcoleInterface, UserInterface} from './Interfaces/Users';
+import { registerAutoEcole, registerChercheur } from './Functions/mongo';
 
 const app = express();
 app.use(cors());
@@ -28,6 +28,7 @@ let connectedUsers: any = {};
 io.on('connection', (socket) => {
   socket.on('join', (data) => {
     connectedUsers[data.userId] = socket;
+    console.log(`New user connected: ${data.userId}`);
   });
 
     socket.on('disconnect', () => {
@@ -41,6 +42,10 @@ io.on('connection', (socket) => {
 
     socket.on('registerAutoEcole', (data: AutoEcoleInterface ) => {
         registerAutoEcole(data, socket);
+    });
+
+    socket.on('registerChercheur', (data: UserInterface) => {
+        registerChercheur(data, socket);
     });
 });
 

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerAutoEcole = void 0;
+exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 function connectToMongo() {
@@ -60,5 +60,23 @@ function registerAutoEcole(data, socket) {
     });
 }
 exports.registerAutoEcole = registerAutoEcole;
+function registerChercheur(data, socket) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const user = yield Users_1.User.findOne({ email: data.mail });
+        if (user) {
+            socket.emit('registerResponse', { register: false });
+        }
+        else {
+            const newUser = new Users_1.User({
+                email: data.mail,
+                password: data.password,
+                acceptNotifications: true,
+            });
+            yield newUser.save();
+            socket.emit('registerResponse', { register: true });
+        }
+    });
+}
+exports.registerChercheur = registerChercheur;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map

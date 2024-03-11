@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { AutoEcoleInterface } from "../Interfaces/Users";
-import { AutoEcole } from "../MongoModels/Users";
+import { AutoEcoleInterface, UserInterface } from "../Interfaces/Users";
+import { AutoEcole, User } from "../MongoModels/Users";
 
 function connectToMongo() {
   mongoose.connect("mongodb://localhost:27017/autoecoles", {
@@ -46,6 +46,21 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
     }
 }
 
+async function registerChercheur(data: UserInterface, socket: any) {
+    const user = await User.findOne({ email: data.mail });
+    if (user) {
+        socket.emit('registerResponse', { register : false });
+    }else {
+        const newUser = new User({
+            email: data.mail,
+            password: data.password,
+            acceptNotifications: true,
+        });
+        await newUser.save();
+        socket.emit('registerResponse', { register : true });
+    }
+}
+
 export default connectToMongo;
 
-export { registerAutoEcole };
+export { registerAutoEcole, registerChercheur };

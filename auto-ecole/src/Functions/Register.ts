@@ -30,33 +30,50 @@ const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
     const formations = [(document.getElementById('auto-ecole-formation1') as HTMLInputElement), (document.getElementById('auto-ecole-formation2') as HTMLInputElement)];
 
     const data = {
-      name: name.value,
-      mail: mail.value,
-      password: password.value,
-      address: address.value,
-      pics: pics.value,
-      // modifier ça pour quand on aura plusieurs profs
-      monitors: [prof1.value, prof2.value],
-      phone: phone.value,
-      card: card.checked,
-      cheque: cheque.checked,
-      especes: especes.checked,
-      qualiopi: qualiopi.checked,
-      label_qualite: label_qualite.checked,
-      qualicert: qualicert.checked,
-      garantie_fin: garantie_fin.checked,
-      datadocke: datadocke.checked,
-      cpf: cpf.checked,
-      aide_apprentis: aide_apprentis.checked,
-      permis1: permis1.checked,
-      fin_francetravail: fin_francetravail.checked,
-      formations: [formations[0].value, formations[1].value],
+        name: name.value,
+        mail: mail.value,
+        password: password.value,
+        address: address.value,
+        pics: pics.value,
+        // modifier ça pour quand on aura plusieurs profs
+        monitors: [prof1.value, prof2.value],
+        phone: phone.value,
+        card: card.checked,
+        cheque: cheque.checked,
+        especes: especes.checked,
+        qualiopi: qualiopi.checked,
+        label_qualite: label_qualite.checked,
+        qualicert: qualicert.checked,
+        garantie_fin: garantie_fin.checked,
+        datadocke: datadocke.checked,
+        cpf: cpf.checked,
+        aide_apprentis: aide_apprentis.checked,
+        permis1: permis1.checked,
+        fin_francetravail: fin_francetravail.checked,
+        formations: [formations[0].value, formations[1].value],
     };
 
     console.log(data);
 
     socket.emit('registerAutoEcole', data);
     return;
-  };
+};
 
-export { registerAutoEcole }
+const registerChercheur = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const mail = (document.getElementById('nouveau-email') as HTMLInputElement);
+    const password = (document.getElementById('nouveau-password') as HTMLInputElement);
+
+    const data = {
+        mail: mail.value,
+        password: password.value,
+    };
+
+    console.log(data);
+
+    socket.emit('registerChercheur', data);
+    return;
+};
+
+export { registerAutoEcole, registerChercheur };
