@@ -11,6 +11,11 @@ export default function Home() {
       <main>
         <Header />
         <h1>Wow incroyable ce site d'avis</h1>
+        <div>
+          <input placeholder="Rechercherrrrr" className={styles.rechercher}/>
+          <button className={styles.search}>Go go</button>
+        </div>
+        
       </main>
     </div>
   );
