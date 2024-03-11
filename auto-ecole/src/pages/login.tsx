@@ -2,6 +2,8 @@ import React from 'react';
 import Head from 'next/head';
 import styles from '@/styles/Login.module.css'; 
 import Header from "@/Components/Header";
+import Link from 'next/link';
+
 
 
 const Login: React.FC = () => {
@@ -18,7 +20,7 @@ const Login: React.FC = () => {
             <input type="password" placeholder='Password' id="login-password"/>
             <button type="submit" className={styles.button_login}>Login</button>
         </form>
-
+        <Link href="/register"><button className={styles.button_login}>Go to register</button></Link>
       </main>
     </div>
   );
