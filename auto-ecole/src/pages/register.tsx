@@ -3,6 +3,8 @@ import Head from 'next/head';
 import styles from '@/styles/Register.module.css';
 import { socket } from './_app';
 import { registerAutoEcole, registerChercheur } from '@/Functions/Register';
+import Header from "@/Components/Header";
+
 
 const Register: React.FC = () => {
 
@@ -22,6 +24,7 @@ const Register: React.FC = () => {
         <title>Register</title>
       </Head>
       <main>
+        <Header />
         <div className={styles.oui}>
           <form id="auto-ecole" onSubmit={registerAutoEcole}>
             <div className={styles.oui3}>
