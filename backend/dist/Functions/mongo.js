@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 function connectToMongo() {
     mongoose_1.default.connect("mongodb://localhost:27017/autoecoles", {})
         .then(() => {
@@ -35,7 +36,7 @@ function registerAutoEcole(data, socket) {
             const newAutoEcole = new Users_1.AutoEcole({
                 name: data.name,
                 email: data.mail,
-                password: data.password,
+                password: yield bcrypt_1.default.hash(data.password, 10),
                 address: data.address,
                 pics: data.pics,
                 moniteurs: data.monitors,
@@ -69,7 +70,7 @@ function registerChercheur(data, socket) {
         else {
             const newUser = new Users_1.User({
                 email: data.mail,
-                password: data.password,
+                password: yield bcrypt_1.default.hash(data.password, 10),
                 acceptNotifications: true,
             });
             yield newUser.save();

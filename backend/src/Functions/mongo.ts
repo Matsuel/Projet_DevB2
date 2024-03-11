@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { AutoEcoleInterface, UserInterface } from "../Interfaces/Users";
 import { AutoEcole, User } from "../MongoModels/Users";
+import bcrypt from 'bcrypt';
 
 function connectToMongo() {
   mongoose.connect("mongodb://localhost:27017/autoecoles", {
@@ -22,7 +23,7 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
         const newAutoEcole = new AutoEcole({
             name: data.name,
             email: data.mail,
-            password: data.password,
+            password: await bcrypt.hash(data.password, 10),
             address: data.address,
             pics: data.pics,
             moniteurs: data.monitors,
@@ -53,7 +54,7 @@ async function registerChercheur(data: UserInterface, socket: any) {
     }else {
         const newUser = new User({
             email: data.mail,
-            password: data.password,
+            password: await bcrypt.hash(data.password, 10),
             acceptNotifications: true,
         });
         await newUser.save();
