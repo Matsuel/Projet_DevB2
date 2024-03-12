@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import styles from '@/styles/Login.module.css'; 
 import Header from "@/Components/Header";
@@ -10,14 +10,20 @@ import { login } from '@/Functions/Login';
 
 const Login: React.FC = () => {
 
-  socket.on('loginResponse', (data: any) => {
-    if (data.login) {
-      console.log('login success');
-      window.location.href = '/';
-    } else {
-      console.log('login failed');
-    }
-  });
+  useEffect(() => {
+    socket.on('loginResponse', (data: any) => {
+      if (data.login) {
+        console.log('login success');
+        window.location.href = '/';
+      } else {
+        console.log('login failed');
+      }
+    });
+
+    return () => {
+      socket.off('loginResponse');
+    };
+  })
 
   return (
     <div>

@@ -16,6 +16,10 @@ const Register: React.FC = () => {
         alert('Inscription échouée');
       }
     });
+
+    return () => {
+      socket.off('registerResponse');
+    };
   }, []);
 
   return (
