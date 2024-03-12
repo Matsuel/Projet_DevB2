@@ -4,14 +4,14 @@ import { AutoEcole, Student, User } from "../MongoModels/Users";
 import bcrypt from 'bcrypt';
 
 function connectToMongo() {
-  mongoose.connect("mongodb://localhost:27017/autoecoles", {
-  })
-    .then(() => {
-        console.log("Connected to MongoDB");
+    mongoose.connect("mongodb://localhost:27017/autoecoles", {
     })
-    .catch((err) => {
-        console.error("Error connecting to MongoDB", err);
-    });
+        .then(() => {
+            console.log("Connected to MongoDB");
+        })
+        .catch((err) => {
+            console.error("Error connecting to MongoDB", err);
+        });
 }
 
 async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
@@ -19,8 +19,8 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
-        socket.emit('registerResponse', { register : false });
-    }else {
+        socket.emit('registerResponse', { register: false });
+    } else {
         const newAutoEcole = new AutoEcole({
             name: data.name,
             email: data.mail,
@@ -45,47 +45,59 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
             students: data.students,
         });
         await newAutoEcole.save();
-        socket.emit('registerResponse', { register : true });
         await registerStudents(data.mail);
+        socket.emit('registerResponse', { register: true });
     }
 }
 
 async function registerChercheur(data: UserInterface, socket: any) {
     const user = await User.findOne({ email: data.mail });
     if (user) {
-        socket.emit('registerResponse', { register : false });
-    }else {
+        socket.emit('registerResponse', { register: false });
+    } else {
         const newUser = new User({
             email: data.mail,
             password: await bcrypt.hash(data.password, 10),
             acceptNotifications: data.notifs,
         });
         await newUser.save();
-        socket.emit('registerResponse', { register : true });
+        socket.emit('registerResponse', { register: true });
     }
 }
 
 // fonction à appeler pour enregistrer les élèves si l'auto-école est validée
-//voir pour register les students que s'ils ne sont pas déjà enregistrés
 async function registerStudents(emailAutoEcole: string) {
     const autoEcole = await AutoEcole.findOne({ email: emailAutoEcole });
     const autoEcoleId = autoEcole._id;
     const students = autoEcole.students as string[];
     const studentsToSave = [];
     for (const student of students) {
-        const randomPassword = genereatePassword();
-        console.log(randomPassword);
-        const newStudent = new Student({
-            autoEcoleId: autoEcoleId,
-            email: student,
-            password: await bcrypt.hash(randomPassword, 10),
-            acceptNotifications: true,
-        });
-        await newStudent.save();
-        studentsToSave.push({ email: student, password: randomPassword });
+        if (!studentAlreadySave(student)) {
+            const randomPassword = genereatePassword();
+            console.log(randomPassword);
+            const newStudent = new Student({
+                autoEcoleId: autoEcoleId,
+                email: student,
+                password: await bcrypt.hash(randomPassword, 10),
+                acceptNotifications: true,
+            });
+            await newStudent.save();
+            studentsToSave.push({ email: student, password: randomPassword });
+        }
     }
     saveToFile(studentsToSave);
 }
+
+async function studentAlreadySave(email : string) {
+    let students = await Student.findOne({ email: email });
+    if (students) return true;
+    students = await User.findOne({ email: email });
+    if (students) return true;
+    students = await AutoEcole.findOne({ email: email });
+    if (students) return true;
+    return false;
+}
+
 
 function genereatePassword() {
     let password = '';
@@ -111,14 +123,14 @@ function saveToFile(data: [string, string][]) {
 
 async function login(data: LoginInterface, socket: any) {
     let user = await AutoEcole.findOne({ email: data.mail });
-    if (! user ) {
+    if (!user) {
         user = await Student.findOne({ email: data.mail });
-        if (! user ) {
+        if (!user) {
             user = await User.findOne({ email: data.mail });
-            if(! user) {
+            if (!user) {
                 socket.emit('loginResponse', { login: false });
             }
-        } 
+        }
     }
 
     if (bcrypt.compare(data.password, user.password)) {

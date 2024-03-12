@@ -58,8 +58,8 @@ function registerAutoEcole(data, socket) {
                 students: data.students,
             });
             yield newAutoEcole.save();
-            socket.emit('registerResponse', { register: true });
             yield registerStudents(data.mail);
+            socket.emit('registerResponse', { register: true });
         }
     });
 }
@@ -91,18 +91,34 @@ function registerStudents(emailAutoEcole) {
         const students = autoEcole.students;
         const studentsToSave = [];
         for (const student of students) {
-            const randomPassword = genereatePassword();
-            console.log(randomPassword);
-            const newStudent = new Users_1.Student({
-                autoEcoleId: autoEcoleId,
-                email: student,
-                password: yield bcrypt_1.default.hash(randomPassword, 10),
-                acceptNotifications: true,
-            });
-            yield newStudent.save();
-            studentsToSave.push({ email: student, password: randomPassword });
+            if (!studentAlreadySave(student)) {
+                const randomPassword = genereatePassword();
+                console.log(randomPassword);
+                const newStudent = new Users_1.Student({
+                    autoEcoleId: autoEcoleId,
+                    email: student,
+                    password: yield bcrypt_1.default.hash(randomPassword, 10),
+                    acceptNotifications: true,
+                });
+                yield newStudent.save();
+                studentsToSave.push({ email: student, password: randomPassword });
+            }
         }
         saveToFile(studentsToSave);
+    });
+}
+function studentAlreadySave(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let students = yield Users_1.Student.findOne({ email: email });
+        if (students)
+            return true;
+        students = yield Users_1.User.findOne({ email: email });
+        if (students)
+            return true;
+        students = yield Users_1.AutoEcole.findOne({ email: email });
+        if (students)
+            return true;
+        return false;
     });
 }
 function genereatePassword() {

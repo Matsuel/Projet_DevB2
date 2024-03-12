@@ -7,10 +7,10 @@ import Header from "@/Components/Header";
 
 
 const Register: React.FC = () => {
-
   useEffect(() => {
-    socket.on('registerResponse', (data: { register: boolean }) => {
-      if (data.register) {
+    socket.on('registerResponse', (data: { register: boolean, students: string[] }) => {
+      console.log(data);
+      if (data.register){
         window.location.href = '/login';
       } else {
         alert('Inscription échouée');

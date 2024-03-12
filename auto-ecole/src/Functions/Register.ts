@@ -53,7 +53,7 @@ const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
         permis1: permis1.checked,
         fin_francetravail: fin_francetravail.checked,
         formations: [formations[0].value, formations[1].value],
-        students: students.value,
+        students: [students.value]
     };
 
     console.log(data);
