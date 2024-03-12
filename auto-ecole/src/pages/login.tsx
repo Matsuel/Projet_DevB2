@@ -13,7 +13,6 @@ const Login: React.FC = () => {
   useEffect(() => {
     socket.on('loginResponse', (data: any) => {
       if (data.login) {
-        console.log('login success');
         window.location.href = '/';
       } else {
         console.log('login failed');

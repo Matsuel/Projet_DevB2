@@ -129,11 +129,15 @@ async function login(data: LoginInterface, socket: any) {
             user = await User.findOne({ email: data.mail });
             if (!user) {
                 socket.emit('loginResponse', { login: false });
+                return;
             }
         }
     }
 
-    if (bcrypt.compare(data.password, user.password)) {
+    console.log(user);
+    console.log(data)
+
+    if (await bcrypt.compare(data.password, user.password)) {
         socket.emit('loginResponse', { login: true });
     } else {
         socket.emit('loginResponse', { login: false });

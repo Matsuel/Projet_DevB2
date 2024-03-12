@@ -83,7 +83,6 @@ function registerChercheur(data, socket) {
 }
 exports.registerChercheur = registerChercheur;
 // fonction à appeler pour enregistrer les élèves si l'auto-école est validée
-//voir pour register les students que s'ils ne sont pas déjà enregistrés
 function registerStudents(emailAutoEcole) {
     return __awaiter(this, void 0, void 0, function* () {
         const autoEcole = yield Users_1.AutoEcole.findOne({ email: emailAutoEcole });
@@ -150,10 +149,13 @@ function login(data, socket) {
                 user = yield Users_1.User.findOne({ email: data.mail });
                 if (!user) {
                     socket.emit('loginResponse', { login: false });
+                    return;
                 }
             }
         }
-        if (bcrypt_1.default.compare(data.password, user.password)) {
+        console.log(user);
+        console.log(data);
+        if (yield bcrypt_1.default.compare(data.password, user.password)) {
             socket.emit('loginResponse', { login: true });
         }
         else {
