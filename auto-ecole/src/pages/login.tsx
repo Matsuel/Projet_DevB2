@@ -3,10 +3,22 @@ import Head from 'next/head';
 import styles from '@/styles/Login.module.css'; 
 import Header from "@/Components/Header";
 import Link from 'next/link';
+import { socket } from './_app';
+import { login } from '@/Functions/Login';
 
 
 
 const Login: React.FC = () => {
+
+  socket.on('loginResponse', (data: any) => {
+    if (data.login) {
+      console.log('login success');
+      window.location.href = '/';
+    } else {
+      console.log('login failed');
+    }
+  });
+
   return (
     <div>
       <Head>
@@ -15,7 +27,7 @@ const Login: React.FC = () => {
       <main>
         <Header />
         <h1>login</h1>
-        <form id="login">
+        <form id="login" onSubmit={login}>
             <input type="text" placeholder='email' id="login-email"/>
             <input type="password" placeholder='Password' id="login-password"/>
             <button type="submit" className={styles.button_login}>Login</button>

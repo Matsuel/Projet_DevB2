@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerChercheur = exports.registerAutoEcole = void 0;
+exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -125,5 +125,26 @@ function saveToFile(data) {
         }
     });
 }
+function login(data, socket) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let user = yield Users_1.AutoEcole.findOne({ email: data.mail });
+        if (!user) {
+            user = yield Users_1.Student.findOne({ email: data.mail });
+            if (!user) {
+                user = yield Users_1.User.findOne({ email: data.mail });
+                if (!user) {
+                    socket.emit('loginResponse', { login: false });
+                }
+            }
+        }
+        if (bcrypt_1.default.compare(data.password, user.password)) {
+            socket.emit('loginResponse', { login: true });
+        }
+        else {
+            socket.emit('loginResponse', { login: false });
+        }
+    });
+}
+exports.login = login;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map
