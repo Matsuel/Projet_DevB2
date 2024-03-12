@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { AutoEcoleInterface, UserInterface } from "../Interfaces/Users";
-import { AutoEcole, User } from "../MongoModels/Users";
+import { AutoEcole, Student, User } from "../MongoModels/Users";
 import bcrypt from 'bcrypt';
 
 function connectToMongo() {
@@ -46,6 +46,7 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
         });
         await newAutoEcole.save();
         socket.emit('registerResponse', { register : true });
+        await registerStudents(data.mail);
     }
 }
 
@@ -62,6 +63,50 @@ async function registerChercheur(data: UserInterface, socket: any) {
         await newUser.save();
         socket.emit('registerResponse', { register : true });
     }
+}
+
+// fonction à appeler pour enregistrer les élèves si l'auto-école est validée
+//voir pour register les students que s'ils ne sont pas déjà enregistrés
+async function registerStudents(emailAutoEcole: string) {
+    const autoEcole = await AutoEcole.findOne({ email: emailAutoEcole });
+    const autoEcoleId = autoEcole._id;
+    const students = autoEcole.students as string[];
+    const studentsToSave = [];
+    for (const student of students) {
+        const randomPassword = genereatePassword();
+        console.log(randomPassword);
+        const newStudent = new Student({
+            autoEcoleId: autoEcoleId,
+            email: student,
+            password: await bcrypt.hash(randomPassword, 10),
+            acceptNotifications: true,
+        });
+        await newStudent.save();
+        studentsToSave.push({ email: student, password: randomPassword });
+    }
+    saveToFile(studentsToSave);
+}
+
+function genereatePassword() {
+    let password = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 15; i++) {
+        password += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return password;
+}
+
+// sauvegarde dans un fichier an attendant de pouvoir envoyer un mail
+function saveToFile(data: [string, string][]) {
+    const fs = require('fs');
+    if (!fs.existsSync('students.json')) {
+        fs.writeFileSync('students.json', '[]');
+    }
+    fs.appendFile('students.json', JSON.stringify(data), (err: any) => {
+        if (err) {
+            console.error(err);
+        }
+    });
 }
 
 export default connectToMongo;

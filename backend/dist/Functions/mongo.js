@@ -59,6 +59,7 @@ function registerAutoEcole(data, socket) {
             });
             yield newAutoEcole.save();
             socket.emit('registerResponse', { register: true });
+            yield registerStudents(data.mail);
         }
     });
 }
@@ -81,5 +82,48 @@ function registerChercheur(data, socket) {
     });
 }
 exports.registerChercheur = registerChercheur;
+// fonction à appeler pour enregistrer les élèves si l'auto-école est validée
+//voir pour register les students que s'ils ne sont pas déjà enregistrés
+function registerStudents(emailAutoEcole) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const autoEcole = yield Users_1.AutoEcole.findOne({ email: emailAutoEcole });
+        const autoEcoleId = autoEcole._id;
+        const students = autoEcole.students;
+        const studentsToSave = [];
+        for (const student of students) {
+            const randomPassword = genereatePassword();
+            console.log(randomPassword);
+            const newStudent = new Users_1.Student({
+                autoEcoleId: autoEcoleId,
+                email: student,
+                password: yield bcrypt_1.default.hash(randomPassword, 10),
+                acceptNotifications: true,
+            });
+            yield newStudent.save();
+            studentsToSave.push({ email: student, password: randomPassword });
+        }
+        saveToFile(studentsToSave);
+    });
+}
+function genereatePassword() {
+    let password = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 15; i++) {
+        password += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return password;
+}
+// sauvegarde dans un fichier an attendant de pouvoir envoyer un mail
+function saveToFile(data) {
+    const fs = require('fs');
+    if (!fs.existsSync('students.json')) {
+        fs.writeFileSync('students.json', '[]');
+    }
+    fs.appendFile('students.json', JSON.stringify(data), (err) => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map
