@@ -19,6 +19,7 @@ export interface AutoEcoleInterface {
     permis1: boolean;
     fin_francetravail: boolean;
     formations: string[];
+    students: string[];
 }
 
 export interface UserInterface {

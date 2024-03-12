@@ -26,6 +26,7 @@ const AutoEcole = mongoose_1.default.model("AutoEcole", new mongoose_1.default.S
     permis1: { type: Boolean, required: true },
     fin_francetravail: { type: Boolean, required: true },
     formations: { type: [String], required: true },
+    students: { type: [String], required: true },
     // subscribeDate: { type: Date, required: true },
 }));
 exports.AutoEcole = AutoEcole;
