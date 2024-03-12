@@ -27,7 +27,7 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
             password: await bcrypt.hash(data.password, 10),
             address: data.address,
             pics: data.pics,
-            moniteurs: data.monitors,
+            monitors: data.monitors,
             phone: data.phone,
             card: data.card,
             cheque: data.cheque,

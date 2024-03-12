@@ -40,7 +40,7 @@ function registerAutoEcole(data, socket) {
                 password: yield bcrypt_1.default.hash(data.password, 10),
                 address: data.address,
                 pics: data.pics,
-                moniteurs: data.monitors,
+                monitors: data.monitors,
                 phone: data.phone,
                 card: data.card,
                 cheque: data.cheque,
