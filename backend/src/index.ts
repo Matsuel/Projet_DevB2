@@ -5,8 +5,8 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import connectToMongo from './Functions/mongo';
-import {AutoEcoleInterface, UserInterface} from './Interfaces/Users';
+import connectToMongo, { login } from './Functions/mongo';
+import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import { registerAutoEcole, registerChercheur } from './Functions/mongo';
 
 const app = express();
@@ -40,12 +40,16 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('registerAutoEcole', (data: AutoEcoleInterface ) => {
-        registerAutoEcole(data, socket);
+    socket.on('registerAutoEcole', async (data: AutoEcoleInterface ) => {
+        await registerAutoEcole(data, socket);
     });
 
-    socket.on('registerChercheur', (data: UserInterface) => {
-        registerChercheur(data, socket);
+    socket.on('registerChercheur', async (data: UserInterface) => {
+        await registerChercheur(data, socket);
+    });
+
+    socket.on('login', async (data: LoginInterface) => {
+        await login(data, socket);
     });
 });
 

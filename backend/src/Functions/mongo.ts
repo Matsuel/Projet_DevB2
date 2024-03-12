@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { AutoEcoleInterface, UserInterface } from "../Interfaces/Users";
+import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Interfaces/Users";
 import { AutoEcole, Student, User } from "../MongoModels/Users";
 import bcrypt from 'bcrypt';
 
@@ -109,6 +109,25 @@ function saveToFile(data: [string, string][]) {
     });
 }
 
+async function login(data: LoginInterface, socket: any) {
+    let user = await AutoEcole.findOne({ email: data.mail });
+    if (! user ) {
+        user = await Student.findOne({ email: data.mail });
+        if (! user ) {
+            user = await User.findOne({ email: data.mail });
+            if(! user) {
+                socket.emit('loginResponse', { login: false });
+            }
+        } 
+    }
+
+    if (bcrypt.compare(data.password, user.password)) {
+        socket.emit('loginResponse', { login: true });
+    } else {
+        socket.emit('loginResponse', { login: false });
+    }
+}
+
 export default connectToMongo;
 
-export { registerAutoEcole, registerChercheur };
+export { registerAutoEcole, registerChercheur, login }

@@ -27,3 +27,8 @@ export interface UserInterface {
     password: string;
     notifs: boolean;
 }
+
+export interface LoginInterface {
+    mail: string;
+    password: string;
+}
