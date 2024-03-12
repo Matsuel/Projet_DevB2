@@ -55,6 +55,7 @@ function registerAutoEcole(data, socket) {
                 permis1: data.permis1,
                 fin_francetravail: data.fin_francetravail,
                 formations: data.formations,
+                students: data.students,
             });
             yield newAutoEcole.save();
             socket.emit('registerResponse', { register: true });

@@ -21,6 +21,7 @@ const AutoEcole = mongoose.model("AutoEcole", new mongoose.Schema({
     permis1: { type: Boolean, required: true },
     fin_francetravail: { type: Boolean, required: true },
     formations: { type: [String], required: true },
+    students: { type: [String], required: true },
 
     // subscribeDate: { type: Date, required: true },
 }));

@@ -28,6 +28,8 @@ const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
     const fin_francetravail = (document.getElementById('auto-ecole-fin-francetravail') as HTMLInputElement);
     // modifier ça pour quand on aura plusieurs formations
     const formations = [(document.getElementById('auto-ecole-formation1') as HTMLInputElement), (document.getElementById('auto-ecole-formation2') as HTMLInputElement)];
+    // modifier ça pour quand on aura plusieurs étudiants
+    const students = (document.getElementById('auto-ecole-mails-etudiants') as HTMLInputElement);
 
     const data = {
         name: name.value,
@@ -51,6 +53,7 @@ const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
         permis1: permis1.checked,
         fin_francetravail: fin_francetravail.checked,
         formations: [formations[0].value, formations[1].value],
+        students: students.value,
     };
 
     console.log(data);
