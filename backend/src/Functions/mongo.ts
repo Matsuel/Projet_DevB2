@@ -142,6 +142,11 @@ async function login(data: LoginInterface) {
     }
 }
 
+async function getAutoEcole(id: string) {
+    const autoEcole = await AutoEcole.findOne({ _id: id }).select('-password');
+    return autoEcole;
+}
+
 export default connectToMongo;
 
-export { registerAutoEcole, registerChercheur, login }
+export { registerAutoEcole, registerChercheur, login, getAutoEcole };
