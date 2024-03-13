@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>) => {
+const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>, setToken : React.Dispatch<React.SetStateAction<string>>) => {
     e.preventDefault();
 
 
@@ -60,9 +60,11 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     const response = await axios.post('http://localhost:3500/registerAutoEcole', data);
     setRegister(response.data.register);
     response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
+    response.data.register === true ? setToken(response.data.token) : setToken('');
+
 };
 
-const registerChercheur = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>) => {
+const registerChercheur = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>, setToken : React.Dispatch<React.SetStateAction<string>>) => {
     e.preventDefault();
 
     const mail = (document.getElementById('nouveau-email') as HTMLInputElement);
@@ -78,6 +80,7 @@ const registerChercheur = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     const response = await axios.post('http://localhost:3500/registerChercheur', data);
     setRegister(response.data.register);
     response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
+    response.data.register === true ? setToken(response.data.token) : setToken('');
 };
 
 export { registerAutoEcole, registerChercheur };

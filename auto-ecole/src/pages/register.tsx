@@ -8,9 +8,11 @@ import Header from "@/Components/Header";
 const Register: React.FC = () => {
   const [register , setRegister] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string>('');
+  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
     if (register) {
+      localStorage.setItem('token', token);
       window.location.href = '/';
     }
   }, [register]);
@@ -24,7 +26,7 @@ const Register: React.FC = () => {
         <Header />
         <div className={styles.oui}>
           <p>{registerError}</p>
-          <form id="auto-ecole" onSubmit={ (e) => registerAutoEcole(e, setRegister, setRegisterError) }>
+          <form id="auto-ecole" onSubmit={ (e) => registerAutoEcole(e, setRegister, setRegisterError, setToken) }>
             <div className={styles.oui3}>
               <h1>Ecole</h1>
               <input type="text" placeholder='Nom' id="auto-ecole-nom" required />
@@ -99,7 +101,7 @@ const Register: React.FC = () => {
             </div>
           </form> */}
 
-          <form id="nouveau" onSubmit={ (e) => registerChercheur(e, setRegister, setRegisterError) }>
+          <form id="nouveau" onSubmit={ (e) => registerChercheur(e, setRegister, setRegisterError, setToken) }>
             <div className={styles.oui3}>
               <h1>Nouveau</h1>
               <input type="email" placeholder='email' id="nouveau-email" />

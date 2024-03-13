@@ -10,9 +10,11 @@ import { login } from '@/Functions/Login';
 const Login: React.FC = () => {
   const [loginResponse, setLoginResponse] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>('');
+  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
     if (loginResponse) {
+      localStorage.setItem('token', token);
       window.location.href = '/';
     }
   }, [loginResponse]);
@@ -26,7 +28,7 @@ const Login: React.FC = () => {
         <Header />
         <h1>login</h1>
         <p>{loginError}</p>
-        <form id="login" onSubmit={(e) => login(e, setLoginResponse, setLoginError)}>
+        <form id="login" onSubmit={(e) => login(e, setLoginResponse, setLoginError, setToken)}>
             <input type="text" placeholder='email' id="login-email"/>
             <input type="password" placeholder='Password' id="login-password"/>
             <button type="submit" className={styles.button_login}>Login</button>
