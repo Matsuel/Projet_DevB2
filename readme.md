@@ -1,47 +1,31 @@
-# Back end
+# Modifier table autoEcole
 
-## Démarrage du serveur
+## monitors devient un tableau d'objets avec clé id et valeur nom du prof
+## ajout de la note/5
+## ajout du nombre de note
+## comme ça (note/5 * nb de notes) + (nouvelle note/5)/ nb de note +1 = nouvelle note
+## ajout d'un tableau avec tous les avis sur l'auto école :
+    - sender_id
+    -message content
+    -data
+    -note/5
 
-```bash
-cd backend
-npm start
-```
+nom auto ecole
+note/5 et commentaire
+-prof: note/5 et commentaire
+-prof
 
-*Utilisation de TypeScript plutôt que Ruby car les websockets TS sont plus facile à utiliser, nous utiliserons Ruby si nous faisons une API*
 
-## 4 types de Tables en db mongo
+table avis ecole:
+-liste de notes/5
+-liste de commentaire
+-liste de personne qui a cree
+-date
 
-### Users cherchant auto école
-
-#### Email
-#### Password
-#### Accepter les notifs bool oui/non
-
-### Auto école
-
-#### Nom
-#### Email
-#### Password
-#### Adresse
-#### Photos string[] images converties en base64
-#### Noms des profs string[]
-#### Type de formations disponibles string[]
-#### Date abonnement voir comment gérer ça
-#### Mail des anciens élèves inscrit string[]
-#### Liste des élèves demandant à être approuvés string []
-
-### Personne ayant appris dans l'ae
-
-#### Mail devant être dans la liste de l'auto école sinon demande d'être approuvé
-#### Password
-#### Demande de notifs
-
-### Table Conversations
-
-#### users_id string[]
-
-### messages+conversationId
-
-#### sender_id
-#### date
-#### content
+table avis profs:
+-nom du prof
+-id auto ecole
+-liste de notes/5
+-liste de commentaire
+-liste de personne qui a cree
+-date
