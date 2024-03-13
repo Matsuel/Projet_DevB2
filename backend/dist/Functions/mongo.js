@@ -78,8 +78,8 @@ function registerChercheur(data) {
                 acceptNotifications: data.notifs,
             });
             yield newUser.save();
-            const user = yield Users_1.User.findOne({ email: data.mail });
-            return { register: true, id: user._id };
+            const userId = (yield Users_1.User.findOne({ email: data.mail }))._id;
+            return { register: true, id: userId };
         }
     });
 }

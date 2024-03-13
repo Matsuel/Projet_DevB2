@@ -50,13 +50,16 @@ app.use((0, express_session_1.default)({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: {
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
+    }
 }));
 app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { mail, password } = req.body;
     const user = yield (0, mongo_1.login)({ mail, password });
     if (user.login) {
-        req.session.user = user.id;
+        req.session.userId = user.id;
         res.send({ login: true });
     }
     else {
@@ -67,7 +70,7 @@ app.post('/registerAutoEcole', (req, res) => __awaiter(void 0, void 0, void 0, f
     const data = req.body;
     const response = yield (0, mongo_1.registerAutoEcole)(data);
     if (response) {
-        req.session.user = response.id;
+        req.session.userId = response.id;
         res.send({ register: true });
     }
     else {
@@ -78,7 +81,7 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
     const data = req.body;
     const response = yield (0, mongo_1.registerChercheur)(data);
     if (response) {
-        req.session.user = response.id;
+        req.session.userId = response.id;
         res.send({ register: true });
     }
     else {

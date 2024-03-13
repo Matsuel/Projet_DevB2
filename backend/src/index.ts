@@ -18,7 +18,10 @@ app.use(session({
     secret: process.env.SECRET as string,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    cookie: { 
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000
+    }
 }));
 
 app.post('/login', async (req, res) => {
@@ -26,7 +29,7 @@ app.post('/login', async (req, res) => {
     const user = await login({ mail, password });
 
     if (user.login) {
-        req.session.user = user.id;
+        req.session.userId = user.id;
         res.send({ login: true });
     }else {
         res.send({ login: false });
@@ -37,7 +40,7 @@ app.post('/registerAutoEcole', async (req, res) => {
     const data = req.body as AutoEcoleInterface;
     const response = await registerAutoEcole(data);
     if (response) {
-        req.session.user = response.id;
+        req.session.userId = response.id;
         res.send({ register: true });
     }else {
         res.send({ register: false });
@@ -48,7 +51,7 @@ app.post('/registerChercheur', async (req, res) => {
     const data = req.body as UserInterface;
     const response = await registerChercheur(data);
     if (response) {
-        req.session.user = response.id;
+        req.session.userId = response.id;
         res.send({ register: true });
     }else {
         res.send({ register: false });
