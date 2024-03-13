@@ -51,10 +51,10 @@ async function registerAutoEcole(data: AutoEcoleInterface) {
     }
 }
 
-async function registerChercheur(data: UserInterface, socket: any) {
+async function registerChercheur(data: UserInterface) {
     const user = await User.findOne({ email: data.mail });
     if (user) {
-        socket.emit('registerResponse', { register: false });
+        return { register: false };
     } else {
         const newUser = new User({
             email: data.mail,
@@ -62,7 +62,8 @@ async function registerChercheur(data: UserInterface, socket: any) {
             acceptNotifications: data.notifs,
         });
         await newUser.save();
-        socket.emit('registerResponse', { register: true });
+        const user = await User.findOne({ email: data.mail });
+        return { register: true, id: user._id };
     }
 }
 

@@ -23,6 +23,7 @@ const Register: React.FC = () => {
       <main>
         <Header />
         <div className={styles.oui}>
+          <p>{registerError}</p>
           <form id="auto-ecole" onSubmit={ (e) => registerAutoEcole(e, setRegister, setRegisterError) }>
             <div className={styles.oui3}>
               <h1>Ecole</h1>
@@ -98,7 +99,7 @@ const Register: React.FC = () => {
             </div>
           </form> */}
 
-          <form id="nouveau" onSubmit={registerChercheur}>
+          <form id="nouveau" onSubmit={ (e) => registerChercheur(e, setRegister, setRegisterError) }>
             <div className={styles.oui3}>
               <h1>Nouveau</h1>
               <input type="email" placeholder='email' id="nouveau-email" />

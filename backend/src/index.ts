@@ -23,7 +23,6 @@ app.use(session({
 
 app.post('/login', async (req, res) => {
     const { mail, password } = req.body;
-    console.log(mail,password);
     const user = await login({ mail, password });
 
     if (user.login) {
@@ -45,7 +44,16 @@ app.post('/registerAutoEcole', async (req, res) => {
     }
 });
 
-
+app.post('/registerChercheur', async (req, res) => {
+    const data = req.body as UserInterface;
+    const response = await registerChercheur(data);
+    if (response) {
+        req.session.user = response.id;
+        res.send({ register: true });
+    }else {
+        res.send({ register: false });
+    }
+});
 
 connectToMongo();
 

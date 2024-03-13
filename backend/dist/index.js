@@ -54,7 +54,6 @@ app.use((0, express_session_1.default)({
 }));
 app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { mail, password } = req.body;
-    console.log(mail, password);
     const user = yield (0, mongo_1.login)({ mail, password });
     if (user.login) {
         req.session.user = user.id;
@@ -67,6 +66,17 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.post('/registerAutoEcole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
     const response = yield (0, mongo_1.registerAutoEcole)(data);
+    if (response) {
+        req.session.user = response.id;
+        res.send({ register: true });
+    }
+    else {
+        res.send({ register: false });
+    }
+}));
+app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    const response = yield (0, mongo_1.registerChercheur)(data);
     if (response) {
         req.session.user = response.id;
         res.send({ register: true });

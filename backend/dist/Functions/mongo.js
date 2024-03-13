@@ -65,11 +65,11 @@ function registerAutoEcole(data) {
     });
 }
 exports.registerAutoEcole = registerAutoEcole;
-function registerChercheur(data, socket) {
+function registerChercheur(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield Users_1.User.findOne({ email: data.mail });
         if (user) {
-            socket.emit('registerResponse', { register: false });
+            return { register: false };
         }
         else {
             const newUser = new Users_1.User({
@@ -78,7 +78,8 @@ function registerChercheur(data, socket) {
                 acceptNotifications: data.notifs,
             });
             yield newUser.save();
-            socket.emit('registerResponse', { register: true });
+            const user = yield Users_1.User.findOne({ email: data.mail });
+            return { register: true, id: user._id };
         }
     });
 }

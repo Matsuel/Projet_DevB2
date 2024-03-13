@@ -62,12 +62,12 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
 };
 
-const registerChercheur = (e: React.FormEvent<HTMLFormElement>) => {
+const registerChercheur = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>) => {
     e.preventDefault();
 
     const mail = (document.getElementById('nouveau-email') as HTMLInputElement);
     const password = (document.getElementById('nouveau-password') as HTMLInputElement);
-    const notifs= (document.getElementById('ancien-eleve-notifs') as HTMLInputElement);
+    const notifs= (document.getElementById('nouveau-notifs') as HTMLInputElement);
 
     const data = {
         mail: mail.value,
@@ -75,10 +75,9 @@ const registerChercheur = (e: React.FormEvent<HTMLFormElement>) => {
         notifs: notifs.checked,
     };
 
-    console.log(data);
-
-    // socket.emit('registerChercheur', data);
-    return;
+    const response = await axios.post('http://localhost:3500/registerChercheur', data);
+    setRegister(response.data.register);
+    response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
 };
 
 export { registerAutoEcole, registerChercheur };
