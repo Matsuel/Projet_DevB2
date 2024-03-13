@@ -64,6 +64,17 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.send({ login: false });
     }
 }));
+app.post('/registerAutoEcole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = req.body;
+    const response = yield (0, mongo_1.registerAutoEcole)(data);
+    if (response) {
+        req.session.user = response.id;
+        res.send({ register: true });
+    }
+    else {
+        res.send({ register: false });
+    }
+}));
 (0, mongo_1.default)();
 app.listen(3500, () => {
     console.log('Server is running on port 3500');

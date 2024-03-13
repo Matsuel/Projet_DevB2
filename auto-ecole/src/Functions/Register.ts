@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
+const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>) => {
     e.preventDefault();
 
 
@@ -56,10 +56,10 @@ const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
         students: [students.value]
     };
 
-    console.log(data);
-
     // socket.emit('registerAutoEcole', data);
-    return;
+    const response = await axios.post('http://localhost:3500/registerAutoEcole', data);
+    setRegister(response.data.register);
+    response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
 };
 
 const registerChercheur = (e: React.FormEvent<HTMLFormElement>) => {

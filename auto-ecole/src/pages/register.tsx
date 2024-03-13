@@ -1,26 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import styles from '@/styles/Register.module.css';
-import { socket } from './_app';
 import { registerAutoEcole, registerChercheur } from '@/Functions/Register';
 import Header from "@/Components/Header";
 
 
 const Register: React.FC = () => {
-  useEffect(() => {
-    socket.on('registerResponse', (data: { register: boolean, students: string[] }) => {
-      console.log(data);
-      if (data.register){
-        window.location.href = '/login';
-      } else {
-        alert('Inscription échouée');
-      }
-    });
+  const [register , setRegister] = useState<boolean>(false);
+  const [registerError, setRegisterError] = useState<string>('');
 
-    return () => {
-      socket.off('registerResponse');
-    };
-  }, []);
+  useEffect(() => {
+    if (register) {
+      window.location.href = '/';
+    }
+  }, [register]);
 
   return (
     <div>
@@ -30,7 +23,7 @@ const Register: React.FC = () => {
       <main>
         <Header />
         <div className={styles.oui}>
-          <form id="auto-ecole" onSubmit={registerAutoEcole}>
+          <form id="auto-ecole" onSubmit={ (e) => registerAutoEcole(e, setRegister, setRegisterError) }>
             <div className={styles.oui3}>
               <h1>Ecole</h1>
               <input type="text" placeholder='Nom' id="auto-ecole-nom" required />

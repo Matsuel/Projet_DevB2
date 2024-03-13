@@ -25,13 +25,13 @@ function connectToMongo() {
         console.error("Error connecting to MongoDB", err);
     });
 }
-function registerAutoEcole(data, socket) {
+function registerAutoEcole(data) {
     return __awaiter(this, void 0, void 0, function* () {
         // ajouter champ pour les anciens élèves
         // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
         const autoEcole = yield Users_1.AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
         if (autoEcole) {
-            socket.emit('registerResponse', { register: false });
+            return { register: false };
         }
         else {
             const newAutoEcole = new Users_1.AutoEcole({
@@ -59,7 +59,8 @@ function registerAutoEcole(data, socket) {
             });
             yield newAutoEcole.save();
             yield registerStudents(data.mail);
-            socket.emit('registerResponse', { register: true });
+            const autoEcole = yield Users_1.AutoEcole.findOne({ email: data.mail });
+            return { register: true, id: autoEcole._id };
         }
     });
 }
@@ -152,8 +153,6 @@ function login(data) {
                 }
             }
         }
-        console.log(user);
-        console.log(data);
         if (yield bcrypt_1.default.compare(data.password, user.password)) {
             return { login: true, id: user._id };
         }

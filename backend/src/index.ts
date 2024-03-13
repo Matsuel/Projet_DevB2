@@ -3,9 +3,8 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { login } from './Functions/mongo';
+import connectToMongo, { login, registerAutoEcole, registerChercheur } from './Functions/mongo';
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
-import { registerAutoEcole, registerChercheur } from './Functions/mongo';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -32,6 +31,17 @@ app.post('/login', async (req, res) => {
         res.send({ login: true });
     }else {
         res.send({ login: false });
+    }
+});
+
+app.post('/registerAutoEcole', async (req, res) => {
+    const data = req.body as AutoEcoleInterface;
+    const response = await registerAutoEcole(data);
+    if (response) {
+        req.session.user = response.id;
+        res.send({ register: true });
+    }else {
+        res.send({ register: false });
     }
 });
 

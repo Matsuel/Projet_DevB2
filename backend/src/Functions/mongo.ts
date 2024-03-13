@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Interfaces/Users";
 import { AutoEcole, Student, User } from "../MongoModels/Users";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 function connectToMongo() {
     mongoose.connect("mongodb://localhost:27017/autoecoles", {
@@ -15,12 +14,12 @@ function connectToMongo() {
         });
 }
 
-async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
+async function registerAutoEcole(data: AutoEcoleInterface) {
     // ajouter champ pour les anciens élèves
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
-        socket.emit('registerResponse', { register: false });
+        return { register: false };
     } else {
         const newAutoEcole = new AutoEcole({
             name: data.name,
@@ -47,7 +46,8 @@ async function registerAutoEcole(data: AutoEcoleInterface, socket: any) {
         });
         await newAutoEcole.save();
         await registerStudents(data.mail);
-        socket.emit('registerResponse', { register: true });
+        const autoEcole = await AutoEcole.findOne({ email: data.mail });
+        return { register: true, id: autoEcole._id };
     }
 }
 
