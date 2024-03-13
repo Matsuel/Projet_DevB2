@@ -36,48 +36,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const http_1 = require("http");
-const socket_io_1 = require("socket.io");
+const express_session_1 = __importDefault(require("express-session"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const mongo_1 = __importStar(require("./Functions/mongo"));
-const mongo_2 = require("./Functions/mongo");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
-const server = (0, http_1.createServer)(app);
-const io = new socket_io_1.Server(server, {
-    cors: {
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST'],
-        credentials: true,
-    },
-});
-let connectedUsers = {};
-io.on('connection', (socket) => {
-    socket.on('join', (data) => {
-        connectedUsers[data.userId] = socket;
-        console.log(`New user connected: ${data.userId}`);
-    });
-    socket.on('disconnect', () => {
-        for (let [userId, userSocket] of Object.entries(connectedUsers)) {
-            if (userSocket === socket) {
-                delete connectedUsers[userId];
-                break;
-            }
-        }
-    });
-    socket.on('registerAutoEcole', (data) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, mongo_2.registerAutoEcole)(data, socket);
-    }));
-    socket.on('registerChercheur', (data) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, mongo_2.registerChercheur)(data, socket);
-    }));
-    socket.on('login', (data) => __awaiter(void 0, void 0, void 0, function* () {
-        yield (0, mongo_1.login)(data, socket);
-    }));
-});
+app.use((0, cookie_parser_1.default)());
+app.use((0, express_session_1.default)({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { mail, password } = req.body;
+    console.log(mail, password);
+    const user = yield (0, mongo_1.login)({ mail, password });
+    if (user.login) {
+        req.session.user = user.id;
+        res.send({ login: true });
+    }
+    else {
+        res.send({ login: false });
+    }
+}));
 (0, mongo_1.default)();
-server.listen(3500, () => {
+app.listen(3500, () => {
     console.log('Server is running on port 3500');
 });
 //Canaux de communication websockets

@@ -140,7 +140,7 @@ function saveToFile(data) {
         }
     });
 }
-function login(data, socket) {
+function login(data) {
     return __awaiter(this, void 0, void 0, function* () {
         let user = yield Users_1.AutoEcole.findOne({ email: data.mail });
         if (!user) {
@@ -148,18 +148,17 @@ function login(data, socket) {
             if (!user) {
                 user = yield Users_1.User.findOne({ email: data.mail });
                 if (!user) {
-                    socket.emit('loginResponse', { login: false });
-                    return;
+                    return { login: false };
                 }
             }
         }
         console.log(user);
         console.log(data);
         if (yield bcrypt_1.default.compare(data.password, user.password)) {
-            socket.emit('loginResponse', { login: true });
+            return { login: true, id: user._id };
         }
         else {
-            socket.emit('loginResponse', { login: false });
+            return { login: false };
         }
     });
 }

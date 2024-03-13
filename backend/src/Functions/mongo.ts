@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Interfaces/Users";
 import { AutoEcole, Student, User } from "../MongoModels/Users";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 function connectToMongo() {
     mongoose.connect("mongodb://localhost:27017/autoecoles", {
@@ -121,26 +122,22 @@ function saveToFile(data: [string, string][]) {
     });
 }
 
-async function login(data: LoginInterface, socket: any) {
+async function login(data: LoginInterface) {
     let user = await AutoEcole.findOne({ email: data.mail });
     if (!user) {
         user = await Student.findOne({ email: data.mail });
         if (!user) {
             user = await User.findOne({ email: data.mail });
             if (!user) {
-                socket.emit('loginResponse', { login: false });
-                return;
+                return { login: false };
             }
         }
     }
 
-    console.log(user);
-    console.log(data)
-
     if (await bcrypt.compare(data.password, user.password)) {
-        socket.emit('loginResponse', { login: true });
+        return { login: true, id: user._id };
     } else {
-        socket.emit('loginResponse', { login: false });
+        return { login: false };
     }
 }
 

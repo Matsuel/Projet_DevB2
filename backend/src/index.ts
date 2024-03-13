@@ -1,63 +1,45 @@
 import express from 'express';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
 import connectToMongo, { login } from './Functions/mongo';
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import { registerAutoEcole, registerChercheur } from './Functions/mongo';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-const server = createServer(app);
+app.use(cookieParser());
 
+app.use(session({
+    secret: process.env.SECRET as string,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
 
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-});
+app.post('/login', async (req, res) => {
+    const { mail, password } = req.body;
+    console.log(mail,password);
+    const user = await login({ mail, password });
 
-let connectedUsers: any = {};
-
-io.on('connection', (socket) => {
-  socket.on('join', (data) => {
-    connectedUsers[data.userId] = socket;
-    console.log(`New user connected: ${data.userId}`);
-  });
-
-    socket.on('disconnect', () => {
-        for (let [userId, userSocket] of Object.entries(connectedUsers)) {
-            if (userSocket === socket) {
-                delete connectedUsers[userId];
-                break;
-            }
-        }
-    });
-
-    socket.on('registerAutoEcole', async (data: AutoEcoleInterface ) => {
-        await registerAutoEcole(data, socket);
-    });
-
-    socket.on('registerChercheur', async (data: UserInterface) => {
-        await registerChercheur(data, socket);
-    });
-
-    socket.on('login', async (data: LoginInterface) => {
-        await login(data, socket);
-    });
+    if (user.login) {
+        req.session.user = user.id;
+        res.send({ login: true });
+    }else {
+        res.send({ login: false });
+    }
 });
 
 
 
 connectToMongo();
 
-server.listen(3500, () => {
+app.listen(3500, () => {
     console.log('Server is running on port 3500');
 });
 
