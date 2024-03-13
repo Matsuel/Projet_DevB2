@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import styles from '@/styles/autoecole.module.css';
+import axios from 'axios';
 
 
-const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {  return (
+const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {  
+  useEffect(() => {
+    const data = axios.get(`http://localhost:3500/autoecole/${id}`);
+    console.log(data)
+  }, [])
+  return (
+
     <div>
     <Head>
       <title>Autoecole</title>
