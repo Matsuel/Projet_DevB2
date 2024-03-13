@@ -8,7 +8,6 @@
     - sender_id
     -message content
     -data
-    -note/5
 
 nom auto ecole
 note/5 et commentaire
