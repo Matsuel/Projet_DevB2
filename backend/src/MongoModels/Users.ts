@@ -1,12 +1,16 @@
 import mongoose from "mongoose";
 
+const MonitorSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+});
+
 const AutoEcole = mongoose.model("AutoEcole", new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
     address: { type: String, required: true },
     pics: { type: [String], required: false },
-    monitors: { type: [String], required: true },
+    monitors: { type: [MonitorSchema], required: true },
     phone: { type: String, required: true },
     card: { type: Boolean, required: true },
     cheque: { type: Boolean, required: true },
