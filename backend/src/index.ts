@@ -62,7 +62,10 @@ app.post('/registerChercheur', async (req, res) => {
 });
 
 app.get('/autoecole/:id', async (req, res) => {
-    res.send({ autoEcole: await getAutoEcole(req.params.id) });
+    // console.log(await getAutoEcole(req.params.id));
+    // res.send({ autoEcole: await getAutoEcole(req.params.id) });
+    const autoEcole = await getAutoEcole(req.params.id);
+    res.send({ autoEcole: autoEcole });
 });
 
 app.get('/autosecoles', async (req, res) => {

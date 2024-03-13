@@ -143,8 +143,12 @@ async function login(data: LoginInterface) {
 }
 
 async function getAutoEcole(id: string) {
-    const autoEcole = await AutoEcole.findOne({ _id: id }).select('-password');
-    return autoEcole;
+    try {
+        const autoEcole = await AutoEcole.findOne({ _id: id }).select('-password');
+        return autoEcole;        
+    } catch (error) {
+        return { find: false };
+    }
 }
 
 async function getAutosEcoles() {

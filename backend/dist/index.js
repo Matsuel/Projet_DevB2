@@ -93,10 +93,13 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 }));
 app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send({ autoEcole: yield (0, mongo_1.getAutoEcole)(req.params.id) });
+    // console.log(await getAutoEcole(req.params.id));
+    // res.send({ autoEcole: await getAutoEcole(req.params.id) });
+    const autoEcole = yield (0, mongo_1.getAutoEcole)(req.params.id);
+    res.send({ autoEcole: autoEcole });
 }));
-app.get('/autosecole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send({ autoEcoles: yield (0, mongo_1.getAutoEcoles)() });
+app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
 }));
 (0, mongo_1.default)();
 app.listen(3500, () => {
