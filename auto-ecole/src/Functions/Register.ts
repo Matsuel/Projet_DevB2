@@ -1,4 +1,4 @@
-import { socket } from "@/pages/_app";
+import axios from "axios";
 
 const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,7 +58,7 @@ const registerAutoEcole = (e: React.FormEvent<HTMLFormElement>) => {
 
     console.log(data);
 
-    socket.emit('registerAutoEcole', data);
+    // socket.emit('registerAutoEcole', data);
     return;
 };
 
@@ -77,7 +77,7 @@ const registerChercheur = (e: React.FormEvent<HTMLFormElement>) => {
 
     console.log(data);
 
-    socket.emit('registerChercheur', data);
+    // socket.emit('registerChercheur', data);
     return;
 };
 
