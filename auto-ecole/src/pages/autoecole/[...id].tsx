@@ -10,7 +10,7 @@ export interface AutoEcoleInterface {
   mail: string;
   address: string;
   pics: string;
-  monitors: string[];
+  monitors: MonitorProps[];
   phone: string;
   card: boolean;
   cheque: boolean;
@@ -26,6 +26,11 @@ export interface AutoEcoleInterface {
   fin_francetravail: boolean;
   formations: string[];
   students: string[];
+}
+
+interface MonitorProps {
+  _id: string;
+  name: string;
 }
 
 const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
@@ -62,7 +67,7 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
         <ul>
           {datas?.monitors.map((monitor) => {
             return (
-              <li>{monitor}</li>
+              <li>{monitor.name}</li>
             )
           })}
         </ul>
