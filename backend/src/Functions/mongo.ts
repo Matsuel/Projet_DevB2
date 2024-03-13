@@ -147,11 +147,11 @@ async function getAutoEcole(id: string) {
     return autoEcole;
 }
 
-async function getAutoEcoles() {
+async function getAutosEcoles() {
     const autoEcoles = await AutoEcole.find().select('-password');
     return autoEcoles;
 }
 
 export default connectToMongo;
 
-export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutoEcoles };
+export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles };

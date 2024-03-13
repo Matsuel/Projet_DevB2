@@ -3,7 +3,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { getAutoEcole, getAutoEcoles, login, registerAutoEcole, registerChercheur } from './Functions/mongo';
+import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur } from './Functions/mongo';
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import dotenv from 'dotenv';
 
@@ -65,8 +65,8 @@ app.get('/autoecole/:id', async (req, res) => {
     res.send({ autoEcole: await getAutoEcole(req.params.id) });
 });
 
-app.get('/autosecole', async (req, res) => {
-    res.send({ autoEcoles: await getAutoEcoles() });
+app.get('/autosecoles', async (req, res) => {
+    res.send({ autoEcoles: await getAutosEcoles() });
 });
 
 connectToMongo();
