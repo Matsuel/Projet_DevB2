@@ -3,7 +3,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { getAutoEcole, login, registerAutoEcole, registerChercheur } from './Functions/mongo';
+import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur } from './Functions/mongo';
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import dotenv from 'dotenv';
 
@@ -61,11 +61,12 @@ app.post('/registerChercheur', async (req, res) => {
     }
 });
 
-app.get('/autoecole/:id', (req, res) => {
-    // Récupérer les informations de l'auto école
-    getAutoEcole(req.params.id).then((autoEcole) => {
-        res.send({ autoEcole: autoEcole });
-    });
+app.get('/autoecole/:id', async (req, res) => {
+    res.send({ autoEcole: await getAutoEcole(req.params.id) });
+});
+
+app.get('/autosecoles', async (req, res) => {
+    res.send({ autoEcoles: await getAutosEcoles() });
 });
 
 connectToMongo();

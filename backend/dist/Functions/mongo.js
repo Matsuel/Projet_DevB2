@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
+exports.getAutoEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -170,5 +170,12 @@ function getAutoEcole(id) {
     });
 }
 exports.getAutoEcole = getAutoEcole;
+function getAutoEcoles() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const autoEcoles = yield Users_1.AutoEcole.find().select('-password');
+        return autoEcoles;
+    });
+}
+exports.getAutoEcoles = getAutoEcoles;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map
