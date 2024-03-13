@@ -39,6 +39,7 @@ const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongo_1 = __importStar(require("./Functions/mongo"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -60,7 +61,8 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const user = yield (0, mongo_1.login)({ mail, password });
     if (user.login) {
         req.session.userId = user.id;
-        res.send({ login: true });
+        const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, { expiresIn: '24h' });
+        res.send({ login: true, token: token });
     }
     else {
         res.send({ login: false });
@@ -71,7 +73,8 @@ app.post('/registerAutoEcole', (req, res) => __awaiter(void 0, void 0, void 0, f
     const response = yield (0, mongo_1.registerAutoEcole)(data);
     if (response) {
         req.session.userId = response.id;
-        res.send({ register: true });
+        const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
+        res.send({ register: true, token: token });
     }
     else {
         res.send({ register: false });
@@ -82,7 +85,8 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
     const response = yield (0, mongo_1.registerChercheur)(data);
     if (response) {
         req.session.userId = response.id;
-        res.send({ register: true });
+        const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
+        res.send({ register: true, token: token });
     }
     else {
         res.send({ register: false });

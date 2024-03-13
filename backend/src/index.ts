@@ -30,7 +30,8 @@ app.post('/login', async (req, res) => {
 
     if (user.login) {
         req.session.userId = user.id;
-        res.send({ login: true });
+        const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
+        res.send({ login: true, token: token });
     }else {
         res.send({ login: false });
     }
@@ -41,7 +42,8 @@ app.post('/registerAutoEcole', async (req, res) => {
     const response = await registerAutoEcole(data);
     if (response) {
         req.session.userId = response.id;
-        res.send({ register: true });
+        const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
+        res.send({ register: true, token: token });
     }else {
         res.send({ register: false });
     }
@@ -52,7 +54,8 @@ app.post('/registerChercheur', async (req, res) => {
     const response = await registerChercheur(data);
     if (response) {
         req.session.userId = response.id;
-        res.send({ register: true });
+        const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
+        res.send({ register: true, token: token });
     }else {
         res.send({ register: false });
     }
