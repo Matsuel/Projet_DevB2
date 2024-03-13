@@ -92,7 +92,7 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
         res.send({ register: false });
     }
 }));
-app.get('/autoEcole/:id', (req, res) => {
+app.get('/autoecole/:id', (req, res) => {
     // Récupérer les informations de l'auto école
     (0, mongo_1.getAutoEcole)(req.params.id).then((autoEcole) => {
         res.send({ autoEcole: autoEcole });

@@ -61,7 +61,7 @@ app.post('/registerChercheur', async (req, res) => {
     }
 });
 
-app.get('/autoEcole/:id', (req, res) => {
+app.get('/autoecole/:id', (req, res) => {
     // Récupérer les informations de l'auto école
     getAutoEcole(req.params.id).then((autoEcole) => {
         res.send({ autoEcole: autoEcole });
