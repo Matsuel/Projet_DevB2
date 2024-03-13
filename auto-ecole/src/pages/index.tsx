@@ -1,8 +1,14 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import Header from "@/Components/Header";
+import { useEffect } from "react";
 
 export default function Home() {
+
+  useEffect(() => {
+    localStorage.getItem('token') ? null: window.location.href = '/login';
+  });
+
   return (
     <div>
       <Head>
