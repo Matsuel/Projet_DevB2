@@ -92,12 +92,12 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
         res.send({ register: false });
     }
 }));
-app.get('/autoecole/:id', (req, res) => {
-    // Récupérer les informations de l'auto école
-    (0, mongo_1.getAutoEcole)(req.params.id).then((autoEcole) => {
-        res.send({ autoEcole: autoEcole });
-    });
-});
+app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send({ autoEcole: yield (0, mongo_1.getAutoEcole)(req.params.id) });
+}));
+app.get('/autosecole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.send({ autoEcoles: yield (0, mongo_1.getAutoEcoles)() });
+}));
 (0, mongo_1.default)();
 app.listen(3500, () => {
     console.log('Server is running on port 3500');
