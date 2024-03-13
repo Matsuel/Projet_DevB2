@@ -4,8 +4,7 @@ import Header from "@/Components/Header";
 import styles from '@/styles/autoecole.module.css';
 
 
-const Autoecole: React.FC = () => {
-  return (
+const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {  return (
     <div>
     <Head>
       <title>Autoecole</title>
