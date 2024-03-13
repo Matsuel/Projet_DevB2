@@ -21,13 +21,14 @@ async function registerAutoEcole(data: AutoEcoleInterface) {
     if (autoEcole) {
         return { register: false };
     } else {
+        const monitors = data.monitors.map((monitor) => ({ _id : new mongoose.Types.ObjectId(), name: monitor }));
         const newAutoEcole = new AutoEcole({
             name: data.name,
             email: data.mail,
             password: await bcrypt.hash(data.password, 10),
             address: data.address,
             pics: data.pics,
-            monitors: data.monitors,
+            monitors: monitors,
             phone: data.phone,
             card: data.card,
             cheque: data.cheque,

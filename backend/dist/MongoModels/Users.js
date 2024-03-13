@@ -5,16 +5,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.Student = exports.AutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const MonitorSchema = new mongoose_1.default.Schema({
-    name: { type: String, required: true },
-});
 const AutoEcole = mongoose_1.default.model("AutoEcole", new mongoose_1.default.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true },
     password: { type: String, required: true },
     address: { type: String, required: true },
     pics: { type: [String], required: false },
-    monitors: { type: [MonitorSchema], required: true },
+    monitors: { type: [{
+                _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
+                name: { type: String, required: true },
+            }] },
     phone: { type: String, required: true },
     card: { type: Boolean, required: true },
     cheque: { type: Boolean, required: true },

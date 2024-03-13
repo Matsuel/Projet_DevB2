@@ -34,13 +34,14 @@ function registerAutoEcole(data) {
             return { register: false };
         }
         else {
+            const monitors = data.monitors.map((monitor) => ({ _id: new mongoose_1.default.Types.ObjectId(), name: monitor }));
             const newAutoEcole = new Users_1.AutoEcole({
                 name: data.name,
                 email: data.mail,
                 password: yield bcrypt_1.default.hash(data.password, 10),
                 address: data.address,
                 pics: data.pics,
-                monitors: data.monitors,
+                monitors: monitors,
                 phone: data.phone,
                 card: data.card,
                 cheque: data.cheque,

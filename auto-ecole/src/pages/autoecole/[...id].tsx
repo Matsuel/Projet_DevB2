@@ -37,7 +37,6 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
   const [datas, setDatas] = useState<AutoEcoleInterface>()
   const router = useRouter();
   const idArray = router.query.id;
-  console.log(idArray);
   useEffect(() => {
     const fetchData = async () => {
       if (idArray) {
@@ -67,7 +66,7 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
         <ul>
           {datas?.monitors.map((monitor) => {
             return (
-              <li>{monitor.name}</li>
+              <li key={monitor._id}>{monitor.name}</li>
             )
           })}
         </ul>
@@ -100,9 +99,9 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
 
         <h1 className={styles.title}>Formations:</h1>
         <ul>
-          {datas?.formations.map((formation) => {
+          {datas?.formations.map((formation, index) => {
             return (
-              <li>{formation}</li>
+              <li key={index}>{formation}</li>
             )
           })}
         </ul>
