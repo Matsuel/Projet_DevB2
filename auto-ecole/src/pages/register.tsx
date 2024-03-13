@@ -92,7 +92,7 @@ const Register: React.FC = () => {
             </div>
           </form>
 
-          <form id="ancien-eleve">
+          {/* <form id="ancien-eleve">
             <div className={styles.oui3}>
               <h1>ancien eleve</h1>
               <input type="email" placeholder='email' id="ancien-eleve-mail" />
@@ -103,7 +103,7 @@ const Register: React.FC = () => {
                 </div>
               <button type="submit" className={styles.button_register}>Inscription ancien eleve</button>
             </div>
-          </form>
+          </form> */}
 
           <form id="nouveau" onSubmit={registerChercheur}>
             <div className={styles.oui3}>
