@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
+exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -190,5 +190,17 @@ function getAutosEcoles() {
     });
 }
 exports.getAutosEcoles = getAutosEcoles;
+function searchAutoEcole(query) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const autoEcoles = yield Users_1.AutoEcole.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { city: { $regex: query, $options: 'i' } }
+            ]
+        }).select('_id name address zip city');
+        return autoEcoles;
+    });
+}
+exports.searchAutoEcole = searchAutoEcole;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map

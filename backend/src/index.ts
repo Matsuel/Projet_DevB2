@@ -3,10 +3,11 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur } from './Functions/mongo';
+import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import { searchInCitiesFiles } from './Functions/cities';
 
 const upload = multer({ storage : multer.memoryStorage() });
 
@@ -78,6 +79,12 @@ app.get('/autoecole/:id', async (req, res) => {
 
 app.get('/autosecoles', async (req, res) => {
     res.send({ autoEcoles: await getAutosEcoles() });
+});
+
+app.get('/search', async (req, res) => {
+    const cities = await searchInCitiesFiles(req.query.search as string);
+    const autoEcoles = await searchAutoEcole(req.query.search as string);
+    res.send({ cities: cities, autoEcoles: autoEcoles });
 });
 
 connectToMongo();

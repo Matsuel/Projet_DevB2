@@ -164,6 +164,16 @@ async function getAutosEcoles() {
     return autoEcoles;
 }
 
+async function searchAutoEcole(query: string) {
+    const autoEcoles = await AutoEcole.find({ 
+        $or: [
+            { name: { $regex: query, $options: 'i' } },
+            { city: { $regex: query, $options: 'i' } }
+        ]
+    }).select('_id name address zip city');
+    return autoEcoles;
+}
+
 export default connectToMongo;
 
-export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles };
+export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles, searchAutoEcole }

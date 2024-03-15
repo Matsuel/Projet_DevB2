@@ -43,6 +43,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongo_1 = __importStar(require("./Functions/mongo"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const multer_1 = __importDefault(require("multer"));
+const cities_1 = require("./Functions/cities");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -107,6 +108,11 @@ app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
 }));
 app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
+}));
+app.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const cities = yield (0, cities_1.searchInCitiesFiles)(req.query.search);
+    const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
+    res.send({ cities: cities, autoEcoles: autoEcoles });
 }));
 (0, mongo_1.default)();
 app.listen(3500, () => {
