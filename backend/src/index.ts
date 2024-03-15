@@ -7,7 +7,7 @@ import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole,
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
-import { searchInCitiesFiles } from './Functions/cities';
+import { searchInCitiesFiles } from './Functions/search';
 
 const upload = multer({ storage : multer.memoryStorage() });
 
