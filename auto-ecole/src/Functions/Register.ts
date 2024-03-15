@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>, setToken : React.Dispatch<React.SetStateAction<string>>) => {
+const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegister: React.Dispatch<React.SetStateAction<boolean>>, setRegisterError: React.Dispatch<React.SetStateAction<string>>, setToken : React.Dispatch<React.SetStateAction<string>>, selectedFile: File | null) => {
     e.preventDefault();
 
 
@@ -31,12 +31,14 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     // modifier ça pour quand on aura plusieurs étudiants
     const students = (document.getElementById('auto-ecole-mails-etudiants') as HTMLInputElement);
 
+    console.log(selectedFile);
+
     const data = {
         name: name.value,
         mail: mail.value,
         password: password.value,
         address: address.value,
-        pics: pics.value,
+        pics: selectedFile,
         // modifier ça pour quand on aura plusieurs profs
         monitors: [prof1.value, prof2.value],
         phone: phone.value,
@@ -56,8 +58,31 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
         students: [students.value]
     };
 
+    let formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('mail', data.mail);
+    formData.append('password', data.password);
+    formData.append('address', data.address);   
+    formData.append('pics', data.pics as Blob);
+    formData.append('monitors', JSON.stringify(data.monitors));
+    formData.append('phone', data.phone);
+    formData.append('card', data.card.toString());
+    formData.append('cheque', data.cheque.toString());
+    formData.append('especes', data.especes.toString());
+    formData.append('qualiopi', data.qualiopi.toString());
+    formData.append('label_qualite', data.label_qualite.toString());
+    formData.append('qualicert', data.qualicert.toString());
+    formData.append('garantie_fin', data.garantie_fin.toString());
+    formData.append('datadocke', data.datadocke.toString());
+    formData.append('cpf', data.cpf.toString());
+    formData.append('aide_apprentis', data.aide_apprentis.toString());
+    formData.append('permis1', data.permis1.toString());
+    formData.append('fin_francetravail', data.fin_francetravail.toString());
+    formData.append('formations', JSON.stringify(data.formations));
+    formData.append('students', JSON.stringify(data.students));
+
     // socket.emit('registerAutoEcole', data);
-    const response = await axios.post('http://localhost:3500/registerAutoEcole', data);
+    const response = await axios.post('http://localhost:3500/registerAutoEcole', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     setRegister(response.data.register);
     response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
     response.data.register === true ? setToken(response.data.token) : setToken('');

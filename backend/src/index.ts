@@ -6,6 +6,9 @@ import jwt from 'jsonwebtoken';
 import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur } from './Functions/mongo';
 import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
 import dotenv from 'dotenv';
+import multer from 'multer';
+
+const upload = multer({ storage : multer.memoryStorage() });
 
 dotenv.config();
 
@@ -37,9 +40,14 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('/registerAutoEcole', async (req, res) => {
+app.post('/registerAutoEcole',upload.single('pics'), async (req, res) => {
     const data = req.body as AutoEcoleInterface;
-    const response = await registerAutoEcole(data);
+    const file = req.file;
+    console.log(file);
+    console.log(file.buffer.toString('base64'));
+    console.log(data);
+    // return
+    const response = await registerAutoEcole(data, file);
     if (response) {
         req.session.userId = response.id;
         const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });

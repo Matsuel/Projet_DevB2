@@ -42,6 +42,8 @@ const cors_1 = __importDefault(require("cors"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongo_1 = __importStar(require("./Functions/mongo"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const multer_1 = __importDefault(require("multer"));
+const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -68,9 +70,14 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.send({ login: false });
     }
 }));
-app.post('/registerAutoEcole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/registerAutoEcole', upload.single('pics'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
-    const response = yield (0, mongo_1.registerAutoEcole)(data);
+    const file = req.file;
+    console.log(file);
+    console.log(file.buffer.toString('base64'));
+    console.log(data);
+    // return
+    const response = yield (0, mongo_1.registerAutoEcole)(data, file);
     if (response) {
         req.session.userId = response.id;
         const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });

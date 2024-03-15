@@ -9,6 +9,12 @@ const Register: React.FC = () => {
   const [register , setRegister] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string>('');
   const [token, setToken] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    setSelectedFile(file);
+  }
 
   useEffect(() => {
     if (register) {
@@ -26,7 +32,7 @@ const Register: React.FC = () => {
         <Header />
         <div className={styles.oui}>
           <p>{registerError}</p>
-          <form id="auto-ecole" onSubmit={ (e) => registerAutoEcole(e, setRegister, setRegisterError, setToken) }>
+          <form id="auto-ecole" onSubmit={ (e) => registerAutoEcole(e, setRegister, setRegisterError, setToken, selectedFile) }>
             <div className={styles.oui3}>
               <h1>Ecole</h1>
               <input type="text" placeholder='Nom' id="auto-ecole-nom" required />
@@ -34,7 +40,7 @@ const Register: React.FC = () => {
               <input type="password" placeholder='Password' id="auto-ecole-password" required />
               <input type="text" placeholder='Address' id="auto-ecole-address" required />
               <input type="text" placeholder='ouais mails des etudiants' id="auto-ecole-mails-etudiants" required />
-              <input type="file" placeholder='photos' id="auto-ecole-photo" />
+              <input type="file" placeholder='photos' id="auto-ecole-photo" onChange={handleFileChange} />
               <input type="text" placeholder='nom de prof 1' id="auto-ecole-prof1" required />
               <input type="text" placeholder='nom de prof 2' id="auto-ecole-prof2" required />
               <input type="tel" placeholder='phone' id="auto-ecole-phone" required />

@@ -25,8 +25,9 @@ function connectToMongo() {
         console.error("Error connecting to MongoDB", err);
     });
 }
-function registerAutoEcole(data) {
+function registerAutoEcole(data, file) {
     return __awaiter(this, void 0, void 0, function* () {
+        // return
         // ajouter champ pour les anciens élèves
         // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
         const autoEcole = yield Users_1.AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
@@ -34,13 +35,24 @@ function registerAutoEcole(data) {
             return { register: false };
         }
         else {
+            console.log(data.monitors);
+            if (typeof data.monitors === 'string') {
+                data.monitors = JSON.parse(data.monitors);
+            }
+            if (typeof data.formations === 'string') {
+                data.formations = JSON.parse(data.formations);
+            }
+            if (typeof data.students === 'string') {
+                data.students = JSON.parse(data.students);
+            }
+            // return
             const monitors = data.monitors.map((monitor) => ({ _id: new mongoose_1.default.Types.ObjectId(), name: monitor }));
             const newAutoEcole = new Users_1.AutoEcole({
                 name: data.name,
                 email: data.mail,
                 password: yield bcrypt_1.default.hash(data.password, 10),
                 address: data.address,
-                pics: data.pics,
+                pics: file.buffer.toString('base64'),
                 monitors: monitors,
                 phone: data.phone,
                 card: data.card,

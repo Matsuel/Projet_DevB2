@@ -63,7 +63,6 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
         <h1 id="nom">{datas?.name}</h1>
         <h2 id="tel">{datas?.phone}</h2>
         <h3 id="address">{datas?.address}</h3>
-        <h3 id="photos">{datas?.pics}</h3>
         {
           datas?.pics != "" && <Image src={`data:image/jpeg;base64,${datas?.pics}`} alt="photo" width={200} height={200} />
         }

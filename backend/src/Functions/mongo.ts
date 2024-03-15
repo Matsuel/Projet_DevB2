@@ -14,20 +14,32 @@ function connectToMongo() {
         });
 }
 
-async function registerAutoEcole(data: AutoEcoleInterface) {
+async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
+    // return
     // ajouter champ pour les anciens élèves
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
         return { register: false };
     } else {
+        console.log(data.monitors);
+        if (typeof data.monitors === 'string') {
+            data.monitors = JSON.parse(data.monitors);
+        }
+        if (typeof data.formations === 'string') {
+            data.formations = JSON.parse(data.formations);
+        }
+        if (typeof data.students === 'string') {
+            data.students = JSON.parse(data.students);
+        }
+        // return
         const monitors = data.monitors.map((monitor) => ({ _id : new mongoose.Types.ObjectId(), name: monitor }));
         const newAutoEcole = new AutoEcole({
             name: data.name,
             email: data.mail,
             password: await bcrypt.hash(data.password, 10),
             address: data.address,
-            pics: data.pics,
+            pics: file.buffer.toString('base64'),
             monitors: monitors,
             phone: data.phone,
             card: data.card,
