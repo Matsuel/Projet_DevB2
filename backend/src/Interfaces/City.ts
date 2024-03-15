@@ -1,8 +1,13 @@
 export interface City {
     name: string;
-    zip: number;
+    zip: string;
     gps : {
         lat: string;
-        long: string;
-    }
+        lon: string;
+    };
+    department: {
+        name: string;
+        code: string;
+    };
+    region: string;
 }

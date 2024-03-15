@@ -1,17 +1,22 @@
 
 interface City {
+  name: string;
+  zip: string;
+  gps: {
+    lat: string;
+    lon: string;
+  };
+  department: {
     name: string;
-    zip: number;
-    gps: {
-      lat: number;
-      long: number;
-    }
-  }
-  
-  interface AutoEcoleSearch {
-    _id: string;
-    name: string;
-    address: string;
-    zip: number;
-    city: string;
-  }
+    code: string;
+  };
+  region: string;
+}
+
+interface AutoEcoleSearch {
+  _id: string;
+  name: string;
+  address: string;
+  zip: number;
+  city: string;
+}
