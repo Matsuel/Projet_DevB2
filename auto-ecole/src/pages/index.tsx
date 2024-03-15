@@ -19,6 +19,7 @@ export default function Home() {
       const response = await axios.get('http://localhost:3500/search', { params: { search: query } });
       setSearchCities(response.data.cities);
       setSearchAutoEcoles(response.data.autoEcoles);
+      console.log(response.data);
     }
   }, 1000);
 
