@@ -9,6 +9,8 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     const mail = (document.getElementById('auto-ecole-email') as HTMLInputElement);
     const password = (document.getElementById('auto-ecole-password') as HTMLInputElement);
     const address = (document.getElementById('auto-ecole-address') as HTMLInputElement);
+    const zip = (document.getElementById('auto-ecole-zip') as HTMLInputElement);
+    const city = (document.getElementById('auto-ecole-city') as HTMLInputElement);
     const pics = (document.getElementById('auto-ecole-photo') as HTMLInputElement);
     // modifier ça pour quand on aura plusieurs profs
     const prof1 = (document.getElementById('auto-ecole-prof1') as HTMLInputElement);
@@ -38,6 +40,8 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
         mail: mail.value,
         password: password.value,
         address: address.value,
+        zip: zip.value,
+        city: city.value,
         pics: selectedFile,
         // modifier ça pour quand on aura plusieurs profs
         monitors: [prof1.value, prof2.value],
@@ -63,6 +67,8 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     formData.append('mail', data.mail);
     formData.append('password', data.password);
     formData.append('address', data.address);   
+    formData.append('zip', data.zip);
+    formData.append('city', data.city);
     formData.append('pics', data.pics as Blob);
     formData.append('monitors', JSON.stringify(data.monitors));
     formData.append('phone', data.phone);

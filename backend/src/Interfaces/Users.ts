@@ -3,6 +3,8 @@ export interface AutoEcoleInterface {
     mail: string;
     password: string;
     address: string;
+    zip: number;
+    city: string;
     pics: string;
     monitors: string[];
     phone: string;

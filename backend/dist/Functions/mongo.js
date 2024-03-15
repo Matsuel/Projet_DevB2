@@ -45,6 +45,8 @@ function registerAutoEcole(data, file) {
                 email: data.mail,
                 password: yield bcrypt_1.default.hash(data.password, 10),
                 address: data.address,
+                zip: data.zip,
+                city: data.city,
                 pics: file.buffer.toString('base64'),
                 monitors: monitors,
                 phone: data.phone,

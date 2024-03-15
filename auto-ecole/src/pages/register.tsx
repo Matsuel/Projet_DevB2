@@ -39,6 +39,8 @@ const Register: React.FC = () => {
               <input type="email" placeholder='Mail' id="auto-ecole-email" required />
               <input type="password" placeholder='Password' id="auto-ecole-password" required />
               <input type="text" placeholder='Address' id="auto-ecole-address" required />
+              <input type="number" placeholder='Zip' id="auto-ecole-zip" required />
+              <input type="text" placeholder='City' id="auto-ecole-city" required />
               <input type="text" placeholder='ouais mails des etudiants' id="auto-ecole-mails-etudiants" required />
               <input type="file" placeholder='photos' id="auto-ecole-photo" onChange={handleFileChange} required />
               <input type="text" placeholder='nom de prof 1' id="auto-ecole-prof1" required />

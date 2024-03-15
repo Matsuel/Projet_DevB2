@@ -10,6 +10,8 @@ const AutoEcole = mongoose_1.default.model("AutoEcole", new mongoose_1.default.S
     email: { type: String, required: true },
     password: { type: String, required: true },
     address: { type: String, required: true },
+    zip: { type: Number, required: true },
+    city: { type: String, required: true },
     pics: { type: [String], required: false },
     monitors: { type: [{
                 _id: { type: mongoose_1.default.Schema.Types.ObjectId, required: true },
