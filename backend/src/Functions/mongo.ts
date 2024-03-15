@@ -23,16 +23,9 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
         return { register: false };
     } else {
         console.log(data.monitors);
-        if (typeof data.monitors === 'string') {
-            data.monitors = JSON.parse(data.monitors);
-        }
-        if (typeof data.formations === 'string') {
-            data.formations = JSON.parse(data.formations);
-        }
-        if (typeof data.students === 'string') {
-            data.students = JSON.parse(data.students);
-        }
-        // return
+        typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
+        typeof data.formations === 'string' ? data.formations = JSON.parse(data.formations) : null;
+        typeof data.students === 'string' ? data.students = JSON.parse(data.students) : null;
         const monitors = data.monitors.map((monitor) => ({ _id : new mongoose.Types.ObjectId(), name: monitor }));
         const newAutoEcole = new AutoEcole({
             name: data.name,
