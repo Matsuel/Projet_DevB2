@@ -19,4 +19,5 @@ interface AutoEcoleSearch {
   address: string;
   zip: number;
   city: string;
+  note: number;
 }

@@ -14,6 +14,7 @@ const reviewMonitorSchema = new mongoose_1.default.Schema({
 exports.reviewMonitorSchema = reviewMonitorSchema;
 // reviewsMonitor+ monitorId = nom de la collection
 // reviewsMonitor+ monitorId sera relié au monitorId de la collection Autoecoles
+// quand on save une review autoecole, on modifie la note de l'autoecole et on incrémente noteCount sur la collection Autoecoles
 const reviewAutoecoleSchema = new mongoose_1.default.Schema({
     rate: { type: Number, required: true },
     comment: { type: String, required: true },

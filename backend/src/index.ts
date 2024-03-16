@@ -87,6 +87,11 @@ app.get('/search', async (req, res) => {
     res.send({ cities: cities, autoEcoles: autoEcoles });
 });
 
+app.get('/results', async (req, res) => {
+    const autoEcoles = await searchAutoEcole(req.query.search as string);
+    res.send({ autoEcoles: autoEcoles });
+});
+
 connectToMongo();
 
 app.listen(3500, () => {

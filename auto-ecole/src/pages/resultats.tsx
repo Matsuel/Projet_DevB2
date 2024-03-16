@@ -3,15 +3,29 @@ import Head from 'next/head';
 import Header from "@/Components/Header";
 import Carte from '@/Components/Carte_Resultats';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 
 const Resultats: React.FC = () => {
   const router = useRouter();
   const { query } = router;
   const [city, setCity] = useState<string>('');
+  const [results, setResults] = useState<AutoEcoleSearch[]>([]);
+
+  const handleAutoEcoleClick = (id: string) => {
+    router.push(`/autoecole/${id}`);
+  }
+
   useEffect(() => {
-    if (query.city) {
-      setCity(query.city as string);
+    const fetchData = async () => {
+      if (query.city) {
+        setCity(query.city as string);
+        const response = await axios.get('http://localhost:3500/results', { params: { search: query.city } })
+        console.log(response.data);
+        setResults(response.data.autoEcoles);
+
+      }
     }
+    fetchData();
   }, [query]);
 
   return (
@@ -27,6 +41,13 @@ const Resultats: React.FC = () => {
           <li><Carte nom="oui" address="non" stars={3.5} /></li>
           <li><Carte nom="bruh" address="non" stars={0.5} /></li>
           <li><Carte nom="odzedzdeui" address="dzedezdddd" stars={5} /></li>
+          {results.map((autoEcole) => {
+            return (
+              <li key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id)}>
+                <Carte nom={autoEcole.name} address={`${autoEcole.address} ${autoEcole.zip} ${autoEcole.city}`} stars={autoEcole.note}/>
+              </li>
+            )
+          })}
         </ul>
       </main>
     </div>

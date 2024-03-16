@@ -114,6 +114,10 @@ app.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
     res.send({ cities: cities, autoEcoles: autoEcoles });
 }));
+app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
+    res.send({ autoEcoles: autoEcoles });
+}));
 (0, mongo_1.default)();
 app.listen(3500, () => {
     console.log('Server is running on port 3500');

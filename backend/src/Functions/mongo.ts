@@ -172,7 +172,7 @@ async function searchAutoEcole(query: string) {
             { name: { $regex: query, $options: 'i' } },
             { city: { $regex: query, $options: 'i' } }
         ]
-    }).select('_id name address zip city');
+    }).select('_id name address zip city note');
     return autoEcoles;
 }
 

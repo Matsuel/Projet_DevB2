@@ -56,6 +56,7 @@ export default function Home() {
                 <h2>{autoEcole.name}</h2>
                 <p>{autoEcole.address}</p>
                 <p>{autoEcole.zip} {autoEcole.city}</p>
+                <p>{autoEcole.note}</p>
               </div>
             )
           })
