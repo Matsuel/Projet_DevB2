@@ -13,6 +13,10 @@ export default function Home() {
     router.push(`/resultats?city=${city}`);
   }
 
+  const handleAutoEcoleClick = (id: string) => {
+    router.push(`/autoecole/${id}`);
+  }
+
   const [searchCities, setSearchCities] = useState<City[]>([]);
   const [searchAutoEcoles, setSearchAutoEcoles] = useState<AutoEcoleSearch[]>([]);
 
@@ -48,7 +52,7 @@ export default function Home() {
         {
           searchAutoEcoles.map((autoEcole) => {
             return (
-              <div key={autoEcole._id}>
+              <div key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id)}>
                 <h2>{autoEcole.name}</h2>
                 <p>{autoEcole.address}</p>
                 <p>{autoEcole.zip} {autoEcole.city}</p>
