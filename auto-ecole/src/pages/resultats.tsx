@@ -4,16 +4,13 @@ import Header from "@/Components/Header";
 import Carte from '@/Components/Carte_Resultats';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { handleAutoEcoleClick } from '@/Functions/Router';
 
 const Resultats: React.FC = () => {
   const router = useRouter();
   const { query } = router;
   const [city, setCity] = useState<string>('');
   const [results, setResults] = useState<AutoEcoleSearch[]>([]);
-
-  const handleAutoEcoleClick = (id: string) => {
-    router.push(`/autoecole/${id}`);
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +40,7 @@ const Resultats: React.FC = () => {
           <li><Carte nom="odzedzdeui" address="dzedezdddd" stars={5} /></li>
           {results.map((autoEcole) => {
             return (
-              <li key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id)}>
+              <li key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id, router)}>
                 <Carte nom={autoEcole.name} address={`${autoEcole.address} ${autoEcole.zip} ${autoEcole.city}`} stars={autoEcole.note}/>
               </li>
             )

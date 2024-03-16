@@ -59,7 +59,11 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
 
     <div>
       <Head>
-        <title>Autoecole</title>
+        <title>
+          {
+            datas?.name ? datas.name : "Autoecole"
+          }
+        </title>
       </Head>
       <main>
         <Header />

@@ -5,17 +5,10 @@ import { useEffect, useState } from "react";
 import { debounce } from 'lodash';
 import axios from 'axios';
 import {useRouter} from 'next/router';
+import { handleAutoEcoleClick, handleCityClick } from "@/Functions/Router";
 
 export default function Home() {
   const router = useRouter();
-
-  const handleCityClick = (city: string) => {
-    router.push(`/resultats?city=${city}`);
-  }
-
-  const handleAutoEcoleClick = (id: string) => {
-    router.push(`/autoecole/${id}`);
-  }
 
   const [searchCities, setSearchCities] = useState<City[]>([]);
   const [searchAutoEcoles, setSearchAutoEcoles] = useState<AutoEcoleSearch[]>([]);
@@ -29,7 +22,6 @@ export default function Home() {
       const response = await axios.get('http://localhost:3500/search', { params: { search: query } });
       setSearchCities(response.data.cities);
       setSearchAutoEcoles(response.data.autoEcoles);
-      console.log(response.data);
     }
   }, 1000);
 
@@ -52,7 +44,7 @@ export default function Home() {
         {
           searchAutoEcoles.map((autoEcole) => {
             return (
-              <div key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id)}>
+              <div key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id, router)}>
                 <h2>{autoEcole.name}</h2>
                 <p>{autoEcole.address}</p>
                 <p>{autoEcole.zip} {autoEcole.city}</p>
@@ -64,7 +56,7 @@ export default function Home() {
         {
           searchCities.map((city:City, index:number) => {
             return (
-              <div key={index} onClick={() => handleCityClick(city.name)}>
+              <div key={index} onClick={() => handleCityClick(city.name, router)}>
                 <h2>{city.name}</h2>
               </div>
             )
