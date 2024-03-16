@@ -9,6 +9,7 @@ const reviewMonitorSchema = new mongoose.Schema({
 
 // reviewsMonitor+ monitorId = nom de la collection
 // reviewsMonitor+ monitorId sera relié au monitorId de la collection Autoecoles
+// quand on save une review autoecole, on modifie la note de l'autoecole et on incrémente noteCount sur la collection Autoecoles
 
 
 const reviewAutoecoleSchema = new mongoose.Schema({

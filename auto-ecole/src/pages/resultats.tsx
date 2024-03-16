@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import Carte from '@/Components/Carte_Resultats';
+import { useRouter } from 'next/router';
 
 const Resultats: React.FC = () => {
+  const router = useRouter();
+  const { query } = router;
+  const [city, setCity] = useState<string>('');
+  useEffect(() => {
+    if (query.city) {
+      setCity(query.city as string);
+    }
+  }, [query]);
+
   return (
     <div>
       <Head>
-        <title>Resultats</title>
+        <title>
+          Resultats {city ? `pour ${city}` : ''}
+        </title>
       </Head>
       <main>
         <Header />

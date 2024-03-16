@@ -4,8 +4,14 @@ import Header from "@/Components/Header";
 import { useEffect, useState } from "react";
 import { debounce } from 'lodash';
 import axios from 'axios';
+import {useRouter} from 'next/router';
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleCityClick = (city: string) => {
+    router.push(`/resultats?city=${city}`);
+  }
 
   const [searchCities, setSearchCities] = useState<City[]>([]);
   const [searchAutoEcoles, setSearchAutoEcoles] = useState<AutoEcoleSearch[]>([]);
@@ -39,6 +45,26 @@ export default function Home() {
           <input placeholder="Rechercherrrrr" className={styles.rechercher} onChange={(e) => handleSearch(e.target.value)} />
           <button className={styles.search}>Go go</button>
         </div>
+        {
+          searchAutoEcoles.map((autoEcole) => {
+            return (
+              <div key={autoEcole._id}>
+                <h2>{autoEcole.name}</h2>
+                <p>{autoEcole.address}</p>
+                <p>{autoEcole.zip} {autoEcole.city}</p>
+              </div>
+            )
+          })
+        }
+        {
+          searchCities.map((city:City, index:number) => {
+            return (
+              <div key={index} onClick={() => handleCityClick(city.name)}>
+                <h2>{city.name}</h2>
+              </div>
+            )
+          })
+        }
 
       </main>
     </div>
