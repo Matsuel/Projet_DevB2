@@ -10,6 +10,8 @@ export interface AutoEcoleInterface {
   name: string;
   mail: string;
   address: string;
+  zip: number;
+  city: string;
   pics: string;
   monitors: MonitorProps[];
   phone: string;
@@ -27,6 +29,7 @@ export interface AutoEcoleInterface {
   fin_francetravail: boolean;
   formations: string[];
   students: string[];
+  note: number;
 }
 
 interface MonitorProps {
@@ -63,6 +66,9 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
         <h1 id="nom">{datas?.name}</h1>
         <h2 id="tel">{datas?.phone}</h2>
         <h3 id="address">{datas?.address}</h3>
+        <h3 id="address">{datas?.zip}</h3>
+        <h3 id="address">{datas?.city}</h3>
+        <h3 id="address">{datas?.note}/5</h3>
         {
           datas?.pics != "" && <Image src={`data:image/jpeg;base64,${datas?.pics}`} alt="photo" width={200} height={200} />
         }

@@ -51,6 +51,8 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
             fin_francetravail: data.fin_francetravail,
             formations: data.formations,
             students: data.students,
+            note: 0,
+            noteCount: 0,
         });
         await newAutoEcole.save();
         await registerStudents(data.mail);
