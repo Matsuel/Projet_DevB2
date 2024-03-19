@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
+const Review_1 = require("../MongoModels/Review");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 function connectToMongo() {
     mongoose_1.default.connect("mongodb://localhost:27017/autoecoles", {})
@@ -70,6 +71,12 @@ function registerAutoEcole(data, file) {
             yield newAutoEcole.save();
             yield registerStudents(data.mail);
             const autoEcole = yield Users_1.AutoEcole.findOne({ email: data.mail });
+            let reviewsCollection = mongoose_1.default.model('reviewsAutoecole_' + autoEcole._id, Review_1.reviewAutoecoleSchema);
+            yield reviewsCollection.createCollection();
+            autoEcole.monitors.forEach((monitor) => __awaiter(this, void 0, void 0, function* () {
+                reviewsCollection = mongoose_1.default.model('reviewsMonitor_' + monitor._id, Review_1.reviewMonitorSchema);
+                yield reviewsCollection.createCollection();
+            }));
             return { register: true, id: autoEcole._id };
         }
     });
