@@ -37,8 +37,14 @@ interface MonitorProps {
   name: string;
 }
 
+interface ReviewAutoEcole {
+  rate: number;
+  comment: string;
+}
+
 const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
   const [datas, setDatas] = useState<AutoEcoleInterface>()
+  const [reviews, setReviews] = useState<ReviewAutoEcole[]>([]);
   const router = useRouter();
   const idArray = router.query.id;
   useEffect(() => {
@@ -46,10 +52,12 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
       if (idArray) {
         const id = idArray[idArray.length - 1];
         const data = await axios.get(`http://localhost:3500/autoecole/${id}`);
+        console.log(data.data);
         if ('find' in data.data.autoEcole) {
           window.location.href = '/';
         } else {
           setDatas(data.data.autoEcole);
+          setReviews(data.data.reviews);
         }
       }
     }
@@ -115,6 +123,15 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
           {datas?.formations.map((formation, index) => {
             return (
               <li key={index}>{formation}</li>
+            )
+          })}
+        </ul>
+
+        {reviews.length > 0 && <h1 className={styles.title}>Avis:</h1>}
+        <ul>
+          {reviews.map((review, index) => {
+            return (
+              <li key={index}>{review.rate}/5 - {review.comment}</li>
             )
           })}
         </ul>

@@ -103,7 +103,9 @@ app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     // console.log(await getAutoEcole(req.params.id));
     // res.send({ autoEcole: await getAutoEcole(req.params.id) });
     const autoEcole = yield (0, mongo_1.getAutoEcole)(req.params.id);
-    res.send({ autoEcole: autoEcole });
+    const reviews = mongoose_1.default.model('reviewsAutoecole_' + req.params.id, Review_1.reviewAutoecoleSchema);
+    const reviewsList = yield reviews.find();
+    res.send({ autoEcole: autoEcole, reviews: reviewsList });
 }));
 app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
@@ -129,10 +131,10 @@ app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, fu
         let autoEcoleModel = mongoose_1.default.model('reviewsAutoecole_' + student.autoEcoleId, Review_1.reviewAutoecoleSchema);
         let newReview = { rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date() };
         yield autoEcoleModel.create(newReview);
-        res.send({ response: 'ok' });
+        res.send({ posted: true, autoEcoleId: student.autoEcoleId });
     }
     else {
-        res.send({ response: 'ko' });
+        res.send({ posted: false });
     }
 }));
 (0, mongo_1.default)();

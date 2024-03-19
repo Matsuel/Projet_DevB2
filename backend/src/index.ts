@@ -73,7 +73,9 @@ app.get('/autoecole/:id', async (req, res) => {
     // console.log(await getAutoEcole(req.params.id));
     // res.send({ autoEcole: await getAutoEcole(req.params.id) });
     const autoEcole = await getAutoEcole(req.params.id);
-    res.send({ autoEcole: autoEcole });
+    const reviews = mongoose.model('reviewsAutoecole_'+ req.params.id, reviewAutoecoleSchema);
+    const reviewsList = await reviews.find();
+    res.send({ autoEcole: autoEcole, reviews: reviewsList });
 });
 
 app.get('/autosecoles', async (req, res) => {
@@ -103,7 +105,7 @@ app.post('/reviewsautoecole', async (req, res) => {
         let autoEcoleModel = mongoose.model('reviewsAutoecole_'+ student.autoEcoleId, reviewAutoecoleSchema);
         let newReview = {rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date()};
         await autoEcoleModel.create(newReview);
-        res.send({ posted: true });
+        res.send({ posted: true, autoEcoleId: student.autoEcoleId });
     }else{
         res.send({ posted: false });
     }

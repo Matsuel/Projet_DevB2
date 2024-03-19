@@ -4,6 +4,7 @@ import Header from "@/Components/Header";
 import ReactStars from 'react-stars';
 import styles from '@/styles/add.module.css';
 import axios from 'axios';
+import { useRouter } from 'next/router';
 
 interface AutoEcoleReview {
   stars: number;
@@ -17,6 +18,8 @@ interface MonitorReview {
 
 const Add: React.FC = () => {
 
+  const router = useRouter();
+
   let token = '';
   if (typeof window !== 'undefined') {
     token = localStorage.getItem('token') || '';
@@ -27,7 +30,11 @@ const Add: React.FC = () => {
 
   const handleSubmitAutoecole = async () => {
     const response = await axios.post('http://localhost:3500/reviewsautoecole', { review: autoecoleReview, token: token });
-    console.log(response.data);
+    if (response.data.posted){
+      router.push('/autoecole/' + response.data.autoEcoleId);
+    }else{
+      alert('Erreur lors de la publication de l\'avis');
+    }
   };
 
   return (
