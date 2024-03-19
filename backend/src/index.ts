@@ -4,15 +4,15 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
-import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Users';
+import { AutoEcoleInterface, LoginInterface, UserInterface } from './Interfaces/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import { searchInCitiesFiles } from './Functions/search';
 import mongoose from 'mongoose';
 import { reviewAutoecoleSchema } from './MongoModels/Review';
-import { Student } from './MongoModels/Users';
+import { AutoEcole, Student } from './MongoModels/Users';
 
-const upload = multer({ storage : multer.memoryStorage() });
+const upload = multer({ storage: multer.memoryStorage() });
 
 dotenv.config();
 
@@ -25,9 +25,9 @@ app.use(session({
     secret: process.env.SECRET as string,
     resave: false,
     saveUninitialized: true,
-    cookie: { 
-      secure: false,
-      maxAge: 24 * 60 * 60 * 1000
+    cookie: {
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
@@ -39,12 +39,12 @@ app.post('/login', async (req, res) => {
         req.session.userId = user.id;
         const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
         res.send({ login: true, token: token });
-    }else {
+    } else {
         res.send({ login: false });
     }
 });
 
-app.post('/registerAutoEcole',upload.single('pics'), async (req, res) => {
+app.post('/registerAutoEcole', upload.single('pics'), async (req, res) => {
     const data = req.body as AutoEcoleInterface;
     const file = req.file;
     const response = await registerAutoEcole(data, file);
@@ -52,7 +52,7 @@ app.post('/registerAutoEcole',upload.single('pics'), async (req, res) => {
         req.session.userId = response.id;
         const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
         res.send({ register: true, token: token });
-    }else {
+    } else {
         res.send({ register: false });
     }
 });
@@ -64,7 +64,7 @@ app.post('/registerChercheur', async (req, res) => {
         req.session.userId = response.id;
         const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
         res.send({ register: true, token: token });
-    }else {
+    } else {
         res.send({ register: false });
     }
 });
@@ -73,7 +73,7 @@ app.get('/autoecole/:id', async (req, res) => {
     // console.log(await getAutoEcole(req.params.id));
     // res.send({ autoEcole: await getAutoEcole(req.params.id) });
     const autoEcole = await getAutoEcole(req.params.id);
-    const reviews = mongoose.model('reviewsAutoecole_'+ req.params.id, reviewAutoecoleSchema);
+    const reviews = mongoose.model('reviewsAutoecole_' + req.params.id, reviewAutoecoleSchema);
     const reviewsList = await reviews.find();
     res.send({ autoEcole: autoEcole, reviews: reviewsList });
 });
@@ -101,12 +101,19 @@ app.post('/reviewsautoecole', async (req, res) => {
     const decoded = jwt.verify(token, process.env.SECRET as string);
     const id = decoded.id;
     const student = await Student.findById(id);
-    if(student) {
-        let autoEcoleModel = mongoose.model('reviewsAutoecole_'+ student.autoEcoleId, reviewAutoecoleSchema);
-        let newReview = {rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date()};
+    if (student) {
+        let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
+        let newReview = { rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date() };
         await autoEcoleModel.create(newReview);
+        if (reviewContent.stars !== 0) {
+            let autoEcole = await AutoEcole.findById(student.autoEcoleId);
+            let note = ((Number(autoEcole.note) * Number(autoEcole.noteCount)) + Number(reviewContent.stars)) / (Number(autoEcole.noteCount) + 1);
+            autoEcole.note = note;
+            autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
+            await autoEcole.save();
+        }
         res.send({ posted: true, autoEcoleId: student.autoEcoleId });
-    }else{
+    } else {
         res.send({ posted: false });
     }
 });
