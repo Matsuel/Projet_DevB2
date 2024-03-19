@@ -3,41 +3,32 @@ import Head from 'next/head';
 import Header from "@/Components/Header";
 import ReactStars from 'react-stars';
 import styles from '@/styles/add.module.css';
+import axios from 'axios';
+
+interface AutoEcoleReview {
+  stars: number;
+  comment: string;
+}
+
+interface MonitorReview {
+  stars: number;
+  comment: string;
+}
 
 const Add: React.FC = () => {
 
-  const [autoecolestar, setAutoecolestar] = useState(0);
-  const [autoecolecomment, setAutoecolecomment] = useState('');
-  const [prof1star, setProf1ecolestar] = useState(0);
-  const [prof1ecolecomment, setProf1ecolecomment] = useState('');
-
-  useEffect(() => {
-    console.log(autoecolestar);
-  }, [autoecolestar]);
-
-  const handleAutoecoleStarsChange = (value: number) => {
-    setAutoecolestar(value);
+  let token = '';
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('token') || '';
   }
 
-  const handleAutoecoleCommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setAutoecolecomment(event.target.value);
-  }
+  const [autoecoleReview, setAutoecoleReview] = useState<AutoEcoleReview>({ stars: 0, comment: '' });
+  // const [monitorsReview, setMonitorsReview] = useState<MonitorReview[]>([]);
 
-  const handleProf1StarsChange = (value: number) => {
-    setProf1ecolestar(value);
-  }
-
-  const handleProf1CommentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setProf1ecolecomment(event.target.value);
-  }
-
-  const handleSubmitAutoecole = () => {
-    // Handle submission logic for autoecole
-  }
-
-  const handleSubmitProf1 = () => {
-    // Handle submission logic for prof1
-  }
+  const handleSubmitAutoecole = async () => {
+    const response = await axios.post('http://localhost:3500/reviewsautoecole', { review: autoecoleReview, token: token });
+    console.log(response);
+  };
 
   return (
     <div>
@@ -52,22 +43,22 @@ const Add: React.FC = () => {
             count={5}
             size={24}
             color2={'#ffd700'}
-            value={autoecolestar}
-            onChange={handleAutoecoleStarsChange}
+            value={autoecoleReview.stars}
+            onChange={(newRating) => setAutoecoleReview({ ...autoecoleReview, stars: newRating })}
           />
-          <textarea id="autoecole-comment" placeholder='Commentaire' className={styles.add} required onChange={handleAutoecoleCommentChange} />
-          <button type="button" onClick={handleSubmitAutoecole}>avis ecole</button>
+          <textarea id="autoecole-comment" placeholder='Commentaire' className={styles.add} required onChange={(e) => setAutoecoleReview({ ...autoecoleReview, comment: e.target.value })} />
+          <button type="button" onClick={handleSubmitAutoecole}>avis autoecole</button>
 
           <h2>Super nom de prof</h2>
           <ReactStars
             count={5}
             size={24}
             color2={'#ffd700'}
-            value={prof1star}
-            onChange={handleProf1StarsChange}
+          // value={prof1star}
+          // onChange={handleProf1StarsChange}
           />
-          <textarea id="prof1-comment" placeholder='Commentaire' className={styles.add} required onChange={handleProf1CommentChange} />
-          <button type="button" onClick={handleSubmitProf1}>avis prof1</button>
+          <textarea id="prof1-comment" placeholder='Commentaire' className={styles.add} required />
+          <button type="button">avis prof1</button>
         </form>
       </main>
     </div>

@@ -108,12 +108,11 @@ function registerStudents(emailAutoEcole) {
     return __awaiter(this, void 0, void 0, function* () {
         const autoEcole = yield Users_1.AutoEcole.findOne({ email: emailAutoEcole });
         const autoEcoleId = autoEcole._id;
-        const students = autoEcole.students;
+        console.log(autoEcole.students);
         const studentsToSave = [];
-        for (const student of students) {
-            if (!studentAlreadySave(student)) {
+        for (const student of autoEcole.students) {
+            if ((yield studentAlreadySave(student)) === false) {
                 const randomPassword = genereatePassword();
-                console.log(randomPassword);
                 const newStudent = new Users_1.Student({
                     autoEcoleId: autoEcoleId,
                     email: student,

@@ -44,10 +44,6 @@ app.post('/login', async (req, res) => {
 app.post('/registerAutoEcole',upload.single('pics'), async (req, res) => {
     const data = req.body as AutoEcoleInterface;
     const file = req.file;
-    console.log(file);
-    console.log(file.buffer.toString('base64'));
-    console.log(data);
-    // return
     const response = await registerAutoEcole(data, file);
     if (response) {
         req.session.userId = response.id;
@@ -90,6 +86,11 @@ app.get('/search', async (req, res) => {
 app.get('/results', async (req, res) => {
     const autoEcoles = await searchAutoEcole(req.query.search as string);
     res.send({ autoEcoles: autoEcoles });
+});
+
+app.post('/reviewsautoecole', async (req, res) => {
+    console.log(req.body);
+    res.send({ response: 'ok' });
 });
 
 connectToMongo();

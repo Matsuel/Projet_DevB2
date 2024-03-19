@@ -90,12 +90,11 @@ async function registerChercheur(data: UserInterface) {
 async function registerStudents(emailAutoEcole: string) {
     const autoEcole = await AutoEcole.findOne({ email: emailAutoEcole });
     const autoEcoleId = autoEcole._id;
-    const students = autoEcole.students as string[];
+    console.log(autoEcole.students);
     const studentsToSave = [];
-    for (const student of students) {
-        if (!studentAlreadySave(student)) {
+    for (const student of autoEcole.students) {
+        if ( await studentAlreadySave(student as string) === false) {
             const randomPassword = genereatePassword();
-            console.log(randomPassword);
             const newStudent = new Student({
                 autoEcoleId: autoEcoleId,
                 email: student,

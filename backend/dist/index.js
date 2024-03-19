@@ -74,10 +74,6 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.post('/registerAutoEcole', upload.single('pics'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
     const file = req.file;
-    console.log(file);
-    console.log(file.buffer.toString('base64'));
-    console.log(data);
-    // return
     const response = yield (0, mongo_1.registerAutoEcole)(data, file);
     if (response) {
         req.session.userId = response.id;
@@ -117,6 +113,10 @@ app.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
     res.send({ autoEcoles: autoEcoles });
+}));
+app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    res.send({ response: 'ok' });
 }));
 (0, mongo_1.default)();
 app.listen(3500, () => {
