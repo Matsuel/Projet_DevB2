@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Interfaces/Users";
 import { AutoEcole, Student, User } from "../MongoModels/Users";
+import { reviewAutoecoleSchema, reviewMonitorSchema } from "../MongoModels/Review";
 import bcrypt from 'bcrypt';
 
 function connectToMongo() {
@@ -57,6 +58,12 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
         await newAutoEcole.save();
         await registerStudents(data.mail);
         const autoEcole = await AutoEcole.findOne({ email: data.mail });
+        let reviewsCollection = mongoose.model('reviewsAutoecole_' + autoEcole._id, reviewAutoecoleSchema);
+        await reviewsCollection.createCollection();
+        autoEcole.monitors.forEach(async (monitor: any) => {
+            reviewsCollection = mongoose.model('reviewsMonitor_' + monitor._id, reviewMonitorSchema);
+            await reviewsCollection.createCollection();
+        });
         return { register: true, id: autoEcole._id };
     }
 }
