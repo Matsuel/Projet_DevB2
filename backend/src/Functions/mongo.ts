@@ -61,10 +61,10 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
         await newAutoEcole.save();
         await registerStudents(data.mail);
         let reviewsCollection = mongoose.model('reviewsAutoecole_' + newAutoEcole._id, reviewAutoecoleSchema);
-        await reviewsCollection.createCollection();
+        reviewsCollection.createCollection();
         newAutoEcole.monitors.forEach(async (monitor: any) => {
             reviewsCollection = mongoose.model('reviewsMonitor_' + monitor._id, reviewMonitorSchema);
-            await reviewsCollection.createCollection();
+            reviewsCollection.createCollection();
         });
         return { register: true, id: newAutoEcole._id };
     }

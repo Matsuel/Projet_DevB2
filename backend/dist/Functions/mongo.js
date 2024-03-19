@@ -74,10 +74,10 @@ function registerAutoEcole(data, file) {
             yield newAutoEcole.save();
             yield registerStudents(data.mail);
             let reviewsCollection = mongoose_1.default.model('reviewsAutoecole_' + newAutoEcole._id, Review_1.reviewAutoecoleSchema);
-            yield reviewsCollection.createCollection();
+            reviewsCollection.createCollection();
             newAutoEcole.monitors.forEach((monitor) => __awaiter(this, void 0, void 0, function* () {
                 reviewsCollection = mongoose_1.default.model('reviewsMonitor_' + monitor._id, Review_1.reviewMonitorSchema);
-                yield reviewsCollection.createCollection();
+                reviewsCollection.createCollection();
             }));
             return { register: true, id: newAutoEcole._id };
         }

@@ -27,7 +27,7 @@ const Add: React.FC = () => {
 
   const handleSubmitAutoecole = async () => {
     const response = await axios.post('http://localhost:3500/reviewsautoecole', { review: autoecoleReview, token: token });
-    console.log(response);
+    console.log(response.data);
   };
 
   return (

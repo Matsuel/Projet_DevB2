@@ -8,6 +8,9 @@ import {AutoEcoleInterface, LoginInterface, UserInterface} from './Interfaces/Us
 import dotenv from 'dotenv';
 import multer from 'multer';
 import { searchInCitiesFiles } from './Functions/search';
+import mongoose from 'mongoose';
+import { reviewAutoecoleSchema } from './MongoModels/Review';
+import { Student } from './MongoModels/Users';
 
 const upload = multer({ storage : multer.memoryStorage() });
 
@@ -89,8 +92,21 @@ app.get('/results', async (req, res) => {
 });
 
 app.post('/reviewsautoecole', async (req, res) => {
+    //réparer ici la collection reviewsAutoecole+autoecoleId
     console.log(req.body);
-    res.send({ response: 'ok' });
+    const reviewContent = req.body.review;
+    const token = req.body.token;
+    const decoded = jwt.verify(token, process.env.SECRET as string);
+    const id = decoded.id;
+    const student = await Student.findById(id);
+    if(student) {
+        let autoEcoleModel = mongoose.model('reviewsAutoecole_'+ student.autoEcoleId, reviewAutoecoleSchema);
+        let newReview = {rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date()};
+        await autoEcoleModel.create(newReview);
+        res.send({ posted: true });
+    }else{
+        res.send({ posted: false });
+    }
 });
 
 connectToMongo();

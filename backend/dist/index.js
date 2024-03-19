@@ -44,6 +44,9 @@ const mongo_1 = __importStar(require("./Functions/mongo"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const multer_1 = __importDefault(require("multer"));
 const search_1 = require("./Functions/search");
+const mongoose_1 = __importDefault(require("mongoose"));
+const Review_1 = require("./MongoModels/Review");
+const Users_1 = require("./MongoModels/Users");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -115,8 +118,22 @@ app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.send({ autoEcoles: autoEcoles });
 }));
 app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //réparer ici la collection reviewsAutoecole+autoecoleId
     console.log(req.body);
-    res.send({ response: 'ok' });
+    const reviewContent = req.body.review;
+    const token = req.body.token;
+    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
+    const id = decoded.id;
+    const student = yield Users_1.Student.findById(id);
+    if (student) {
+        let autoEcoleModel = mongoose_1.default.model('reviewsAutoecole_' + student.autoEcoleId, Review_1.reviewAutoecoleSchema);
+        let newReview = { rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date() };
+        yield autoEcoleModel.create(newReview);
+        res.send({ response: 'ok' });
+    }
+    else {
+        res.send({ response: 'ko' });
+    }
 }));
 (0, mongo_1.default)();
 app.listen(3500, () => {
