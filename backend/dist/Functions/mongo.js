@@ -40,7 +40,10 @@ function registerAutoEcole(data, file) {
             typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
             typeof data.formations === 'string' ? data.formations = JSON.parse(data.formations) : null;
             typeof data.students === 'string' ? data.students = JSON.parse(data.students) : null;
-            const monitors = data.monitors.map((monitor) => ({ _id: new mongoose_1.default.Types.ObjectId(), name: monitor }));
+            const monitors = data.monitors.map((monitor) => ({
+                _id: new mongoose_1.default.Types.ObjectId(),
+                name: monitor
+            }));
             const newAutoEcole = new Users_1.AutoEcole({
                 name: data.name,
                 email: data.mail,
@@ -70,14 +73,13 @@ function registerAutoEcole(data, file) {
             });
             yield newAutoEcole.save();
             yield registerStudents(data.mail);
-            const autoEcole = yield Users_1.AutoEcole.findOne({ email: data.mail });
-            let reviewsCollection = mongoose_1.default.model('reviewsAutoecole_' + autoEcole._id, Review_1.reviewAutoecoleSchema);
+            let reviewsCollection = mongoose_1.default.model('reviewsAutoecole_' + newAutoEcole._id, Review_1.reviewAutoecoleSchema);
             yield reviewsCollection.createCollection();
-            autoEcole.monitors.forEach((monitor) => __awaiter(this, void 0, void 0, function* () {
+            newAutoEcole.monitors.forEach((monitor) => __awaiter(this, void 0, void 0, function* () {
                 reviewsCollection = mongoose_1.default.model('reviewsMonitor_' + monitor._id, Review_1.reviewMonitorSchema);
                 yield reviewsCollection.createCollection();
             }));
-            return { register: true, id: autoEcole._id };
+            return { register: true, id: newAutoEcole._id };
         }
     });
 }

@@ -27,7 +27,10 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
         typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
         typeof data.formations === 'string' ? data.formations = JSON.parse(data.formations) : null;
         typeof data.students === 'string' ? data.students = JSON.parse(data.students) : null;
-        const monitors = data.monitors.map((monitor) => ({ _id : new mongoose.Types.ObjectId(), name: monitor }));
+        const monitors = data.monitors.map((monitor) => ({
+            _id: new mongoose.Types.ObjectId(),
+            name: monitor
+        }));
         const newAutoEcole = new AutoEcole({
             name: data.name,
             email: data.mail,
@@ -57,14 +60,13 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
         });
         await newAutoEcole.save();
         await registerStudents(data.mail);
-        const autoEcole = await AutoEcole.findOne({ email: data.mail });
-        let reviewsCollection = mongoose.model('reviewsAutoecole_' + autoEcole._id, reviewAutoecoleSchema);
+        let reviewsCollection = mongoose.model('reviewsAutoecole_' + newAutoEcole._id, reviewAutoecoleSchema);
         await reviewsCollection.createCollection();
-        autoEcole.monitors.forEach(async (monitor: any) => {
+        newAutoEcole.monitors.forEach(async (monitor: any) => {
             reviewsCollection = mongoose.model('reviewsMonitor_' + monitor._id, reviewMonitorSchema);
             await reviewsCollection.createCollection();
         });
-        return { register: true, id: autoEcole._id };
+        return { register: true, id: newAutoEcole._id };
     }
 }
 
@@ -107,7 +109,7 @@ async function registerStudents(emailAutoEcole: string) {
     saveToFile(studentsToSave);
 }
 
-async function studentAlreadySave(email : string) {
+async function studentAlreadySave(email: string) {
     let students = await Student.findOne({ email: email });
     if (students) return true;
     students = await User.findOne({ email: email });
@@ -162,7 +164,7 @@ async function login(data: LoginInterface) {
 async function getAutoEcole(id: string) {
     try {
         const autoEcole = await AutoEcole.findOne({ _id: id }).select('-password');
-        return autoEcole;        
+        return autoEcole;
     } catch (error) {
         return { find: false };
     }
@@ -174,7 +176,7 @@ async function getAutosEcoles() {
 }
 
 async function searchAutoEcole(query: string) {
-    const autoEcoles = await AutoEcole.find({ 
+    const autoEcoles = await AutoEcole.find({
         $or: [
             { name: { $regex: query, $options: 'i' } },
             { city: { $regex: query, $options: 'i' } }
