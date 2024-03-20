@@ -105,7 +105,15 @@ app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     const autoEcole = yield (0, mongo_1.getAutoEcole)(req.params.id);
     const reviews = mongoose_1.default.model('reviewsAutoecole_' + req.params.id, Review_1.reviewAutoecoleSchema);
     const reviewsList = yield reviews.find();
-    res.send({ autoEcole: autoEcole, reviews: reviewsList });
+    let monitorsReviews = [];
+    // @ts-ignore
+    for (let i = 0; i < autoEcole.monitors.length; i++) {
+        // @ts-ignore
+        let monitorReviews = mongoose_1.default.model('reviewsMonitor_' + autoEcole.monitors[i]._id, Review_1.reviewAutoecoleSchema);
+        let monitorReview = yield monitorReviews.find();
+        monitorsReviews.push(monitorReview);
+    }
+    res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
 }));
 app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });

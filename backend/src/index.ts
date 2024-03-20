@@ -76,7 +76,15 @@ app.get('/autoecole/:id', async (req, res) => {
     const autoEcole = await getAutoEcole(req.params.id);
     const reviews = mongoose.model('reviewsAutoecole_' + req.params.id, reviewAutoecoleSchema);
     const reviewsList = await reviews.find();
-    res.send({ autoEcole: autoEcole, reviews: reviewsList });
+    let monitorsReviews: any[] = [];
+    // @ts-ignore
+    for (let i = 0; i < autoEcole.monitors.length; i++) {
+        // @ts-ignore
+        let monitorReviews = mongoose.model('reviewsMonitor_' + autoEcole.monitors[i]._id, reviewAutoecoleSchema);
+        let monitorReview = await monitorReviews.find();
+        monitorsReviews.push(monitorReview);
+    }
+    res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
 });
 
 app.get('/autosecoles', async (req, res) => {
