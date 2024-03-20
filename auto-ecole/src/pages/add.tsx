@@ -14,25 +14,54 @@ interface AutoEcoleReview {
 interface MonitorReview {
   stars: number;
   comment: string;
+  name?: string;
+  _id?: string;
 }
 
 const Add: React.FC = () => {
 
   const router = useRouter();
 
+  const [autoecoleReview, setAutoecoleReview] = useState<AutoEcoleReview>({ stars: 0, comment: '' });
+  const [monitorsReview, setMonitorsReview] = useState<MonitorReview[]>([]);
+
   let token = '';
   if (typeof window !== 'undefined') {
     token = localStorage.getItem('token') || '';
   }
 
-  const [autoecoleReview, setAutoecoleReview] = useState<AutoEcoleReview>({ stars: 0, comment: '' });
-  // const [monitorsReview, setMonitorsReview] = useState<MonitorReview[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      setMonitorsReview([]);
+      const response = await axios.post('http://localhost:3500/autoecoleinfos', { token: token });
+      if (response.data.autoEcole){
+      const newMonitorsReview = response.data.autoEcole.monitors.map((monitor: any) => {
+        return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
+      });
+      setMonitorsReview(newMonitorsReview);
+    }else{
+      router.push('/');
+    }
+
+    };
+    fetchData();
+  }, []);
 
   const handleSubmitAutoecole = async () => {
     const response = await axios.post('http://localhost:3500/reviewsautoecole', { review: autoecoleReview, token: token });
-    if (response.data.posted){
+    if (response.data.posted) {
       router.push('/autoecole/' + response.data.autoEcoleId);
-    }else{
+    } else {
+      alert('Erreur lors de la publication de l\'avis');
+    }
+  };
+
+  const handleSubmitMonitor = async (monitor: MonitorReview) => {
+    const response = await axios.post('http://localhost:3500/reviewsmonitor', { review: monitor, token: token });
+    console.log(response.data);
+    if (response.data.posted) {
+      router.push('/autoecole/' + response.data.autoEcoleId);
+    } else {
       alert('Erreur lors de la publication de l\'avis');
     }
   };
@@ -56,16 +85,31 @@ const Add: React.FC = () => {
           <textarea id="autoecole-comment" placeholder='Commentaire' className={styles.add} required onChange={(e) => setAutoecoleReview({ ...autoecoleReview, comment: e.target.value })} />
           <button type="button" onClick={handleSubmitAutoecole}>avis autoecole</button>
 
-          <h2>Super nom de prof</h2>
-          <ReactStars
-            count={5}
-            size={24}
-            color2={'#ffd700'}
-          // value={prof1star}
-          // onChange={handleProf1StarsChange}
-          />
-          <textarea id="prof1-comment" placeholder='Commentaire' className={styles.add} required />
-          <button type="button">avis prof1</button>
+          {monitorsReview.map((monitor, index) => {
+            return (
+              <div key={index}>
+                <h2>{monitor.name}</h2>
+                <ReactStars
+                  count={5}
+                  size={24}
+                  color2={'#ffd700'}
+                  value={monitor.stars}
+                  onChange={(newRating) => {
+                    const newMonitorsReview = [...monitorsReview];
+                    newMonitorsReview[index].stars = newRating;
+                    setMonitorsReview(newMonitorsReview);
+                  }}
+                />
+                <textarea id="prof1-comment" placeholder='Commentaire' className={styles.add} required onChange={(e) => {
+                  const newMonitorsReview = [...monitorsReview];
+                  newMonitorsReview[index].comment = e.target.value;
+                  setMonitorsReview(newMonitorsReview);
+                }} />
+                <button type="button" onClick={() => handleSubmitMonitor(monitor)}>
+                  avis prof1</button>
+              </div>
+            )
+          })}
         </form>
       </main>
     </div>

@@ -11,6 +11,7 @@ import { searchInCitiesFiles } from './Functions/search';
 import mongoose from 'mongoose';
 import { reviewAutoecoleSchema } from './MongoModels/Review';
 import { AutoEcole, Student } from './MongoModels/Users';
+import { ReviewMonitor } from './Interfaces/Review';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -82,6 +83,19 @@ app.get('/autosecoles', async (req, res) => {
     res.send({ autoEcoles: await getAutosEcoles() });
 });
 
+app.post('/autoecoleinfos', async (req, res) => {
+    const token = req.body.token;
+    const decoded = jwt.verify(token, process.env.SECRET as string);
+    const id = decoded.id;
+    const student = await Student.findById(id);
+    if (student) {
+        const autoEcole = await AutoEcole.findById(student.autoEcoleId).select('monitors name');
+        res.send({ autoEcole: autoEcole });
+    } else {
+        res.send({ autoEcole: null });
+    }
+});
+
 app.get('/search', async (req, res) => {
     const cities = await searchInCitiesFiles(req.query.search as string);
     const autoEcoles = await searchAutoEcole(req.query.search as string);
@@ -118,6 +132,33 @@ app.post('/reviewsautoecole', async (req, res) => {
             await autoEcole.save();
         }
         res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+    } else {
+        res.send({ posted: false });
+    }
+});
+
+app.post('/reviewsmonitor', async (req, res) => {
+    const content: ReviewMonitor = req.body.review;
+    const token = req.body.token;
+    const decoded = jwt.verify(token, process.env.SECRET as string);
+    const id = decoded.id;
+    const student = await Student.findById(id);
+    if (student) {
+        let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
+        let monitorIndex = monitors.monitors.findIndex((monitor: any) => monitor._id.toString() === content._id);
+        if (monitorIndex !== -1) {
+            let monitorReviewModel = mongoose.model('reviewsMonitor_' + content._id, reviewAutoecoleSchema);
+            let newReview = {
+                rate: content.stars > 0 ? content.stars : null,
+                comment: content.comment,
+                creatorId: id,
+                date: new Date()
+            };
+            await monitorReviewModel.create(newReview);
+            res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+        } else {
+            res.send({ posted: false });
+        }
     } else {
         res.send({ posted: false });
     }

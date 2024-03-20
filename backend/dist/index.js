@@ -110,6 +110,19 @@ app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
 app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
 }));
+app.post('/autoecoleinfos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.body.token;
+    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
+    const id = decoded.id;
+    const student = yield Users_1.Student.findById(id);
+    if (student) {
+        const autoEcole = yield Users_1.AutoEcole.findById(student.autoEcoleId).select('monitors name');
+        res.send({ autoEcole: autoEcole });
+    }
+    else {
+        res.send({ autoEcole: null });
+    }
+}));
 app.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cities = yield (0, search_1.searchInCitiesFiles)(req.query.search);
     const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
@@ -144,6 +157,34 @@ app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, fu
             yield autoEcole.save();
         }
         res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+    }
+    else {
+        res.send({ posted: false });
+    }
+}));
+app.post('/reviewsmonitor', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const content = req.body.review;
+    const token = req.body.token;
+    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
+    const id = decoded.id;
+    const student = yield Users_1.Student.findById(id);
+    if (student) {
+        let monitors = yield Users_1.AutoEcole.findById(student.autoEcoleId).select('monitors');
+        let monitorIndex = monitors.monitors.findIndex((monitor) => monitor._id.toString() === content._id);
+        if (monitorIndex !== -1) {
+            let monitorReviewModel = mongoose_1.default.model('reviewsMonitor_' + content._id, Review_1.reviewAutoecoleSchema);
+            let newReview = {
+                rate: content.stars > 0 ? content.stars : null,
+                comment: content.comment,
+                creatorId: id,
+                date: new Date()
+            };
+            yield monitorReviewModel.create(newReview);
+            res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+        }
+        else {
+            res.send({ posted: false });
+        }
     }
     else {
         res.send({ posted: false });
