@@ -42,9 +42,22 @@ interface ReviewAutoEcole {
   comment: string;
 }
 
+interface ReviewMonitor {
+  stars: number;
+  comment: string;
+  name?: string;
+  _id?: string;
+}
+
+interface ReviewsMonitor {
+  map(arg0: (review: any, index: any) => React.JSX.Element): React.ReactNode;
+  reviews: ReviewMonitor[];
+}
+
 const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
   const [datas, setDatas] = useState<AutoEcoleInterface>()
   const [reviews, setReviews] = useState<ReviewAutoEcole[]>([]);
+  const [reviewsMonitor, setReviewsMonitor] = useState<ReviewsMonitor[]>([]);
   const router = useRouter();
   const idArray = router.query.id;
   useEffect(() => {
@@ -58,6 +71,7 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
         } else {
           setDatas(data.data.autoEcole);
           setReviews(data.data.reviews);
+          setReviewsMonitor(data.data.monitorsReviews);
         }
       }
     }
@@ -85,9 +99,20 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
           datas?.pics != "" && <Image src={`data:image/jpeg;base64,${datas?.pics}`} alt="photo" width={200} height={200} />
         }
         <ul>
-          {datas?.monitors.map((monitor) => {
+          {datas?.monitors.map((monitor, index) => {
+            console.log(reviewsMonitor[index]);
             return (
+              <>
               <li key={monitor._id}>{monitor.name}</li>
+              <ul>
+                {reviewsMonitor[index].map((review, index) => {
+                  return (
+                    <li key={index}>{review.stars}/5 - {review.comment}</li>
+                  )
+                })}
+              </ul>
+              
+              </>
             )
           })}
         </ul>
