@@ -103,7 +103,12 @@ app.post('/reviewsautoecole', async (req, res) => {
     const student = await Student.findById(id);
     if (student) {
         let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
-        let newReview = { rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date() };
+        let newReview = {
+            rate: reviewContent.stars > 0 ? reviewContent.stars : null,
+            comment: reviewContent.comment,
+            creatorId: id,
+            date: new Date()
+        };
         await autoEcoleModel.create(newReview);
         if (reviewContent.stars !== 0) {
             let autoEcole = await AutoEcole.findById(student.autoEcoleId);

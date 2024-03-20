@@ -131,7 +131,7 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
         <ul>
           {reviews.map((review, index) => {
             return (
-              <li key={index}>{review.rate}/5 - {review.comment}</li>
+              <li key={index}>{review.rate ? review.rate + '/5 - ' : ''} {review.comment}</li>
             )
           })}
         </ul>

@@ -129,7 +129,12 @@ app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, fu
     const student = yield Users_1.Student.findById(id);
     if (student) {
         let autoEcoleModel = mongoose_1.default.model('reviewsAutoecole_' + student.autoEcoleId, Review_1.reviewAutoecoleSchema);
-        let newReview = { rate: reviewContent.stars, comment: reviewContent.comment, creatorId: id, date: new Date() };
+        let newReview = {
+            rate: reviewContent.stars > 0 ? reviewContent.stars : null,
+            comment: reviewContent.comment,
+            creatorId: id,
+            date: new Date()
+        };
         yield autoEcoleModel.create(newReview);
         if (reviewContent.stars !== 0) {
             let autoEcole = yield Users_1.AutoEcole.findById(student.autoEcoleId);

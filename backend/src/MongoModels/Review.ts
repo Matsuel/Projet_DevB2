@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const reviewMonitorSchema = new mongoose.Schema({
-    rate: { type: Number, required: true },
+    rate: { type: Number, required: false },
     comment: { type: String, required: true },
     creatorId: { type: String, required: true },
     date: { type: Date, required: true },
@@ -13,7 +13,7 @@ const reviewMonitorSchema = new mongoose.Schema({
 
 
 const reviewAutoecoleSchema = new mongoose.Schema({
-    rate: { type: Number, required: true },
+    rate: { type: Number, required: false },
     comment: { type: String, required: true },
     creatorId: { type: String, required: true },
     date: { type: Date, required: true },
