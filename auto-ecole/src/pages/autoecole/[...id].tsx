@@ -5,6 +5,9 @@ import styles from '@/styles/autoecole.module.css';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import useSWR from 'swr';
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 export interface AutoEcoleInterface {
   name: string;
@@ -54,58 +57,50 @@ interface ReviewsMonitor {
   reviews: ReviewMonitor[];
 }
 
-const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
-  const [datas, setDatas] = useState<AutoEcoleInterface>()
-  const [reviews, setReviews] = useState<ReviewAutoEcole[]>([]);
-  const [reviewsMonitor, setReviewsMonitor] = useState<ReviewsMonitor[]>([]);
+interface AutoecoleInfos {
+  autoEcole: AutoEcoleInterface;
+  reviews: ReviewAutoEcole[];
+  monitorsReviews: ReviewsMonitor[];
+}
+
+const Autoecole = () => {
   const router = useRouter();
-  const idArray = router.query.id;
-  useEffect(() => {
-    const fetchData = async () => {
-      if (idArray) {
-        const id = idArray[idArray.length - 1];
-        const data = await axios.get(`http://localhost:3500/autoecole/${id}`);
-        console.log(data.data);
-        if ('find' in data.data.autoEcole) {
-          window.location.href = '/';
-        } else {
-          setDatas(data.data.autoEcole);
-          setReviews(data.data.reviews);
-          setReviewsMonitor(data.data.monitorsReviews);
-        }
-      }
-    }
-    fetchData();
-  }, [idArray])
+  const {id} = router.query;
+
+  const { data , error } = useSWR<AutoecoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
+
+  if(!data) return <div>Chargement...</div>
+  if(error) return <div>Erreur</div>
+  const { autoEcole, reviews, monitorsReviews } = data;
+
   return (
 
     <div>
       <Head>
         <title>
           {
-            datas?.name ? datas.name : "Autoecole"
+            autoEcole.name ? autoEcole.name : "Autoecole"
           }
         </title>
       </Head>
       <main>
         <Header />
-        <h1 id="nom">{datas?.name}</h1>
-        <h2 id="tel">{datas?.phone}</h2>
-        <h3 id="address">{datas?.address}</h3>
-        <h3 id="address">{datas?.zip}</h3>
-        <h3 id="address">{datas?.city}</h3>
-        <h3 id="address">{datas?.note}/5</h3>
+        <h1 id="nom">{autoEcole.name}</h1>
+        <h2 id="tel">{autoEcole.phone}</h2>
+        <h3 id="address">{autoEcole.address}</h3>
+        <h3 id="address">{autoEcole.zip}</h3>
+        <h3 id="address">{autoEcole.city}</h3>
+        <h3 id="address">{autoEcole.mail}</h3>
         {
-          datas?.pics != "" && <Image src={`data:image/jpeg;base64,${datas?.pics}`} alt="photo" width={200} height={200} />
+          autoEcole.pics != "" && <Image src={`data:image/jpeg;base64,${autoEcole.pics}`} alt="photo" width={200} height={200} />
         }
         <ul>
-          {datas?.monitors.map((monitor, index) => {
-            console.log(reviewsMonitor[index]);
+          {autoEcole.monitors.map((monitor, index) => {
             return (
               <>
               <li key={monitor._id}>{monitor.name}</li>
               <ul>
-                {reviewsMonitor[index].map((review, index) => {
+                {monitorsReviews[index].map((review, index) => {
                   return (
                     <li key={index}>{review.rate ? review.rate + '/5 - ' : ''} {review.comment}</li>
                   )
@@ -117,35 +112,35 @@ const Autoecole: React.FC<{ id: string | undefined }> = ({ id }) => {
           })}
         </ul>
 
-        {datas?.card || datas?.cheque || datas?.especes ? <h1 className={styles.title}>Moyen de paiement</h1> : null}
+        {autoEcole.card || autoEcole.cheque || autoEcole.especes ? <h1 className={styles.title}>Moyen de paiement</h1> : null}
         <ul>
-          {datas?.card ? <li >Carte</li> : null}
-          {datas?.cheque ? <li >Cheque</li> : null}
-          {datas?.especes ? <li >Especes</li> : null}
+          {autoEcole.card ? <li >Carte</li> : null}
+          {autoEcole.cheque ? <li >Cheque</li> : null}
+          {autoEcole.especes ? <li >Especes</li> : null}
         </ul>
 
 
-        {datas?.qualiopi || datas?.label_qualite || datas?.qualicert || datas?.garantie_fin || datas?.datadocke ? <h1 className={styles.title}>Labels de qualité, atouts et garanties:</h1> : null}
+          {autoEcole.qualiopi || autoEcole.label_qualite || autoEcole.qualicert || autoEcole.garantie_fin || autoEcole.datadocke ? <h1 className={styles.title}>Labels de qualité, atouts et garanties:</h1> : null}
         <ul>
-          {datas?.qualiopi ? <li >Certifiée Qualiopi</li> : null}
-          {datas?.label_qualite ? <li >Label de qualité</li> : null}
-          {datas?.qualicert ? <li >Certification qualicert</li> : null}
-          {datas?.garantie_fin ? <li >Garantie financiere</li> : null}
-          {datas?.datadocke ? <li >Etablissement datadocké</li> : null}
+          {autoEcole.qualiopi ? <li >Certifiée Qualiopi</li> : null}
+          {autoEcole.label_qualite ? <li >Label de qualité</li> : null}
+          {autoEcole.qualicert ? <li >Certification qualicert</li> : null}
+          {autoEcole.garantie_fin ? <li >Garantie financiere</li> : null}
+          {autoEcole.datadocke ? <li >Etablissement datadocké</li> : null}
         </ul>
 
-        {datas?.cpf || datas?.aide_apprentis || datas?.permis1 || datas?.fin_francetravail ? <h1 className={styles.title}>Modes de financement:</h1> : null}
+        {autoEcole.cpf || autoEcole.aide_apprentis || autoEcole.permis1 || autoEcole.fin_francetravail ? <h1 className={styles.title}>Modes de financement:</h1> : null}
         <ul>
-          {datas?.cpf ? <li >CPF</li> : null}
-          {datas?.aide_apprentis ? <li >Aide apprentis</li> : null}
-          {datas?.permis1 ? <li >Permis 1€</li> : null}
-          {datas?.fin_francetravail ? <li >Financement france travail</li> : null}
+          {autoEcole.cpf ? <li >CPF</li> : null}
+          {autoEcole.aide_apprentis ? <li >Aide apprentis</li> : null}
+          {autoEcole.permis1 ? <li >Permis 1€</li> : null}
+          {autoEcole.fin_francetravail ? <li >Financement france travail</li> : null}
         </ul>
 
 
         <h1 className={styles.title}>Formations:</h1>
         <ul>
-          {datas?.formations.map((formation, index) => {
+          {autoEcole.formations.map((formation, index) => {
             return (
               <li key={index}>{formation}</li>
             )
