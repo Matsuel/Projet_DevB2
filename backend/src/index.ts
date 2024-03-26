@@ -219,6 +219,12 @@ io.on('connection', (socket) => {
         console.log(id);
         connectedUsers[id] = socket;
     });
+
+    socket.on('getConversations', async (data) => {
+        const id = getIdFromToken(data.id);
+        const conversations = await Conversations.find({ usersId: id });
+        socket.emit('conversations', { conversations: conversations });
+    });
 });
 
 connectToMongo();

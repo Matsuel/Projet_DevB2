@@ -238,6 +238,11 @@ io.on('connection', (socket) => {
         console.log(id);
         connectedUsers[id] = socket;
     });
+    socket.on('getConversations', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const id = getIdFromToken(data.id);
+        const conversations = yield Conversation_1.Conversations.find({ usersId: id });
+        socket.emit('conversations', { conversations: conversations });
+    }));
 });
 (0, mongo_1.default)();
 app.listen(3500, () => {
