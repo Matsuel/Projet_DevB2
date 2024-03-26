@@ -13,6 +13,8 @@ import { reviewAutoecoleSchema } from './MongoModels/Review';
 import { AutoEcole, Student } from './MongoModels/Users';
 import { ReviewMonitor } from './Interfaces/Review';
 import { ConversationShema, Conversations } from './MongoModels/Conversation';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -22,6 +24,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+
+const server = createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST']
+    },
+});
 
 app.use(session({
     secret: process.env.SECRET as string,
@@ -199,10 +210,25 @@ const getIdFromToken = (token: string) => {
 
 }
 
+let connectedUsers: any= {};
+
+io.on('connection', (socket) => {
+    
+    socket.on('connection', (data) => {
+        const id = getIdFromToken(data.id)
+        console.log(id);
+        connectedUsers[id] = socket;
+    });
+});
+
 connectToMongo();
 
 app.listen(3500, () => {
     console.log('Server is running on port 3500');
+});
+
+server.listen(4000, () => {
+    console.log('Socket is running on port 4000');
 });
 
 
