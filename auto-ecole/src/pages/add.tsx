@@ -5,17 +5,11 @@ import ReactStars from 'react-stars';
 import styles from '@/styles/add.module.css';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { ReviewMonitor } from '@/types/Monitor';
 
 interface AutoEcoleReview {
   stars: number;
   comment: string;
-}
-
-interface MonitorReview {
-  stars: number;
-  comment: string;
-  name?: string;
-  _id?: string;
 }
 
 const Add: React.FC = () => {
@@ -23,7 +17,7 @@ const Add: React.FC = () => {
   const router = useRouter();
 
   const [autoecoleReview, setAutoecoleReview] = useState<AutoEcoleReview>({ stars: 0, comment: '' });
-  const [monitorsReview, setMonitorsReview] = useState<MonitorReview[]>([]);
+  const [monitorsReview, setMonitorsReview] = useState<ReviewMonitor[]>([]);
 
   let token = '';
   if (typeof window !== 'undefined') {
@@ -56,7 +50,7 @@ const Add: React.FC = () => {
     }
   };
 
-  const handleSubmitMonitor = async (monitor: MonitorReview) => {
+  const handleSubmitMonitor = async (monitor: ReviewMonitor) => {
     const response = await axios.post('http://localhost:3500/reviewsmonitor', { review: monitor, token: token });
     console.log(response.data);
     if (response.data.posted) {

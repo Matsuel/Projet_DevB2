@@ -7,74 +7,19 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import useSWR from 'swr';
 import { createConversation } from '@/Functions/Chat';
+import { AutoEcoleInfos } from '@/types/AutoEcole';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
-
-export interface AutoEcoleInterface {
-  name: string;
-  mail: string;
-  address: string;
-  zip: number;
-  city: string;
-  pics: string;
-  monitors: MonitorProps[];
-  phone: string;
-  card: boolean;
-  cheque: boolean;
-  especes: boolean;
-  qualiopi: boolean;
-  label_qualite: boolean;
-  qualicert: boolean;
-  garantie_fin: boolean;
-  datadocke: boolean;
-  cpf: boolean;
-  aide_apprentis: boolean;
-  permis1: boolean;
-  fin_francetravail: boolean;
-  formations: string[];
-  students: string[];
-  note: number;
-}
-
-interface MonitorProps {
-  _id: string;
-  name: string;
-}
-
-interface ReviewAutoEcole {
-  rate: number;
-  comment: string;
-  creatorId: string;
-}
-
-interface ReviewMonitor {
-  stars: number;
-  comment: string;
-  name?: string;
-  _id?: string;
-}
-
-interface ReviewsMonitor {
-  map(arg0: (review: any, index: any) => React.JSX.Element): React.ReactNode;
-  reviews: ReviewMonitor[];
-}
-
-interface AutoecoleInfos {
-  autoEcole: AutoEcoleInterface;
-  reviews: ReviewAutoEcole[];
-  monitorsReviews: ReviewsMonitor[];
-}
 
 const Autoecole = () => {
   const router = useRouter();
   const {id} = router.query;
 
-  const { data , error, isLoading } = useSWR<AutoecoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
+  const { data , error, isLoading } = useSWR<AutoEcoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
 
   if(isLoading || !data) return <div>Chargement...</div>
   if(error) return <div>Erreur</div>
   const { autoEcole, reviews, monitorsReviews } = data;
-  console.log(reviews)
 
   return (
 
