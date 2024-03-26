@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import styles from '@/styles/chat.module.css'; 
 import ConvCard from '@/Components/Chat_Conv_Card';
 import ChatCard from '@/Components/Chat_Card';
+import { io } from 'socket.io-client';
 
 const Chat: React.FC = () => {
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const socket = io('http://localhost:4000');
+      const token = localStorage.getItem('token');
+      if (token) {
+        socket.emit('connection', { id: token });
+      }
+    }
+  }, []);
+
   return (
     <div>
     <Head>
