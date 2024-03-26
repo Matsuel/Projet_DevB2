@@ -1,0 +1,17 @@
+.main {
+    width: 30%;
+    height: 100px;
+    background-color: aliceblue;
+    margin-bottom: 10px;
+  }
+  
+  .left {
+    float: left; /* Aligns card to the left */
+    clear: both; /* Clears floats */
+  }
+  
+  .right {
+    float: right; /* Aligns card to the right */
+    clear: both; /* Clears floats */
+  }
+  
