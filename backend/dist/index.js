@@ -47,6 +47,7 @@ const search_1 = require("./Functions/search");
 const mongoose_1 = __importDefault(require("mongoose"));
 const Review_1 = require("./MongoModels/Review");
 const Users_1 = require("./MongoModels/Users");
+const Conversation_1 = require("./MongoModels/Conversation");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -198,6 +199,29 @@ app.post('/reviewsmonitor', (req, res) => __awaiter(void 0, void 0, void 0, func
         res.send({ posted: false });
     }
 }));
+app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    let { userId, creatorId } = req.body;
+    creatorId = getIdFromToken(creatorId);
+    console.log(creatorId, userId);
+    const conversationExists = yield Conversation_1.Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
+    if (conversationExists) {
+        res.send({ created: false });
+    }
+    else {
+        const newConversation = new Conversation_1.Conversations({
+            usersId: [userId, creatorId]
+        });
+        yield newConversation.save();
+        const conversationShema = mongoose_1.default.model('conversation_' + newConversation._id, Conversation_1.ConversationShema);
+        conversationShema.createCollection();
+        res.send({ created: true });
+    }
+}));
+const getIdFromToken = (token) => {
+    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
+    return decoded.id;
+};
 (0, mongo_1.default)();
 app.listen(3500, () => {
     console.log('Server is running on port 3500');

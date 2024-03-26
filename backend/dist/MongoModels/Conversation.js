@@ -3,10 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Conversation = void 0;
+exports.ConversationShema = exports.Conversations = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const Conversation = mongoose_1.default.model("Conversation", new mongoose_1.default.Schema({
+const Conversations = mongoose_1.default.model("Conversations", new mongoose_1.default.Schema({
     usersId: { type: [String], required: true },
 }));
-exports.Conversation = Conversation;
+exports.Conversations = Conversations;
+const ConversationShema = new mongoose_1.default.Schema({
+    senderId: { type: String, required: true },
+    date: { type: Date, required: true },
+    content: { type: String, required: true },
+});
+exports.ConversationShema = ConversationShema;
 //# sourceMappingURL=Conversation.js.map

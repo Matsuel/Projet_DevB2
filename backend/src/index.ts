@@ -12,6 +12,7 @@ import mongoose from 'mongoose';
 import { reviewAutoecoleSchema } from './MongoModels/Review';
 import { AutoEcole, Student } from './MongoModels/Users';
 import { ReviewMonitor } from './Interfaces/Review';
+import { ConversationShema, Conversations } from './MongoModels/Conversation';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -171,6 +172,32 @@ app.post('/reviewsmonitor', async (req, res) => {
         res.send({ posted: false });
     }
 });
+
+app.post('/createConversation', async (req, res) => {
+    console.log(req.body);
+    let { userId, creatorId } = req.body;
+    creatorId = getIdFromToken(creatorId);
+    console.log(creatorId, userId);
+    const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
+    if (conversationExists) {
+        res.send({ created: false});
+    } else {
+        const newConversation = new Conversations({
+            usersId: [userId, creatorId]
+        });
+        await newConversation.save();
+        const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
+        conversationShema.createCollection();
+        res.send({ created: true });
+    }
+
+});
+
+const getIdFromToken = (token: string) => {
+    const decoded = jwt.verify(token, process.env.SECRET as string);
+    return decoded.id;
+
+}
 
 connectToMongo();
 

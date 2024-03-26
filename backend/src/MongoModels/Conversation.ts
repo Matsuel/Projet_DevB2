@@ -1,7 +1,13 @@
 import mongoose from "mongoose";
 
-const Conversation = mongoose.model("Conversation", new mongoose.Schema({
+const Conversations = mongoose.model("Conversations", new mongoose.Schema({
     usersId: { type: [String], required: true },
 }));
 
-export { Conversation }
+const ConversationShema = new mongoose.Schema({
+    senderId: { type: String, required: true },
+    date: { type: Date, required: true },
+    content: { type: String, required: true },
+});
+
+export { Conversations, ConversationShema };

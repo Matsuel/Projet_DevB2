@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import useSWR from 'swr';
+import { createConversation } from '@/Functions/Chat';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
@@ -43,6 +44,7 @@ interface MonitorProps {
 interface ReviewAutoEcole {
   rate: number;
   comment: string;
+  creatorId: string;
 }
 
 interface ReviewMonitor {
@@ -67,11 +69,12 @@ const Autoecole = () => {
   const router = useRouter();
   const {id} = router.query;
 
-  const { data , error } = useSWR<AutoecoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
+  const { data , error, isLoading } = useSWR<AutoecoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
 
-  if(!data) return <div>Chargement...</div>
+  if(isLoading || !data) return <div>Chargement...</div>
   if(error) return <div>Erreur</div>
   const { autoEcole, reviews, monitorsReviews } = data;
+  console.log(reviews)
 
   return (
 
@@ -151,7 +154,9 @@ const Autoecole = () => {
         <ul>
           {reviews.map((review, index) => {
             return (
-              <li key={index}>{review.rate ? review.rate + '/5 - ' : ''} {review.comment}</li>
+              <li key={index}
+              onClick={() => createConversation(review.creatorId, localStorage.getItem('token') as string)}
+              >{review.rate ? review.rate + '/5 - ' : ''} {review.comment}</li>
             )
           })}
         </ul>
