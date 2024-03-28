@@ -3,7 +3,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { getAutoEcole, getAutosEcoles, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
+import connectToMongo, { getAutoEcole, getAutosEcoles, getMessages, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
 import { AutoEcoleInterface, LoginInterface, UserInterface } from './Interfaces/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
@@ -224,6 +224,29 @@ io.on('connection', (socket) => {
         const id = getIdFromToken(data.id);
         const conversations = await Conversations.find({ usersId: id });
         socket.emit('conversations', { conversations: conversations });
+    });
+
+    socket.on('getMessages', async (data) => {
+        const { conversationId, userId } = data;
+        const decoded = jwt.verify(userId, process.env.SECRET as string);
+        const id = decoded.id;
+        socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
+    });
+
+    socket.on('sendMessage', async (data) => {
+        const { conversationId, userId, content } = data;
+        console.log(data);
+        const decoded = jwt.verify(userId, process.env.SECRET as string);
+        const id = decoded.id;
+        const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
+        const newMessage = {
+            senderId: id,
+            conversation_id: conversationId,
+            content: content,
+            date: new Date()
+        };
+        await conversationShema.create(newMessage);
+        socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
     });
 });
 

@@ -8,4 +8,12 @@ const createConversation = async (userId : string, creatorId : string) => {
     //try catch si ça existe pas
 }
 
-export {createConversation}
+const getMessages = async (conversationId : string, userId : string, socket : any) => {
+    socket.emit("getMessages", {conversationId, userId})
+}
+
+const sendMessage = async (conversationId : string, userId : string, content : string, socket : any) => {
+    socket.emit("sendMessage", {conversationId, userId, content})
+}
+
+export {createConversation, getMessages, sendMessage}

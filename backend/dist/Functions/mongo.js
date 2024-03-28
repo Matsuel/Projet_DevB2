@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
+exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const Review_1 = require("../MongoModels/Review");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const Conversation_1 = require("../MongoModels/Conversation");
 function connectToMongo() {
     mongoose_1.default.connect("mongodb://localhost:27017/autoecoles", {})
         .then(() => {
@@ -212,5 +213,13 @@ function searchAutoEcole(query) {
     });
 }
 exports.searchAutoEcole = searchAutoEcole;
+function getMessages(conversationId, userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);
+        const messages = yield conversationShema.find();
+        return messages;
+    });
+}
+exports.getMessages = getMessages;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map

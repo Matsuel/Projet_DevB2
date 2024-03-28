@@ -3,6 +3,7 @@ import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Interfaces
 import { AutoEcole, Student, User } from "../MongoModels/Users";
 import { reviewAutoecoleSchema, reviewMonitorSchema } from "../MongoModels/Review";
 import bcrypt from 'bcrypt';
+import { ConversationShema } from "../MongoModels/Conversation";
 
 function connectToMongo() {
     mongoose.connect("mongodb://localhost:27017/autoecoles", {
@@ -184,6 +185,12 @@ async function searchAutoEcole(query: string) {
     return autoEcoles;
 }
 
+async function getMessages(conversationId: string, userId: string) {
+    const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
+    const messages = await conversationShema.find();
+    return messages;
+}
+
 export default connectToMongo;
 
-export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles, searchAutoEcole }
+export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles, searchAutoEcole, getMessages };

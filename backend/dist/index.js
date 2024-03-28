@@ -243,6 +243,30 @@ io.on('connection', (socket) => {
         const conversations = yield Conversation_1.Conversations.find({ usersId: id });
         socket.emit('conversations', { conversations: conversations });
     }));
+    socket.on('getMessages', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const { conversationId, userId } = data;
+        const decoded = jsonwebtoken_1.default.verify(userId, process.env.SECRET);
+        const id = decoded.id;
+        socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
+    }));
+    socket.on('sendMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        const { conversationId, userId, content } = data;
+        console.log(data);
+        const decoded = jsonwebtoken_1.default.verify(userId, process.env.SECRET);
+        const id = decoded.id;
+        const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);
+        const newMessage = {
+            senderId: id,
+            conversation_id: conversationId,
+            content: content,
+            date: new Date()
+        };
+        yield conversationShema.create(newMessage);
+        // if (connectedUsers[userId]) {
+        //     connectedUsers[userId].emit('getMessages', { messages: [newMessage] });
+        // }
+        socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
+    }));
 });
 (0, mongo_1.default)();
 app.listen(3500, () => {
