@@ -67,8 +67,6 @@ const Chat: React.FC = () => {
           </div>
           <div className={styles.rightColumn}>
             <div>
-              <ChatCard id="12" message='bonjourno' date="Il y a 3 jours" position='left'/>
-              <ChatCard id="12" message='bonjourno' date="Il y a 3 jours" position='right'/>
               {messagesList.map((message) => {
                 return (
                   <ChatCard id={message.senderId} message={message.content} date={message.date.toString()} position={message.senderId === userId ? 'right' : 'left'}/>
