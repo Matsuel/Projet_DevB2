@@ -18,6 +18,7 @@ const Chat: React.FC = () => {
   const [userId , setUserId] = useState<string>('');
 
   const handleConversationActive = (id: string) => {
+    if(id === conversationActive) return;
     setConversationActive(id);
     getMessages(id, localStorage.getItem('token') as string, socket);
   };
