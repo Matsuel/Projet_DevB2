@@ -15,3 +15,10 @@
   .navLinks li {
     display: inline;
   }
+
+
+.links{
+  width: 200px;
+  justify-content: space-around;
+  display: flex;
+}

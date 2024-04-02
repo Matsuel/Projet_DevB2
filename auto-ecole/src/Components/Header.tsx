@@ -11,7 +11,7 @@ const Header: React.FC = () => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <div>
+            <div className={styles.links}>
               <Link href="/add">Ajouter</Link>
               <Link href="/login">Connexion</Link>
             </div>
