@@ -262,9 +262,6 @@ io.on('connection', (socket) => {
             date: new Date()
         };
         yield conversationShema.create(newMessage);
-        // if (connectedUsers[userId]) {
-        //     connectedUsers[userId].emit('getMessages', { messages: [newMessage] });
-        // }
         socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
     }));
 });

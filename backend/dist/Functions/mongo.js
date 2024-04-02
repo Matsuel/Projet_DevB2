@@ -29,7 +29,6 @@ function connectToMongo() {
 }
 function registerAutoEcole(data, file) {
     return __awaiter(this, void 0, void 0, function* () {
-        // return
         // ajouter champ pour les anciens élèves
         // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
         const autoEcole = yield Users_1.AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
@@ -37,54 +36,49 @@ function registerAutoEcole(data, file) {
             return { register: false };
         }
         else {
-            console.log(data.monitors);
             typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
             typeof data.formations === 'string' ? data.formations = JSON.parse(data.formations) : null;
             typeof data.students === 'string' ? data.students = JSON.parse(data.students) : null;
-            const monitors = data.monitors.map((monitor) => ({
-                _id: new mongoose_1.default.Types.ObjectId(),
-                name: monitor
-            }));
-            const newAutoEcole = new Users_1.AutoEcole({
-                name: data.name,
-                email: data.mail,
-                password: yield bcrypt_1.default.hash(data.password, 10),
-                address: data.address,
-                zip: data.zip,
-                city: data.city,
-                pics: file.buffer.toString('base64'),
-                monitors: monitors,
-                phone: data.phone,
-                card: data.card,
-                cheque: data.cheque,
-                especes: data.especes,
-                qualiopi: data.qualiopi,
-                label_qualite: data.label_qualite,
-                qualicert: data.qualicert,
-                garantie_fin: data.garantie_fin,
-                datadocke: data.datadocke,
-                cpf: data.cpf,
-                aide_apprentis: data.aide_apprentis,
-                permis1: data.permis1,
-                fin_francetravail: data.fin_francetravail,
-                formations: data.formations,
-                students: data.students,
-                note: 0,
-                noteCount: 0,
-            });
+            let newAutoEcole = new Users_1.AutoEcole({});
+            for (const key in data) {
+                if (key === 'monitors') {
+                    newAutoEcole.monitors = data.monitors.map((monitor) => ({
+                        _id: new mongoose_1.default.Types.ObjectId(),
+                        name: monitor
+                    }));
+                }
+                else if (key === 'password') {
+                    newAutoEcole.password = yield bcrypt_1.default.hash(data.password, 10);
+                }
+                else if (key === 'mail') {
+                    newAutoEcole.email = data.mail;
+                }
+                else {
+                    newAutoEcole[key] = data[key];
+                }
+            }
+            newAutoEcole.pics = file.buffer.toString('base64');
+            newAutoEcole.note = 0;
+            newAutoEcole.noteCount = 0;
             yield newAutoEcole.save();
             yield registerStudents(data.mail);
-            let reviewsCollection = mongoose_1.default.model('reviewsAutoecole_' + newAutoEcole._id, Review_1.reviewAutoecoleSchema);
-            reviewsCollection.createCollection();
-            newAutoEcole.monitors.forEach((monitor) => __awaiter(this, void 0, void 0, function* () {
-                reviewsCollection = mongoose_1.default.model('reviewsMonitor_' + monitor._id, Review_1.reviewMonitorSchema);
-                reviewsCollection.createCollection();
-            }));
+            yield createReviewsCollections(data.mail);
             return { register: true, id: newAutoEcole._id };
         }
     });
 }
 exports.registerAutoEcole = registerAutoEcole;
+function createReviewsCollections(mail) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const newAutoEcole = yield Users_1.AutoEcole.findOne({ email: mail });
+        let reviewsCollection = mongoose_1.default.model('reviewsAutoecole_' + newAutoEcole._id, Review_1.reviewAutoecoleSchema);
+        reviewsCollection.createCollection();
+        newAutoEcole.monitors.forEach((monitor) => __awaiter(this, void 0, void 0, function* () {
+            reviewsCollection = mongoose_1.default.model('reviewsMonitor_' + monitor._id, Review_1.reviewMonitorSchema);
+            reviewsCollection.createCollection();
+        }));
+    });
+}
 function registerChercheur(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield Users_1.User.findOne({ email: data.mail });

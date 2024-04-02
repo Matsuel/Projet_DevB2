@@ -17,58 +17,48 @@ function connectToMongo() {
 }
 
 async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
-    // return
     // ajouter champ pour les anciens élèves
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
         return { register: false };
     } else {
-        console.log(data.monitors);
         typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
         typeof data.formations === 'string' ? data.formations = JSON.parse(data.formations) : null;
         typeof data.students === 'string' ? data.students = JSON.parse(data.students) : null;
-        const monitors = data.monitors.map((monitor) => ({
-            _id: new mongoose.Types.ObjectId(),
-            name: monitor
-        }));
-        const newAutoEcole = new AutoEcole({
-            name: data.name,
-            email: data.mail,
-            password: await bcrypt.hash(data.password, 10),
-            address: data.address,
-            zip: data.zip,
-            city: data.city,
-            pics: file.buffer.toString('base64'),
-            monitors: monitors,
-            phone: data.phone,
-            card: data.card,
-            cheque: data.cheque,
-            especes: data.especes,
-            qualiopi: data.qualiopi,
-            label_qualite: data.label_qualite,
-            qualicert: data.qualicert,
-            garantie_fin: data.garantie_fin,
-            datadocke: data.datadocke,
-            cpf: data.cpf,
-            aide_apprentis: data.aide_apprentis,
-            permis1: data.permis1,
-            fin_francetravail: data.fin_francetravail,
-            formations: data.formations,
-            students: data.students,
-            note: 0,
-            noteCount: 0,
-        });
+        let newAutoEcole = new AutoEcole({});
+        for (const key in data) {
+            if (key === 'monitors') {
+                newAutoEcole.monitors = data.monitors.map((monitor) => ({
+                    _id: new mongoose.Types.ObjectId(),
+                    name: monitor
+                }));
+            } else if (key === 'password') {
+                newAutoEcole.password = await bcrypt.hash(data.password, 10);
+            } else if (key === 'mail') {
+                newAutoEcole.email = data.mail;
+            } else {
+                newAutoEcole[key] = data[key];
+            }
+        }
+        newAutoEcole.pics = file.buffer.toString('base64');
+        newAutoEcole.note = 0;
+        newAutoEcole.noteCount = 0;
         await newAutoEcole.save();
         await registerStudents(data.mail);
-        let reviewsCollection = mongoose.model('reviewsAutoecole_' + newAutoEcole._id, reviewAutoecoleSchema);
-        reviewsCollection.createCollection();
-        newAutoEcole.monitors.forEach(async (monitor: any) => {
-            reviewsCollection = mongoose.model('reviewsMonitor_' + monitor._id, reviewMonitorSchema);
-            reviewsCollection.createCollection();
-        });
+        await createReviewsCollections(data.mail);
         return { register: true, id: newAutoEcole._id };
     }
+}
+
+async function createReviewsCollections(mail: string) {
+    const newAutoEcole = await AutoEcole.findOne({ email: mail });
+    let reviewsCollection = mongoose.model('reviewsAutoecole_' + newAutoEcole._id, reviewAutoecoleSchema);
+    reviewsCollection.createCollection();
+    newAutoEcole.monitors.forEach(async (monitor: any) => {
+        reviewsCollection = mongoose.model('reviewsMonitor_' + monitor._id, reviewMonitorSchema);
+        reviewsCollection.createCollection();
+    });
 }
 
 async function registerChercheur(data: UserInterface) {
@@ -94,7 +84,7 @@ async function registerStudents(emailAutoEcole: string) {
     console.log(autoEcole.students);
     const studentsToSave = [];
     for (const student of autoEcole.students) {
-        if ( await studentAlreadySave(student as string) === false) {
+        if (await studentAlreadySave(student as string) === false) {
             const randomPassword = genereatePassword();
             const newStudent = new Student({
                 autoEcoleId: autoEcoleId,
