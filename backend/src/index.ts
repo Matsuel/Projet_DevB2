@@ -4,18 +4,18 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import connectToMongo, { getAutoEcole, getAutosEcoles, getMessages, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
-import { AutoEcoleInterface, LoginInterface, UserInterface } from './Interfaces/Users';
+import { AutoEcoleInterface, LoginInterface, UserInterface } from './Types/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import { searchInCitiesFiles } from './Functions/search';
 import mongoose from 'mongoose';
 import { reviewAutoecoleSchema } from './MongoModels/Review';
 import { AutoEcole, Student } from './MongoModels/Users';
-import { ReviewMonitor } from './Interfaces/Review';
+import { ReviewMonitor } from './Types/Review';
 import { ConversationShema, Conversations } from './MongoModels/Conversation';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
-import { MessageReceived } from './Interfaces/Chat';
+import { MessageReceived } from './Types/Chat';
 
 const upload = multer({ storage: multer.memoryStorage() });
 

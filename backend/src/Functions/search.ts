@@ -1,5 +1,5 @@
 import datas from "../Utils/cities.json"
-import { City } from "../Interfaces/City";
+import { City } from "../Types/City";
 
 async function searchInCitiesFiles(search: string) {
     search = search.replace("-", " ");

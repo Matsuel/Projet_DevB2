@@ -1,4 +1,4 @@
-export interface ReviewMonitor {
+export type ReviewMonitor = {
     stars: number;
     comment: string;
     name?: string;

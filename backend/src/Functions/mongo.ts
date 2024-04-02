@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Interfaces/Users";
+import { AutoEcoleInterface, LoginInterface, UserInterface } from "../Types/Users";
 import { AutoEcole, Student, User } from "../MongoModels/Users";
 import { reviewAutoecoleSchema, reviewMonitorSchema } from "../MongoModels/Review";
 import bcrypt from 'bcrypt';

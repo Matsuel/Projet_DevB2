@@ -1,4 +1,4 @@
-export interface City {
+export type City = {
     name: string;
     zip: string;
     gps : {

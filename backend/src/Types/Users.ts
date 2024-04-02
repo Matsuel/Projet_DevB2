@@ -1,4 +1,4 @@
-export interface AutoEcoleInterface {
+export type AutoEcoleInterface = {
     name: string;
     mail: string;
     password: string;
@@ -24,13 +24,13 @@ export interface AutoEcoleInterface {
     students: string[];
 }
 
-export interface UserInterface {
+export type UserInterface = {
     mail: string;
     password: string;
     notifs: boolean;
 }
 
-export interface LoginInterface {
+export type LoginInterface = {
     mail: string;
     password: string;
 }
