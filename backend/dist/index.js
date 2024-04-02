@@ -252,6 +252,8 @@ io.on('connection', (socket) => {
     socket.on('sendMessage', (data) => __awaiter(void 0, void 0, void 0, function* () {
         const { conversationId, userId, content } = data;
         console.log(data);
+        if (content.trim() === '')
+            return;
         const decoded = jsonwebtoken_1.default.verify(userId, process.env.SECRET);
         const id = decoded.id;
         const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);

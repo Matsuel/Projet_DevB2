@@ -30,7 +30,6 @@ const Chat: React.FC = () => {
       const token = localStorage.getItem('token');
       if (token) {
         setUserId((jwtDecode(token) as { id: string }).id);
-        console.log((jwtDecode(token) as { id: string }).id);
         newSocket.emit('connection', { id: token });
 
         newSocket.emit('getConversations', { id: token });
@@ -39,7 +38,6 @@ const Chat: React.FC = () => {
         });
 
         newSocket.on('getMessages', (data) => {
-          console.log(data);
           setMessagesList(data.messages);
         });
       }

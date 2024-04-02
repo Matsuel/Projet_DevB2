@@ -234,8 +234,9 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sendMessage', async (data) => {
-        const { conversationId, userId, content } = data;
+        const { conversationId, userId, content }:Message = data;
         console.log(data);
+        if (content.trim() === '') return;
         const decoded = jwt.verify(userId, process.env.SECRET as string);
         const id = decoded.id;
         const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
@@ -249,6 +250,12 @@ io.on('connection', (socket) => {
         socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
     });
 });
+
+type Message = {
+    conversationId: string;
+    userId: string;
+    content: string;
+}
 
 connectToMongo();
 
