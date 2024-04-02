@@ -25,10 +25,6 @@ export default function Home() {
     }
   }, 1000);
 
-  useEffect(() => {
-    localStorage.getItem('token') ? null : window.location.href = '/login';
-  });
-
   return (
     <div>
       <Head>
