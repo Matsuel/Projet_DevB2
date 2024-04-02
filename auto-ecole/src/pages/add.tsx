@@ -22,23 +22,26 @@ const Add: React.FC = () => {
   let token = '';
   if (typeof window !== 'undefined') {
     token = localStorage.getItem('token') || '';
+
+    if (token === '') {
+      router.push('/login');
+    }
   }
 
   useEffect(() => {
     const fetchData = async () => {
       setMonitorsReview([]);
       const response = await axios.post('http://localhost:3500/autoecoleinfos', { token: token });
-      if (response.data.autoEcole){
-      const newMonitorsReview = response.data.autoEcole.monitors.map((monitor: any) => {
-        return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
-      });
-      setMonitorsReview(newMonitorsReview);
-    }else{
-      router.push('/');
-    }
-
+      if (response.data.autoEcole) {
+        const newMonitorsReview = response.data.autoEcole.monitors.map((monitor: any) => {
+          return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
+        });
+        setMonitorsReview(newMonitorsReview);
+      } else {
+        router.push('/');
+      }
     };
-    fetchData();
+    token !== '' ? fetchData() : null;
   }, []);
 
   const handleSubmitAutoecole = async () => {
