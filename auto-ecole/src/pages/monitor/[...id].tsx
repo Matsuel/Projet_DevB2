@@ -38,6 +38,9 @@ const Monitor = ({ }: MonitorProps) => {
                 {data.autoEcole.name}
             </h2>
 
+            {data.reviews.length > 0 ? 
+            <>
+            <h2>Commentaires</h2> 
             <ul>
                 {data.reviews.map((review, index) => {
                     return (
@@ -45,6 +48,11 @@ const Monitor = ({ }: MonitorProps) => {
                     )
                 })}
             </ul>
+            </>
+            : <>
+            <h2>Pas de commentaires pour l'instant</h2>
+            
+            </>}
             
         </div>
     );
