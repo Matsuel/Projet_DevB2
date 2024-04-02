@@ -100,6 +100,20 @@ app.get('/autoecole/:id', async (req, res) => {
     res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
 });
 
+app.get('/monitor/:id', async (req, res) => {
+    console.log(req.params.id);
+    const autoEcole = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name')
+    const monitor = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
+    if (monitor) {
+        const monitorReviewCollection = mongoose.model('reviewsMonitor_' + req.params.id, reviewAutoecoleSchema);
+        const monitorReviews = await monitorReviewCollection.find();
+        console.log(monitorReviews);
+        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: monitorReviews });
+    } else {
+        res.send({ monitor: null });
+    }
+});
+
 app.get('/autosecoles', async (req, res) => {
     res.send({ autoEcoles: await getAutosEcoles() });
 });
@@ -192,7 +206,7 @@ app.post('/createConversation', async (req, res) => {
     console.log(creatorId, userId);
     const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
     if (conversationExists) {
-        res.send({ created: false});
+        res.send({ created: false });
     } else {
         const newConversation = new Conversations({
             usersId: [userId, creatorId]
@@ -211,10 +225,10 @@ const getIdFromToken = (token: string) => {
 
 }
 
-let connectedUsers: any= {};
+let connectedUsers: any = {};
 
 io.on('connection', (socket) => {
-    
+
     socket.on('connection', (data) => {
         const id = getIdFromToken(data.id)
         console.log(id);
@@ -235,7 +249,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sendMessage', async (data) => {
-        const { conversationId, userId, content }:MessageReceived = data;
+        const { conversationId, userId, content }: MessageReceived = data;
         console.log(data);
         if (content.trim() === '') return;
         const decoded = jwt.verify(userId, process.env.SECRET as string);

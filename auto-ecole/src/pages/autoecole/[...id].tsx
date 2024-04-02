@@ -8,6 +8,7 @@ import Image from 'next/image';
 import useSWR from 'swr';
 import { createConversation } from '@/Functions/Chat';
 import { AutoEcoleInfos } from '@/types/AutoEcole';
+import { handleMonitorClick } from '@/Functions/Router';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
@@ -46,7 +47,7 @@ const Autoecole = () => {
           {autoEcole.monitors.map((monitor, index) => {
             return (
               <>
-              <li key={monitor._id}>{monitor.name}</li>
+              <li key={monitor._id} onClick={()=> handleMonitorClick(monitor._id, router)}>{monitor.name}</li>
               <ul>
                 {monitorsReviews[index].map((review, index) => {
                   return (

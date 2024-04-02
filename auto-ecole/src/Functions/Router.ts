@@ -6,4 +6,8 @@ const handleAutoEcoleClick = (id: string, router: any) => {
     router.push(`/autoecole/${id}`);
 }
 
-export { handleCityClick, handleAutoEcoleClick }
+const handleMonitorClick = (id: string, router: any) => {
+    router.push(`/monitor/${id}`);
+}
+
+export { handleCityClick, handleAutoEcoleClick, handleMonitorClick };

@@ -42,3 +42,8 @@ export type AutoEcoleReview = {
     stars: number;
     comment: string;
   }
+
+export type AutoEcoleIdName = {
+    _id: string;
+    name: string;
+};

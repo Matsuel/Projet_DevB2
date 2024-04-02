@@ -125,6 +125,20 @@ app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
 }));
+app.get('/monitor/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.params.id);
+    const autoEcole = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name');
+    const monitor = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
+    if (monitor) {
+        const monitorReviewCollection = mongoose_1.default.model('reviewsMonitor_' + req.params.id, Review_1.reviewAutoecoleSchema);
+        const monitorReviews = yield monitorReviewCollection.find();
+        console.log(monitorReviews);
+        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: monitorReviews });
+    }
+    else {
+        res.send({ monitor: null });
+    }
+}));
 app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
 }));
