@@ -10,6 +10,8 @@ import { handleAutoEcoleClick, handleCityClick } from "@/Functions/Router";
 export default function Home() {
   const router = useRouter();
 
+  
+
   const [searchCities, setSearchCities] = useState<City[]>([]);
   const [searchAutoEcoles, setSearchAutoEcoles] = useState<AutoEcoleSearch[]>([]);
 
