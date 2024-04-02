@@ -15,6 +15,7 @@ import { ReviewMonitor } from './Interfaces/Review';
 import { ConversationShema, Conversations } from './MongoModels/Conversation';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
+import { MessageReceived } from './Interfaces/Chat';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -234,7 +235,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('sendMessage', async (data) => {
-        const { conversationId, userId, content }:Message = data;
+        const { conversationId, userId, content }:MessageReceived = data;
         console.log(data);
         if (content.trim() === '') return;
         const decoded = jwt.verify(userId, process.env.SECRET as string);
@@ -250,12 +251,6 @@ io.on('connection', (socket) => {
         socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
     });
 });
-
-type Message = {
-    conversationId: string;
-    userId: string;
-    content: string;
-}
 
 connectToMongo();
 
