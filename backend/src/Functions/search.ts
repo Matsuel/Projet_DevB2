@@ -7,11 +7,11 @@ async function searchInCitiesFiles(search: string) {
     const cities: City[] = datas as City[]; // Cast datas to City[]
     let results: City[] = [];
     cities.forEach((city) => {
-        if (city.name.toLowerCase().includes(search.toLowerCase())) {
+        if (city.name.toLowerCase().includes(search.toLowerCase()) && results.length < 10) {
             results.push(city);
         }
     })
-    return results.slice(0, 10);
+    return results
 }
 
 export { searchInCitiesFiles }

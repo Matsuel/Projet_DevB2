@@ -21,7 +21,7 @@ function searchInCitiesFiles(search) {
         const cities = cities_json_1.default; // Cast datas to City[]
         let results = [];
         cities.forEach((city) => {
-            if (city.name.toLowerCase().includes(search.toLowerCase())) {
+            if (city.name.toLowerCase().includes(search.toLowerCase()) && results.length < 10) {
                 results.push(city);
             }
         });
