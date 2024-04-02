@@ -235,6 +235,17 @@ io.on('connection', (socket) => {
         connectedUsers[id] = socket;
     });
 
+    socket.on('disconnect', () => {
+        console.log('disconnected')
+        
+        for (let user in connectedUsers) {
+            if (connectedUsers[user] === socket) {
+                delete connectedUsers[user];
+                break
+            }
+        }
+    });
+
     socket.on('getConversations', async (data) => {
         const id = getIdFromToken(data.id);
         const conversations = await Conversations.find({ usersId: id });
@@ -262,9 +273,24 @@ io.on('connection', (socket) => {
             date: new Date()
         };
         await conversationShema.create(newMessage);
+        await synchroneMessages(conversationId, id);
         socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
     });
 });
+
+async function synchroneMessages(conversationId: string, userId: string) {
+    const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
+    const messages = await conversationShema.find();
+    const otherUser = (await Conversations.findOne({ _id: conversationId}).select('usersId')).usersId.filter((id: string) => id !== userId)[0]
+    console.log(otherUser);
+    if (connectedUsers[otherUser]) {
+        console.log('connected');
+        connectedUsers[otherUser].emit('getMessages', { messages: messages })
+    } else {
+        console.log('not connected');
+        //sendMail
+    }
+}
 
 connectToMongo();
 

@@ -252,6 +252,15 @@ io.on('connection', (socket) => {
         console.log(id);
         connectedUsers[id] = socket;
     });
+    socket.on('disconnect', () => {
+        console.log('disconnected');
+        for (let user in connectedUsers) {
+            if (connectedUsers[user] === socket) {
+                delete connectedUsers[user];
+                break;
+            }
+        }
+    });
     socket.on('getConversations', (data) => __awaiter(void 0, void 0, void 0, function* () {
         const id = getIdFromToken(data.id);
         const conversations = yield Conversation_1.Conversations.find({ usersId: id });
@@ -278,9 +287,26 @@ io.on('connection', (socket) => {
             date: new Date()
         };
         yield conversationShema.create(newMessage);
+        yield synchroneMessages(conversationId, id);
         socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
     }));
 });
+function synchroneMessages(conversationId, userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);
+        const messages = yield conversationShema.find();
+        const otherUser = (yield Conversation_1.Conversations.findOne({ _id: conversationId }).select('usersId')).usersId.filter((id) => id !== userId)[0];
+        console.log(otherUser);
+        if (connectedUsers[otherUser]) {
+            console.log('connected');
+            connectedUsers[otherUser].emit('getMessages', { messages: messages });
+        }
+        else {
+            console.log('not connected');
+            //sendMail
+        }
+    });
+}
 (0, mongo_1.default)();
 app.listen(3500, () => {
     console.log('Server is running on port 3500');
