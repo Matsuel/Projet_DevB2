@@ -1,11 +1,11 @@
 import React from 'react';
-import styles from '@/styles/ChatCard.module.css'; 
+import styles from '@/styles/ChatCard.module.css';
 
 interface CarteProps {
   id: string;
   message: string;
   date: string;
-  position: 'left' | 'right'; 
+  position: 'left' | 'right';
 }
 
 const Carte: React.FC<CarteProps> = ({ id, message, date, position }) => {
@@ -15,7 +15,12 @@ const Carte: React.FC<CarteProps> = ({ id, message, date, position }) => {
     <div className={`${styles.main} ${cardClass}`}>
       <h2>{id}</h2>
       <h3>{message}</h3>
-      <h3>{date}</h3>
+      <h3>
+        {
+          new Date(date).getHours() + ":" +
+          (new Date(date).getMinutes().toString().padStart(2, '0'))
+        }
+      </h3>
     </div>
   );
 };
