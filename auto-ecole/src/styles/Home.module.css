@@ -21,3 +21,12 @@
 .top{
     margin-top: 40px
 }
+
+.home{
+    width: 30px
+}
+
+.city_container{
+    width: 200px;
+    cursor: pointer;
+}
