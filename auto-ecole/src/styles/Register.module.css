@@ -19,3 +19,7 @@
 .oui4{
     display: flex;
 }
+
+.hidden{
+    display:none;
+}

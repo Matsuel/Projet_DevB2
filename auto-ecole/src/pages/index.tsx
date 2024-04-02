@@ -10,6 +10,8 @@ import { handleAutoEcoleClick, handleCityClick } from "@/Functions/Router";
 export default function Home() {
   const router = useRouter();
 
+  
+
   const [searchCities, setSearchCities] = useState<City[]>([]);
   const [searchAutoEcoles, setSearchAutoEcoles] = useState<AutoEcoleSearch[]>([]);
 
@@ -32,28 +34,41 @@ export default function Home() {
       </Head>
       <main>
         <Header />
-        <h1>Wow incroyable ce site d'avis</h1>
+        <h1>Bienvenue sur adopteunmoniteur.fr</h1>
         <div>
-          <input placeholder="Rechercherrrrr" className={styles.rechercher} onChange={(e) => handleSearch(e.target.value)} />
-          <button className={styles.search}>Go go</button>
+          <input placeholder="Rechercher une ville ou une auto-ecole" className={styles.rechercher} onChange={(e) => handleSearch(e.target.value)} />
+          <button className={styles.search}>Rechercher</button>
         </div>
+        {
+          searchAutoEcoles.length > 0 &&
+          <h1>Auto Ecoles:</h1>
+
+        }
         {
           searchAutoEcoles.map((autoEcole) => {
             return (
-              <div key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id, router)}>
-                <h2>{autoEcole.name}</h2>
-                <p>{autoEcole.address}</p>
-                <p>{autoEcole.zip} {autoEcole.city}</p>
-                <p>{autoEcole.note}</p>
+              
+              <div key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id, router)} className={styles.city}>
+                <div className={styles.ecole_card}>
+                  <h2>{autoEcole.name}</h2>
+                  <p>Address: {autoEcole.address}</p>
+                  <p>Rating: {autoEcole.note}/5</p>
+                </div>
+                
               </div>
             )
           })
+        }
+                {
+          searchCities.length > 0 &&
+          <h1 className={styles.top}>Villes:</h1>
+
         }
         {
           searchCities.map((city:City, index:number) => {
             return (
               <div key={index} onClick={() => handleCityClick(city.name, router)}>
-                <h2>{city.name}</h2>
+                <h2 className={styles.city}>{city.name.charAt(0).toUpperCase() + city.name.slice(1).toLowerCase()}</h2>
               </div>
             )
           })

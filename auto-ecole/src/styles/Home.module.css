@@ -7,3 +7,17 @@
     width: 90px;
     height: 30px;
 }
+
+.ecole_card{
+    /* background-color: red; */
+    margin-bottom: 10px;
+}
+
+.city{
+    cursor: pointer;
+    margin-bottom: 3px;
+}
+
+.top{
+    margin-top: 40px
+}
