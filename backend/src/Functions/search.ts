@@ -11,7 +11,7 @@ async function searchInCitiesFiles(search: string) {
             results.push(city);
         }
     })
-    return results; 
+    return results.slice(0, 10);
 }
 
 export { searchInCitiesFiles }
