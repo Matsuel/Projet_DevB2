@@ -181,6 +181,52 @@ async function getMessages(conversationId: string, userId: string) {
     return messages;
 }
 
+export async function getUserInfosById(id: string) {
+    let userType = await getAccountType(id);
+    let user;
+    if (userType === 'student') {
+        user = await Student.findById(id).select('email acceptNotifications');
+    } else {
+        user = await User.findById(id).select('email acceptNotifications');
+    }
+    return user;
+}
+
+async function getAccountType(id: string) {
+    let user = await Student.findById(id);
+    let isStudent = true;
+    console.log(user,"student");
+    if (!user) {
+        user = await User.findById(id);
+        console.log(user,"user");
+        isStudent = false;
+    }
+    return isStudent ? 'student' : 'user';
+}
+
+export async function editAccount(id: string, data: any) {
+    let type = await getAccountType(id);
+    let user = type === 'student' ? await Student.findById(id) : await User.findById(id);
+    if (await bcrypt.compare(data.password, user.password)) {
+        if (data.newPassword && data.newPassword === data.newPasswordConfirm) {
+            user.password = await bcrypt.hash(data.newPassword, 10);
+        }
+        if (data.email) {
+            user.email = data.email;
+        }
+        await user.save();
+        return true;
+    }
+    return false;
+}
+
+export async function editNotifications(id: string, value: boolean) {
+    let type = await getAccountType(id);
+    let user = type === 'student' ? await Student.findById(id) : await User.findById(id);
+    user.acceptNotifications = value;
+    await user.save();
+}
+
 export default connectToMongo;
 
 export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles, searchAutoEcole, getMessages };

@@ -241,6 +241,26 @@ app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, 
         res.send({ created: true });
     }
 }));
+app.get('/userInfos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.query.token;
+    const id = getIdFromToken(token);
+    const user = yield (0, mongo_1.getUserInfosById)(id);
+    res.send(user);
+}));
+app.post('/editAccount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    const id = req.body.id;
+    const edit = yield (0, mongo_1.editAccount)(id, req.body.data);
+    const token = edit ? jsonwebtoken_1.default.sign({ id: id }, process.env.SECRET, { expiresIn: '24h' }) : null;
+    res.send({ edited: edit, token: token });
+}));
+app.post('/editNotifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    const id = req.body.id;
+    const { acceptNotifications } = req.body.data;
+    yield (0, mongo_1.editNotifications)(id, acceptNotifications);
+    res.send({ edited: true });
+}));
 const getIdFromToken = (token) => {
     const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
     return decoded.id;

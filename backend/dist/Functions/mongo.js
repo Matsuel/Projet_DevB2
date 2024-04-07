@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = void 0;
+exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = exports.editNotifications = exports.editAccount = exports.getUserInfosById = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const Review_1 = require("../MongoModels/Review");
@@ -215,5 +215,59 @@ function getMessages(conversationId, userId) {
     });
 }
 exports.getMessages = getMessages;
+function getUserInfosById(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let userType = yield getAccountType(id);
+        let user;
+        if (userType === 'student') {
+            user = yield Users_1.Student.findById(id).select('email acceptNotifications');
+        }
+        else {
+            user = yield Users_1.User.findById(id).select('email acceptNotifications');
+        }
+        return user;
+    });
+}
+exports.getUserInfosById = getUserInfosById;
+function getAccountType(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let user = yield Users_1.Student.findById(id);
+        let isStudent = true;
+        console.log(user, "student");
+        if (!user) {
+            user = yield Users_1.User.findById(id);
+            console.log(user, "user");
+            isStudent = false;
+        }
+        return isStudent ? 'student' : 'user';
+    });
+}
+function editAccount(id, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let type = yield getAccountType(id);
+        let user = type === 'student' ? yield Users_1.Student.findById(id) : yield Users_1.User.findById(id);
+        if (yield bcrypt_1.default.compare(data.password, user.password)) {
+            if (data.newPassword && data.newPassword === data.newPasswordConfirm) {
+                user.password = yield bcrypt_1.default.hash(data.newPassword, 10);
+            }
+            if (data.email) {
+                user.email = data.email;
+            }
+            yield user.save();
+            return true;
+        }
+        return false;
+    });
+}
+exports.editAccount = editAccount;
+function editNotifications(id, value) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let type = yield getAccountType(id);
+        let user = type === 'student' ? yield Users_1.Student.findById(id) : yield Users_1.User.findById(id);
+        user.acceptNotifications = value;
+        yield user.save();
+    });
+}
+exports.editNotifications = editNotifications;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map

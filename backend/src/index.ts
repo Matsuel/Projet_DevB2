@@ -3,7 +3,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { getAutoEcole, getAutosEcoles, getMessages, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
+import connectToMongo, { editAccount, editNotifications, getAutoEcole, getAutosEcoles, getMessages, getUserInfosById, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
 import { AutoEcoleInterface, LoginInterface, UserInterface } from './Types/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
@@ -217,6 +217,29 @@ app.post('/createConversation', async (req, res) => {
         res.send({ created: true });
     }
 
+});
+
+app.get('/userInfos', async (req, res) => {
+    const token = req.query.token;
+    const id = getIdFromToken(token as string);
+    const user = await getUserInfosById(id);
+    res.send(user);
+});
+
+app.post('/editAccount', async (req, res) => {
+    console.log(req.body);
+    const id = req.body.id;
+    const edit = await editAccount(id, req.body.data);
+    const token = edit ? jwt.sign({ id: id }, process.env.SECRET as string, { expiresIn: '24h' }) : null;
+    res.send({ edited: edit, token: token });    
+});
+
+app.post('/editNotifications', async (req, res) => {
+    console.log(req.body);
+    const id = req.body.id;
+    const { acceptNotifications } = req.body.data;
+    await editNotifications(id, acceptNotifications);
+    res.send({ edited: true });
 });
 
 const getIdFromToken = (token: string) => {
