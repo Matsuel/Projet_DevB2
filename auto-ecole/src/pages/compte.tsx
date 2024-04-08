@@ -8,6 +8,7 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos } from '@/types/Compte';
 import { useRouter } from 'next/router';
+import { Monitor } from '@/types/Monitor';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
@@ -139,6 +140,75 @@ const Compte: React.FC = () => {
                         type="text"
                         id={key}
                         defaultValue={value as string}
+                      />
+                    </>
+                  )
+                })
+              }
+            </div>
+
+            <div>
+              {data?.address &&
+                Object.entries(data).filter(([key, value]) => key === "formations").map(([key, value]) => {
+                  return (
+                    <>
+                      <p>Formations</p>
+                      {(value as string[]).map((formation: string) => {
+                        return (
+                          <div>
+                            <p>{formation}</p>
+                          </div>
+                        )
+                      })}
+                      <input
+                        type="text"
+                        id="newFormation"
+                      />
+                    </>
+                  )
+                })
+              }
+            </div>
+
+            <div>
+              {data?.address &&
+                Object.entries(data).filter(([key, value]) => key === "monitors").map(([key, value]) => {
+                  return (
+                    <>
+                      <p>Moniteurs</p>
+                      {(value as Monitor[]).map((monitor: Monitor) => {
+                        return (
+                          <div key={monitor._id}>
+                            <p>{monitor.name}</p>
+                          </div>
+                        )
+                      })}
+                      <input
+                        type="text"
+                        id="newMonitor"
+                      />
+                    </>
+                  )
+                })
+              }
+            </div>
+
+            <div>
+              {data?.address &&
+                Object.entries(data).filter(([key, value]) => key === "students").map(([key, value]) => {
+                  return (
+                    <>
+                      <p>Elèves</p>
+                      {(value as string[]).map((student: string) => {
+                        return (
+                          <div>
+                            <p>{student}</p>
+                          </div>
+                        )
+                      })}
+                      <input
+                        type="text"
+                        id="newStudent"
                       />
                     </>
                   )
