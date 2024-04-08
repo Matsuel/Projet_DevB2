@@ -15,3 +15,9 @@ export async function deleteAccount(id: string) {
     const response = await axios.post("http://localhost:3500/deleteAccount", {id})
     return response.data
 }
+
+//function pour supprimer de la list des moniteurs, les formations et les students
+//function pour modifier les infos de base de l'auto-ecole
+//function pour modifier les infos du moniteur
+//function pour modifier les infos d'un student
+//function pour modifier les infos d'une formation
