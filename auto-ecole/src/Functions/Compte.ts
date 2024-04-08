@@ -1,4 +1,4 @@
-import { AccountInputs } from "@/pages/compte";
+import { AccountInputs } from '@/types/Compte';
 import axios from 'axios';
 
 export async function editAccount(id: string, data: AccountInputs) {
