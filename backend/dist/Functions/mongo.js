@@ -226,7 +226,7 @@ function getUserInfosById(id) {
             user = yield Users_1.User.findById(id).select('email acceptNotifications');
         }
         else {
-            user = yield Users_1.AutoEcole.findById(id).select('-password');
+            user = yield Users_1.AutoEcole.findById(id).select('-password -__v -noteCount -note -reviews');
         }
         return user;
     });

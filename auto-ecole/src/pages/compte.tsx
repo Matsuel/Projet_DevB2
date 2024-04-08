@@ -7,12 +7,26 @@ import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos } from '@/types/Compte';
+import { useRouter } from 'next/router';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 
 
 const Compte: React.FC = () => {
+
+  const router = useRouter()
+
+  let token = ""
+
+  if (typeof window !== 'undefined') {
+    if (!localStorage.getItem('token')) {
+      router.push('/')
+    } else {
+      token = localStorage.getItem('token') as string
+    }
+  }
+
   const {
     register,
     handleSubmit
@@ -26,13 +40,7 @@ const Compte: React.FC = () => {
   const [editError, setEditError] = useState<boolean>(false)
   const [notificationsEdit, setNotificationsEdit] = useState<boolean>(false)
 
-  let token = ""
-
-  if (typeof window !== 'undefined') {
-    token = localStorage.getItem('token') as string
-  }
-
-  const { data, error, isLoading } = useSWR<UserInfos>('http://localhost:3500/userInfos?token=' + token, fetcher)
+  const { data, error, isLoading } = useSWR<UserInfos | any>('http://localhost:3500/userInfos?token=' + token, fetcher)
   if (isLoading || !data) return <div>Chargement...</div>
   if (error) return <div>Erreur</div>
   console.log(data)
@@ -103,7 +111,43 @@ const Compte: React.FC = () => {
             </button>
           </form>
 
-          {}
+          <form>
+            <div>
+              {data?.address &&
+                Object.entries(data).filter(([key, value]) => typeof value === 'boolean').map(([key, value]) => {
+
+                  return (
+                    <>
+                      <label htmlFor={key}>{key}</label>
+                      <input
+                        type="checkbox"
+                        id={key}
+                        defaultChecked={value as boolean}
+                      />
+                    </>
+                  )
+                })
+              }
+            </div>
+            <div>
+              {data?.address &&
+                Object.entries(data).filter(([key, value]) => typeof value !== 'boolean' && typeof value === "string" && key.toString() !== "_id" || key === "zip").map(([key, value]) => {
+                  return (
+                    <>
+                      <label htmlFor={key}>{key}</label>
+                      <input
+                        type="text"
+                        id={key}
+                        defaultValue={value as string}
+                      />
+                    </>
+                  )
+                })
+              }
+            </div>
+
+          
+          </form>
 
           {data.acceptNotifications &&
             <form onSubmit={handleSubmitNotifications(onSubmitNotifications)}>

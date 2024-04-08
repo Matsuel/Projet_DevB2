@@ -189,7 +189,7 @@ export async function getUserInfosById(id: string) {
     } else if (userType === 'user') {
         user = await User.findById(id).select('email acceptNotifications');
     } else {
-        user = await AutoEcole.findById(id).select('-password');
+        user = await AutoEcole.findById(id).select('-password -__v -noteCount -note -reviews');
     }
     return user;
 }
