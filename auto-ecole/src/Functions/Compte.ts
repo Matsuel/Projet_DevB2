@@ -10,3 +10,8 @@ export async function editNotifications(id: string, data: any) {
     const response = await axios.post("http://localhost:3500/editNotifications", {id, data})
     return response.data
 }
+
+export async function deleteAccount(id: string) {
+    const response = await axios.post("http://localhost:3500/deleteAccount", {id})
+    return response.data
+}

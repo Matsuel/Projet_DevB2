@@ -261,6 +261,10 @@ app.post('/editNotifications', (req, res) => __awaiter(void 0, void 0, void 0, f
     yield (0, mongo_1.editNotifications)(id, acceptNotifications);
     res.send({ edited: true });
 }));
+app.post('/deleteAccount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.body.id;
+    res.send({ deleted: yield (0, mongo_1.deleteAccount)(id) });
+}));
 const getIdFromToken = (token) => {
     const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
     return decoded.id;

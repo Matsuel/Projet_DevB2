@@ -5,7 +5,7 @@ import styles from '@/styles/Compte.module.css';
 import useSWR from 'swr';
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
-import { editAccount, editNotifications } from '@/Functions/Compte';
+import { deleteAccount, editAccount, editNotifications } from '@/Functions/Compte';
 
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
@@ -38,11 +38,6 @@ const Compte: React.FC = () => {
     handleSubmit: handleSubmitNotifications,
   } = useForm<NotificationsInputs>()
 
-  const {
-    register: deleteAccount,
-    handleSubmit: handleSubmitDeleteAccount,
-  } = useForm()
-
   const [editError, setEditError] = useState<boolean>(false)
   const [notificationsEdit, setNotificationsEdit] = useState<boolean>(false)
 
@@ -71,6 +66,14 @@ const Compte: React.FC = () => {
     setTimeout(() => {
       setNotificationsEdit(false)
     }, 3000)
+  }
+
+  const handleDeleteAccount = async () => {
+    const response = await deleteAccount(data._id)
+    if (response.deleted) {
+      localStorage.removeItem('token')
+      window.location.href = '/'
+    }
   }
 
   return (
@@ -128,6 +131,12 @@ const Compte: React.FC = () => {
               Modifier
             </button>
           </form>
+
+          <button
+            onClick={()=> handleDeleteAccount()}
+          >
+            Supprimer le compte
+          </button>
 
         </div>
 

@@ -227,6 +227,18 @@ export async function editNotifications(id: string, value: boolean) {
     await user.save();
 }
 
+export async function deleteAccount(id: string) {
+    let type = await getAccountType(id);
+    if (type === 'student') {
+        await Student.findByIdAndDelete(id);
+        return true;
+    } else if (type === 'user') {
+        await User.findByIdAndDelete(id);
+        return true;
+    }
+    return false;
+}
+
 export default connectToMongo;
 
 export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles, searchAutoEcole, getMessages };
