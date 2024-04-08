@@ -222,8 +222,11 @@ function getUserInfosById(id) {
         if (userType === 'student') {
             user = yield Users_1.Student.findById(id).select('email acceptNotifications');
         }
-        else {
+        else if (userType === 'user') {
             user = yield Users_1.User.findById(id).select('email acceptNotifications');
+        }
+        else {
+            user = yield Users_1.AutoEcole.findById(id).select('-password');
         }
         return user;
     });
@@ -233,19 +236,27 @@ function getAccountType(id) {
     return __awaiter(this, void 0, void 0, function* () {
         let user = yield Users_1.Student.findById(id);
         let isStudent = true;
+        let isUser = false;
         console.log(user, "student");
         if (!user) {
             user = yield Users_1.User.findById(id);
             console.log(user, "user");
             isStudent = false;
+            isUser = true;
+            if (!user) {
+                user = yield Users_1.AutoEcole.findById(id);
+                console.log(user, "autoecole");
+                isUser = false;
+            }
         }
-        return isStudent ? 'student' : 'user';
+        return isStudent ? 'student' : isUser ? 'user' : 'autoecole';
     });
 }
 function editAccount(id, data) {
     return __awaiter(this, void 0, void 0, function* () {
         let type = yield getAccountType(id);
-        let user = type === 'student' ? yield Users_1.Student.findById(id) : yield Users_1.User.findById(id);
+        let user = type === 'student' ? yield Users_1.Student.findById(id) : type === 'user' ? yield Users_1.User.findById(id) : yield Users_1.AutoEcole.findById(id);
+        console.log(user);
         if (yield bcrypt_1.default.compare(data.password, user.password)) {
             if (data.newPassword && data.newPassword === data.newPasswordConfirm) {
                 user.password = yield bcrypt_1.default.hash(data.newPassword, 10);
@@ -263,7 +274,7 @@ exports.editAccount = editAccount;
 function editNotifications(id, value) {
     return __awaiter(this, void 0, void 0, function* () {
         let type = yield getAccountType(id);
-        let user = type === 'student' ? yield Users_1.Student.findById(id) : yield Users_1.User.findById(id);
+        let user = type === 'student' ? yield Users_1.Student.findById(id) : type === 'user' ? yield Users_1.User.findById(id) : null;
         user.acceptNotifications = value;
         yield user.save();
     });

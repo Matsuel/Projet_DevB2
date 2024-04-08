@@ -186,8 +186,10 @@ export async function getUserInfosById(id: string) {
     let user;
     if (userType === 'student') {
         user = await Student.findById(id).select('email acceptNotifications');
-    } else {
+    } else if (userType === 'user') {
         user = await User.findById(id).select('email acceptNotifications');
+    } else {
+        user = await AutoEcole.findById(id).select('-password');
     }
     return user;
 }
@@ -195,18 +197,27 @@ export async function getUserInfosById(id: string) {
 async function getAccountType(id: string) {
     let user = await Student.findById(id);
     let isStudent = true;
+    let isUser = false;
     console.log(user,"student");
     if (!user) {
         user = await User.findById(id);
         console.log(user,"user");
         isStudent = false;
+        isUser = true;
+
+        if (!user) {
+            user = await AutoEcole.findById(id);
+            console.log(user,"autoecole");
+            isUser = false;
+        }
     }
-    return isStudent ? 'student' : 'user';
+    return isStudent ? 'student' : isUser ? 'user' : 'autoecole';
 }
 
 export async function editAccount(id: string, data: any) {
     let type = await getAccountType(id);
-    let user = type === 'student' ? await Student.findById(id) : await User.findById(id);
+    let user = type === 'student' ? await Student.findById(id) : type === 'user' ? await User.findById(id) : await AutoEcole.findById(id);
+    console.log(user);
     if (await bcrypt.compare(data.password, user.password)) {
         if (data.newPassword && data.newPassword === data.newPasswordConfirm) {
             user.password = await bcrypt.hash(data.newPassword, 10);
@@ -222,7 +233,7 @@ export async function editAccount(id: string, data: any) {
 
 export async function editNotifications(id: string, value: boolean) {
     let type = await getAccountType(id);
-    let user = type === 'student' ? await Student.findById(id) : await User.findById(id);
+    let user = type === 'student' ? await Student.findById(id) : type === 'user' ? await User.findById(id) : null;
     user.acceptNotifications = value;
     await user.save();
 }

@@ -6,26 +6,11 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editNotifications } from '@/Functions/Compte';
-
+import { AccountInputs, NotificationsInputs, UserInfos } from '@/types/Compte';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
-type UserInfos = {
-  _id: string,
-  email: string,
-  acceptNotifications: boolean,
-}
 
-export type AccountInputs = {
-  email: string,
-  password: string,
-  newPassword: string,
-  newPasswordConfirm: string,
-}
-
-export type NotificationsInputs = {
-  acceptNotifications: boolean,
-}
 
 const Compte: React.FC = () => {
   const {
@@ -50,6 +35,7 @@ const Compte: React.FC = () => {
   const { data, error, isLoading } = useSWR<UserInfos>('http://localhost:3500/userInfos?token=' + token, fetcher)
   if (isLoading || !data) return <div>Chargement...</div>
   if (error) return <div>Erreur</div>
+  console.log(data)
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
     if (infos.newPassword !== infos.newPasswordConfirm) {
@@ -117,23 +103,27 @@ const Compte: React.FC = () => {
             </button>
           </form>
 
-          <form onSubmit={handleSubmitNotifications(onSubmitNotifications)}>
-            <input
-              type="checkbox"
-              id="acceptNotifications"
-              {...registerNotifications("acceptNotifications")}
-              defaultChecked={data.acceptNotifications}
-            />
-            <label htmlFor="acceptNotifications">Accepter les notifications</label>
-            <button
-              type="submit"
-            >
-              Modifier
-            </button>
-          </form>
+          {}
+
+          {data.acceptNotifications &&
+            <form onSubmit={handleSubmitNotifications(onSubmitNotifications)}>
+              <input
+                type="checkbox"
+                id="acceptNotifications"
+                {...registerNotifications("acceptNotifications")}
+                defaultChecked={data.acceptNotifications}
+              />
+              <label htmlFor="acceptNotifications">Accepter les notifications</label>
+              <button
+                type="submit"
+              >
+                Modifier
+              </button>
+            </form>
+          }
 
           <button
-            onClick={()=> handleDeleteAccount()}
+            onClick={() => handleDeleteAccount()}
           >
             Supprimer le compte
           </button>
