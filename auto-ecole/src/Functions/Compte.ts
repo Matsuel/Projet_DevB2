@@ -1,4 +1,4 @@
-import { AccountInputs } from '@/types/Compte';
+import { AccountInputs, AutoEcoleInfosInputs } from '@/types/Compte';
 import axios from 'axios';
 
 export async function editAccount(id: string, data: AccountInputs) {
@@ -13,6 +13,11 @@ export async function editNotifications(id: string, data: any) {
 
 export async function deleteAccount(id: string) {
     const response = await axios.post("http://localhost:3500/deleteAccount", {id})
+    return response.data
+}
+
+export async function editAutoEcoleInfos(id: string, data: AutoEcoleInfosInputs) {
+    const response = await axios.post("http://localhost:3500/editAutoEcoleInfos", {id, data})
     return response.data
 }
 

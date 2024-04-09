@@ -3,7 +3,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { deleteAccount, editAccount, editNotifications, getAutoEcole, getAutosEcoles, getMessages, getUserInfosById, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
+import connectToMongo, { deleteAccount, editAccount, editAutoEcoleInfos, editNotifications, getAutoEcole, getAutosEcoles, getMessages, getUserInfosById, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
 import { AutoEcoleInterface, LoginInterface, UserInterface } from './Types/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
@@ -246,6 +246,14 @@ app.post('/deleteAccount', async (req, res) => {
     const id = req.body.id;
     res.send({ deleted: await deleteAccount(id) });
 });
+
+app.post('/editAutoEcoleInfos', async (req, res) => {
+    console.log(req.body);
+    const id = req.body.id;
+    console.log(id);
+    res.send({ edited: await editAutoEcoleInfos(id, req.body.data) });
+});
+
 
 const getIdFromToken = (token: string) => {
     const decoded = jwt.verify(token, process.env.SECRET as string);

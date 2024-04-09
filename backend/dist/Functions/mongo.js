@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.registerChercheur = exports.registerAutoEcole = exports.deleteAccount = exports.editNotifications = exports.editAccount = exports.getUserInfosById = void 0;
+exports.deleteAccount = exports.editNotifications = exports.editAutoEcoleInfos = exports.editAccount = exports.getAccountType = exports.getUserInfosById = exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.saveToFile = exports.genereatePassword = exports.studentAlreadySave = exports.registerStudents = exports.registerChercheur = exports.createReviewsCollections = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const Review_1 = require("../MongoModels/Review");
@@ -79,6 +79,7 @@ function createReviewsCollections(mail) {
         }));
     });
 }
+exports.createReviewsCollections = createReviewsCollections;
 function registerChercheur(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield Users_1.User.findOne({ email: data.mail });
@@ -121,6 +122,7 @@ function registerStudents(emailAutoEcole) {
         saveToFile(studentsToSave);
     });
 }
+exports.registerStudents = registerStudents;
 function studentAlreadySave(email) {
     return __awaiter(this, void 0, void 0, function* () {
         let students = yield Users_1.Student.findOne({ email: email });
@@ -135,6 +137,7 @@ function studentAlreadySave(email) {
         return false;
     });
 }
+exports.studentAlreadySave = studentAlreadySave;
 function genereatePassword() {
     let password = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -143,6 +146,7 @@ function genereatePassword() {
     }
     return password;
 }
+exports.genereatePassword = genereatePassword;
 // sauvegarde dans un fichier an attendant de pouvoir envoyer un mail
 function saveToFile(data) {
     const fs = require('fs');
@@ -155,6 +159,7 @@ function saveToFile(data) {
         }
     });
 }
+exports.saveToFile = saveToFile;
 function login(data) {
     return __awaiter(this, void 0, void 0, function* () {
         let user = yield Users_1.AutoEcole.findOne({ email: data.mail });
@@ -252,6 +257,7 @@ function getAccountType(id) {
         return isStudent ? 'student' : isUser ? 'user' : 'autoecole';
     });
 }
+exports.getAccountType = getAccountType;
 function editAccount(id, data) {
     return __awaiter(this, void 0, void 0, function* () {
         let type = yield getAccountType(id);
@@ -271,6 +277,17 @@ function editAccount(id, data) {
     });
 }
 exports.editAccount = editAccount;
+function editAutoEcoleInfos(id, data) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let autoEcole = yield Users_1.AutoEcole.findById(id);
+        for (const key in data) {
+            autoEcole[key] = data[key];
+        }
+        yield autoEcole.save();
+        return true;
+    });
+}
+exports.editAutoEcoleInfos = editAutoEcoleInfos;
 function editNotifications(id, value) {
     return __awaiter(this, void 0, void 0, function* () {
         let type = yield getAccountType(id);

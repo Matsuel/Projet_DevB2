@@ -5,7 +5,7 @@ import styles from '@/styles/Compte.module.css';
 import useSWR from 'swr';
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
-import { deleteAccount, editAccount, editNotifications } from '@/Functions/Compte';
+import { deleteAccount, editAccount, editAutoEcoleInfos, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
 import { useRouter } from 'next/router';
 import { Monitor } from '@/types/Monitor';
@@ -68,8 +68,11 @@ const Compte: React.FC = () => {
     }, 3000)
   }
 
-  const onSubmitCheckbox: SubmitHandler<AutoEcoleInfosInputs> = async infos => {
-    console.log(infos)
+  const onSubmitInfos: SubmitHandler<AutoEcoleInfosInputs> = async infos => {
+    const response = await editAutoEcoleInfos(data._id, infos)
+    if (response.edited) {
+      window.location.reload()
+    }
   }
 
   const handleDeleteAccount = async () => {
@@ -124,7 +127,7 @@ const Compte: React.FC = () => {
           </form>
 
           {/* Infos de l'auto-école */}
-          <form onSubmit={handleSubmitInfos(onSubmitCheckbox)}>
+          <form onSubmit={handleSubmitInfos(onSubmitInfos)}>
             <div>
               {data?.address &&
                 Object.entries(data).filter(([key, value]) => typeof value === 'boolean').map(([key, value]) => {

@@ -16,7 +16,7 @@ function connectToMongo() {
         });
 }
 
-async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
+export async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
     // ajouter champ pour les anciens élèves
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
@@ -51,7 +51,7 @@ async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
     }
 }
 
-async function createReviewsCollections(mail: string) {
+export async function createReviewsCollections(mail: string) {
     const newAutoEcole = await AutoEcole.findOne({ email: mail });
     let reviewsCollection = mongoose.model('reviewsAutoecole_' + newAutoEcole._id, reviewAutoecoleSchema);
     reviewsCollection.createCollection();
@@ -61,7 +61,7 @@ async function createReviewsCollections(mail: string) {
     });
 }
 
-async function registerChercheur(data: UserInterface) {
+export async function registerChercheur(data: UserInterface) {
     const user = await User.findOne({ email: data.mail });
     if (user) {
         return { register: false };
@@ -78,7 +78,7 @@ async function registerChercheur(data: UserInterface) {
 }
 
 // fonction à appeler pour enregistrer les élèves si l'auto-école est validée
-async function registerStudents(emailAutoEcole: string) {
+export async function registerStudents(emailAutoEcole: string) {
     const autoEcole = await AutoEcole.findOne({ email: emailAutoEcole });
     const autoEcoleId = autoEcole._id;
     console.log(autoEcole.students);
@@ -99,7 +99,7 @@ async function registerStudents(emailAutoEcole: string) {
     saveToFile(studentsToSave);
 }
 
-async function studentAlreadySave(email: string) {
+export async function studentAlreadySave(email: string) {
     let students = await Student.findOne({ email: email });
     if (students) return true;
     students = await User.findOne({ email: email });
@@ -110,7 +110,7 @@ async function studentAlreadySave(email: string) {
 }
 
 
-function genereatePassword() {
+export function genereatePassword() {
     let password = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < 15; i++) {
@@ -120,7 +120,7 @@ function genereatePassword() {
 }
 
 // sauvegarde dans un fichier an attendant de pouvoir envoyer un mail
-function saveToFile(data: [string, string][]) {
+export function saveToFile(data: [string, string][]) {
     const fs = require('fs');
     if (!fs.existsSync('students.json')) {
         fs.writeFileSync('students.json', '[]');
@@ -132,7 +132,7 @@ function saveToFile(data: [string, string][]) {
     });
 }
 
-async function login(data: LoginInterface) {
+export async function login(data: LoginInterface) {
     let user = await AutoEcole.findOne({ email: data.mail });
     if (!user) {
         user = await Student.findOne({ email: data.mail });
@@ -151,7 +151,7 @@ async function login(data: LoginInterface) {
     }
 }
 
-async function getAutoEcole(id: string) {
+export async function getAutoEcole(id: string) {
     try {
         const autoEcole = await AutoEcole.findOne({ _id: id }).select('-password');
         return autoEcole;
@@ -160,12 +160,12 @@ async function getAutoEcole(id: string) {
     }
 }
 
-async function getAutosEcoles() {
+export async function getAutosEcoles() {
     const autoEcoles = await AutoEcole.find().select('-password');
     return autoEcoles;
 }
 
-async function searchAutoEcole(query: string) {
+export async function searchAutoEcole(query: string) {
     const autoEcoles = await AutoEcole.find({
         $or: [
             { name: { $regex: query, $options: 'i' } },
@@ -175,7 +175,7 @@ async function searchAutoEcole(query: string) {
     return autoEcoles;
 }
 
-async function getMessages(conversationId: string, userId: string) {
+export async function getMessages(conversationId: string, userId: string) {
     const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
     const messages = await conversationShema.find();
     return messages;
@@ -194,7 +194,7 @@ export async function getUserInfosById(id: string) {
     return user;
 }
 
-async function getAccountType(id: string) {
+export async function getAccountType(id: string) {
     let user = await Student.findById(id);
     let isStudent = true;
     let isUser = false;
@@ -231,6 +231,16 @@ export async function editAccount(id: string, data: any) {
     return false;
 }
 
+export async function editAutoEcoleInfos(id: string, data: any) {
+    let autoEcole = await AutoEcole.findById(id);
+    for (const key in data) {
+        autoEcole[key] = data[key];
+    }
+    await autoEcole.save();
+    return true;
+}
+
+
 export async function editNotifications(id: string, value: boolean) {
     let type = await getAccountType(id);
     let user = type === 'student' ? await Student.findById(id) : type === 'user' ? await User.findById(id) : null;
@@ -251,5 +261,3 @@ export async function deleteAccount(id: string) {
 }
 
 export default connectToMongo;
-
-export { registerAutoEcole, registerChercheur, login, getAutoEcole, getAutosEcoles, searchAutoEcole, getMessages };
