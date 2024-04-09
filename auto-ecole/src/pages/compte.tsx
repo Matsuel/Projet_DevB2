@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editNotifications } from '@/Functions/Compte';
-import { AccountInputs, NotificationsInputs, UserInfos } from '@/types/Compte';
+import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
 import { useRouter } from 'next/router';
 import { Monitor } from '@/types/Monitor';
 
@@ -38,13 +38,18 @@ const Compte: React.FC = () => {
     handleSubmit: handleSubmitNotifications,
   } = useForm<NotificationsInputs>()
 
+  const {
+    register: registerAutoEcoleInfos,
+    handleSubmit: handleSubmitInfos,
+    watch: watchAutoEcoleInfos
+  } = useForm<AutoEcoleInfosInputs>()
+
   const [editError, setEditError] = useState<boolean>(false)
   const [notificationsEdit, setNotificationsEdit] = useState<boolean>(false)
 
   const { data, error, isLoading } = useSWR<UserInfos | any>('http://localhost:3500/userInfos?token=' + token, fetcher)
   if (isLoading || !data) return <div>Chargement...</div>
   if (error) return <div>Erreur</div>
-  console.log(data)
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
     if (infos.newPassword !== infos.newPasswordConfirm) {
@@ -61,6 +66,10 @@ const Compte: React.FC = () => {
     setTimeout(() => {
       setNotificationsEdit(false)
     }, 3000)
+  }
+
+  const onSubmitCheckbox: SubmitHandler<AutoEcoleInfosInputs> = async infos => {
+    console.log(infos)
   }
 
   const handleDeleteAccount = async () => {
@@ -112,7 +121,7 @@ const Compte: React.FC = () => {
             </button>
           </form>
 
-          <form>
+          <form onSubmit={handleSubmitInfos(onSubmitCheckbox)}>
             <div>
               {data?.address &&
                 Object.entries(data).filter(([key, value]) => typeof value === 'boolean').map(([key, value]) => {
@@ -124,15 +133,15 @@ const Compte: React.FC = () => {
                         type="checkbox"
                         id={key}
                         defaultChecked={value as boolean}
+                        {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
                       />
                     </>
                   )
                 })
               }
-            </div>
-            <div>
+
               {data?.address &&
-                Object.entries(data).filter(([key, value]) => typeof value !== 'boolean' && typeof value === "string" && key.toString() !== "_id" || key === "zip").map(([key, value]) => {
+                Object.entries(data).filter(([key, value]) => typeof value !== 'boolean' && typeof value === "string" && key.toString() !== "_id" && key !== "email" || key === "zip").map(([key, value]) => {
                   return (
                     <>
                       <label htmlFor={key}>{key}</label>
@@ -140,11 +149,15 @@ const Compte: React.FC = () => {
                         type="text"
                         id={key}
                         defaultValue={value as string}
+                        {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
                       />
                     </>
                   )
                 })
               }
+            </div>
+            <div>
+
             </div>
 
             <div>
@@ -216,7 +229,7 @@ const Compte: React.FC = () => {
               }
             </div>
 
-          
+
           </form>
 
           {data.acceptNotifications &&
