@@ -232,6 +232,17 @@ function getUserInfosById(id) {
         }
         else {
             user = yield Users_1.AutoEcole.findById(id).select('-password -__v -noteCount -note -reviews');
+            const reviewAE = mongoose_1.default.model('reviewsAutoecole_' + user._id, Review_1.reviewAutoecoleSchema);
+            const review = yield reviewAE.find();
+            let reviewsMonitors = [];
+            for (const monitor of user.monitors) {
+                const reviewMonitor = mongoose_1.default.model('reviewsMonitor_' + monitor._id, Review_1.reviewMonitorSchema);
+                const reviewsMonitor = yield reviewMonitor.find();
+                reviewsMonitors.push({ monitor: monitor.name, reviews: reviewsMonitor });
+            }
+            console.log(review);
+            console.log(reviewsMonitors);
+            return Object.assign(Object.assign({}, user._doc), { reviews: review, reviewsMonitors: reviewsMonitors });
         }
         return user;
     });

@@ -190,6 +190,17 @@ export async function getUserInfosById(id: string) {
         user = await User.findById(id).select('email acceptNotifications');
     } else {
         user = await AutoEcole.findById(id).select('-password -__v -noteCount -note -reviews');
+        const reviewAE = mongoose.model('reviewsAutoecole_' + user._id, reviewAutoecoleSchema);
+        const review = await reviewAE.find();
+        let reviewsMonitors = [];
+        for (const monitor of user.monitors) {
+            const reviewMonitor = mongoose.model('reviewsMonitor_' + monitor._id, reviewMonitorSchema);
+            const reviewsMonitor = await reviewMonitor.find();
+            reviewsMonitors.push({ monitor: monitor.name, reviews: reviewsMonitor });
+        }
+        console.log(review);
+        console.log(reviewsMonitors);
+        return { ...user._doc, reviews: review, reviewsMonitors: reviewsMonitors };
     }
     return user;
 }
