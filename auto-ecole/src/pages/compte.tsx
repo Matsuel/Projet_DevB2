@@ -323,7 +323,6 @@ const Compte: React.FC = () => {
           data?.address &&
           <div>
             {monitorsReviews.map((monitor: ReviewsMonitor) => {
-              console.log(monitor)  
               return (
                 <div>
                   {/* @ts-ignore */}
