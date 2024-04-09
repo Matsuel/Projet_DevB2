@@ -8,7 +8,8 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
 import { useRouter } from 'next/router';
-import { Monitor } from '@/types/Monitor';
+import { Monitor, ReviewMonitor, ReviewsMonitor } from '@/types/Monitor';
+import { ReviewAutoEcole } from '@/types/AutoEcole';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
@@ -48,12 +49,16 @@ const Compte: React.FC = () => {
   const [notificationsEdit, setNotificationsEdit] = useState<boolean>(false)
   const [formations, setFormations] = useState<string[]>([])
   const [students, setStudents] = useState<string[]>([])
+  const [reviews, setReviews] = useState<ReviewAutoEcole[]>([])
+  const [monitorsReviews, setMonitorsReviews] = useState<ReviewsMonitor[]>([])
 
   const { data, error, isLoading } = useSWR<UserInfos | any>('http://localhost:3500/userInfos?token=' + token, fetcher)
   useEffect(() => {
     if (data && data.address) {
       setFormations(data.formations);
       setStudents(data.students);
+      setReviews(data.reviews);
+      setMonitorsReviews(data.reviewsMonitors)
     }
   }, [data]);
   if (isLoading || !data) return <div>Chargement...</div>
@@ -298,7 +303,46 @@ const Compte: React.FC = () => {
 
         </div>
 
-      </main>
+        {
+          data?.address &&
+          <div>
+            {reviews.length>0 && <h2>Commentaires</h2>}
+            {reviews.map((review: ReviewAutoEcole) => {
+              return (
+                <div>
+                  <p>{review.comment}</p>
+                  <p>{review.rate}</p>
+                </div>
+              )
+            })}
+          </div>
+        }
+
+
+        {
+          data?.address &&
+          <div>
+            {monitorsReviews.map((monitor: ReviewsMonitor) => {
+              console.log(monitor)  
+              return (
+                <div>
+                  {/* @ts-ignore */}
+                  <h2>{monitor.monitor}</h2>
+                  {monitor.reviews.map((review: ReviewMonitor) => {
+                    return (
+                      <div>
+                        <p>{review.comment}</p>
+                        <p>{review.stars}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })}
+          </div>
+        }
+
+          </main>
     </div>
   );
 };

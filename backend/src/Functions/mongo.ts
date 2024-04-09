@@ -198,8 +198,6 @@ export async function getUserInfosById(id: string) {
             const reviewsMonitor = await reviewMonitor.find();
             reviewsMonitors.push({ monitor: monitor.name, reviews: reviewsMonitor });
         }
-        console.log(review);
-        console.log(reviewsMonitors);
         return { ...user._doc, reviews: review, reviewsMonitors: reviewsMonitors };
     }
     return user;
