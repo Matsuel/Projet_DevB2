@@ -254,6 +254,12 @@ app.post('/editAutoEcoleInfos', async (req, res) => {
     res.send({ edited: await editAutoEcoleInfos(id, req.body.data) });
 });
 
+app.post('/editAutoEcolePersonnelFormations', async (req, res) => {
+    console.log(req.body);
+    const id = req.body.id;
+    
+});
+
 
 const getIdFromToken = (token: string) => {
     const decoded = jwt.verify(token, process.env.SECRET as string);

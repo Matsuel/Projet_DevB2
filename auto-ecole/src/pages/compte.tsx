@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import styles from '@/styles/Compte.module.css';
 import useSWR from 'swr';
 import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
-import { deleteAccount, editAccount, editAutoEcoleInfos, editNotifications } from '@/Functions/Compte';
+import { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
 import { useRouter } from 'next/router';
 import { Monitor } from '@/types/Monitor';
@@ -46,10 +46,21 @@ const Compte: React.FC = () => {
 
   const [editError, setEditError] = useState<boolean>(false)
   const [notificationsEdit, setNotificationsEdit] = useState<boolean>(false)
+  const [formations, setFormations] = useState<string[]>([])
+  const [students, setStudents] = useState<string[]>([])
 
   const { data, error, isLoading } = useSWR<UserInfos | any>('http://localhost:3500/userInfos?token=' + token, fetcher)
+  useEffect(() => {
+    if (data && data.address) {
+      setFormations(data.formations);
+      setStudents(data.students);
+    }
+  }, [data]);
   if (isLoading || !data) return <div>Chargement...</div>
   if (error) return <div>Erreur</div>
+
+  // {data && data.address &&  setFormations(data.formations)}
+
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
     if (infos.newPassword !== infos.newPasswordConfirm) {
@@ -58,6 +69,7 @@ const Compte: React.FC = () => {
     }
     const response = await editAccount(data._id, infos)
     response.edited ? localStorage.setItem('token', response.token) : setEditError(true)
+    window.location.reload()
   }
 
   const onSubmitNotifications: SubmitHandler<NotificationsInputs> = async infos => {
@@ -81,6 +93,32 @@ const Compte: React.FC = () => {
       localStorage.removeItem('token')
       window.location.href = '/'
     }
+  }
+
+  const addFormation = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setFormations([...formations, e.currentTarget.value])
+      e.currentTarget.value = ""
+    }
+  }
+
+  const deleteFormation = (index: number) => {
+    const newFormations = [...formations]
+    newFormations.splice(index, 1)
+    setFormations(newFormations)
+  }
+
+  const addStudent = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setStudents([...students, e.currentTarget.value])
+      e.currentTarget.value = ""
+    }
+  }
+
+  const deleteStudent = (index: number) => {
+    const newStudents = [...students]
+    newStudents.splice(index, 1)
+    setStudents(newStudents)
   }
 
   return (
@@ -171,80 +209,70 @@ const Compte: React.FC = () => {
             <div>
 
             </div>
-
-            {/* Formations de l'auto-école */}
-            <div>
-              {data?.address &&
-                Object.entries(data).filter(([key, value]) => key === "formations").map(([key, value]) => {
-                  return (
-                    <>
-                      <p>Formations</p>
-                      {(value as string[]).map((formation: string) => {
-                        return (
-                          <div>
-                            <p>{formation}</p>
-                          </div>
-                        )
-                      })}
-                      <input
-                        type="text"
-                        id="newFormation"
-                      />
-                    </>
-                  )
-                })
-              }
-            </div>
-
-            {/* Moniteurs de l'auto-école */}
-            <div>
-              {data?.address &&
-                Object.entries(data).filter(([key, value]) => key === "monitors").map(([key, value]) => {
-                  return (
-                    <>
-                      <p>Moniteurs</p>
-                      {(value as Monitor[]).map((monitor: Monitor) => {
-                        return (
-                          <div key={monitor._id}>
-                            <p>{monitor.name}</p>
-                          </div>
-                        )
-                      })}
-                      <input
-                        type="text"
-                        id="newMonitor"
-                      />
-                    </>
-                  )
-                })
-              }
-            </div>
-
-            <div>
-              {data?.address &&
-                Object.entries(data).filter(([key, value]) => key === "students").map(([key, value]) => {
-                  return (
-                    <>
-                      <p>Elèves</p>
-                      {(value as string[]).map((student: string) => {
-                        return (
-                          <div>
-                            <p>{student}</p>
-                          </div>
-                        )
-                      })}
-                      <input
-                        type="text"
-                        id="newStudent"
-                      />
-                    </>
-                  )
-                })
-              }
-            </div>
-
-
           </form>
+
+          {/* Formations de l'auto-école */}
+          <div>
+            <p>Formations</p>
+            {data?.address &&
+              formations.map((formation: string, index: number) => {
+                return (
+                  <>
+                    <p key={index}>{formation}</p>
+                    <button
+                      onClick={() => deleteFormation(index)}
+                    >
+                      Supprimer
+                    </button>
+                  </>
+                )
+              })
+            }
+            <input
+              type="text"
+              id="newFormation"
+              onKeyDown={(e) => {
+                e.key === "Enter" && addFormation(e)
+              }}
+            />
+          </div>
+
+          {/* Elèves de l'auto-école */}
+          <div>
+            {data?.address &&
+              <>
+                <p>Elèves</p>
+                {students.map((student: string) => {
+                  return (
+                    <div>
+                      <p>{student}</p>
+                      <button
+                        onClick={() => deleteStudent(students.indexOf(student))}
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  )
+                })}
+                <input
+                  type="email"
+                  id="newStudent"
+                  onKeyDown={(e) => {
+                    e.key === "Enter" && addStudent(e)
+                  }}
+                />
+              </>
+            }
+          </div>
+
+          <button
+            onClick={() =>  editAutoEcolePersonnelFormations(data._id, {formations, students})}
+          >
+            Modifier les formations, moniteurs et élèves
+          </button>
+
+
+
 
           {data.acceptNotifications &&
             <form onSubmit={handleSubmitNotifications(onSubmitNotifications)}>

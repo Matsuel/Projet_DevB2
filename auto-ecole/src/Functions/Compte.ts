@@ -21,6 +21,11 @@ export async function editAutoEcoleInfos(id: string, data: AutoEcoleInfosInputs)
     return response.data
 }
 
+export async function editAutoEcolePersonnelFormations(id: string, data: any) {
+    const response = await axios.post("http://localhost:3500/editAutoEcolePersonnelFormations", {id, data})
+    return response.data
+}
+
 //function pour supprimer de la list des moniteurs, les formations et les students
 //function pour modifier les infos de base de l'auto-ecole
 //function pour modifier les infos du moniteur
