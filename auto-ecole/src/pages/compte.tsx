@@ -58,9 +58,7 @@ const Compte: React.FC = () => {
   }, [data]);
   if (isLoading || !data) return <div>Chargement...</div>
   if (error) return <div>Erreur</div>
-
-  // {data && data.address &&  setFormations(data.formations)}
-
+  console.log(data)
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
     if (infos.newPassword !== infos.newPasswordConfirm) {
@@ -211,36 +209,35 @@ const Compte: React.FC = () => {
             </div>
           </form>
 
-          {/* Formations de l'auto-école */}
-          <div>
-            <p>Formations</p>
-            {data?.address &&
-              formations.map((formation: string, index: number) => {
-                return (
-                  <>
-                    <p key={index}>{formation}</p>
-                    <button
-                      onClick={() => deleteFormation(index)}
-                    >
-                      Supprimer
-                    </button>
-                  </>
-                )
-              })
-            }
-            <input
-              type="text"
-              id="newFormation"
-              onKeyDown={(e) => {
-                e.key === "Enter" && addFormation(e)
-              }}
-            />
-          </div>
+          {data?.address ?
+            <div>
+              {/* Formations de l'auto-école */}
+              <div>
+                <p>Formations</p>
+                {formations.map((formation: string, index: number) => {
+                  return (
+                    <>
+                      <p key={index}>{formation}</p>
+                      <button
+                        onClick={() => deleteFormation(index)}
+                      >
+                        Supprimer
+                      </button>
+                    </>
+                  )
+                })}
+                <input
+                  type="text"
+                  id="newFormation"
+                  onKeyDown={(e) => {
+                    e.key === "Enter" && addFormation(e)
+                  }}
+                />
+              </div>
 
-          {/* Elèves de l'auto-école */}
-          <div>
-            {data?.address &&
-              <>
+
+              {/* Elèves de l'auto-école */}
+              <div>
                 <p>Elèves</p>
                 {students.map((student: string) => {
                   return (
@@ -261,12 +258,14 @@ const Compte: React.FC = () => {
                     e.key === "Enter" && addStudent(e)
                   }}
                 />
-              </>
-            }
-          </div>
+              </div>
+            </div>
+            : null}
+
+
 
           <button
-            onClick={() =>  editAutoEcolePersonnelFormations(data._id, {formations, students})}
+            onClick={() => editAutoEcolePersonnelFormations(data._id, { formations, students })}
           >
             Modifier les formations, moniteurs et élèves
           </button>
