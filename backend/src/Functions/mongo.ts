@@ -240,6 +240,14 @@ export async function editAutoEcoleInfos(id: string, data: any) {
     return true;
 }
 
+export async function editAutoEcolePersonnelFormations(id: string, data: any) {
+    let autoEcole = await AutoEcole.findById(id);
+    autoEcole.formations = data.formations;
+    autoEcole.students = data.students;
+    await autoEcole.save();
+    
+    return true;
+}
 
 export async function editNotifications(id: string, value: boolean) {
     let type = await getAccountType(id);

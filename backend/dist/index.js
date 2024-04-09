@@ -273,6 +273,8 @@ app.post('/editAutoEcoleInfos', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 app.post('/editAutoEcolePersonnelFormations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
+    const id = req.body.id;
+    res.send({ edited: yield (0, mongo_1.editAutoEcolePersonnelFormations)(id, req.body.data) });
 }));
 const getIdFromToken = (token) => {
     const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
