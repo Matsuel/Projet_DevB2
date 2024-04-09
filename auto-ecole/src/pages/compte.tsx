@@ -89,6 +89,8 @@ const Compte: React.FC = () => {
         <Header />
 
         <h1>Compte</h1>
+
+        {/* Infos de base du compte */}
         <div className={styles.Compte_container}>
           {editError && <p>Erreur lors de la modification, les mots de passe ne correspondent pas, ou le mot de passe actuel est incorrect</p>}
           {notificationsEdit && <p>Notifications modifiées</p>}
@@ -121,6 +123,7 @@ const Compte: React.FC = () => {
             </button>
           </form>
 
+          {/* Infos de l'auto-école */}
           <form onSubmit={handleSubmitInfos(onSubmitCheckbox)}>
             <div>
               {data?.address &&
@@ -155,11 +158,18 @@ const Compte: React.FC = () => {
                   )
                 })
               }
+
+              <button
+                type="submit"
+              >
+                Modifier les informations de votre auto-école
+              </button>
             </div>
             <div>
 
             </div>
 
+            {/* Formations de l'auto-école */}
             <div>
               {data?.address &&
                 Object.entries(data).filter(([key, value]) => key === "formations").map(([key, value]) => {
@@ -183,6 +193,7 @@ const Compte: React.FC = () => {
               }
             </div>
 
+            {/* Moniteurs de l'auto-école */}
             <div>
               {data?.address &&
                 Object.entries(data).filter(([key, value]) => key === "monitors").map(([key, value]) => {
