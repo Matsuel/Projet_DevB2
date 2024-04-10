@@ -6,6 +6,8 @@ import styles from '@/styles/add.module.css';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { ReviewMonitor } from '@/types/Monitor';
+import { getToken } from '@/Functions/Token';
+import {jwtDecode} from 'jwt-decode';
 
 interface AutoEcoleReview {
   stars: number;
@@ -19,14 +21,7 @@ const Add: React.FC = () => {
   const [autoecoleReview, setAutoecoleReview] = useState<AutoEcoleReview>({ stars: 0, comment: '' });
   const [monitorsReview, setMonitorsReview] = useState<ReviewMonitor[]>([]);
 
-  let token = '';
-  if (typeof window !== 'undefined') {
-    token = localStorage.getItem('token') || '';
-
-    if (token === '') {
-      router.push('/login');
-    }
-  }
+  let token = getToken(router, jwtDecode);
 
   useEffect(() => {
     const fetchData = async () => {

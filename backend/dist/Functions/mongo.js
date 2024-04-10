@@ -240,8 +240,6 @@ function getUserInfosById(id) {
                 const reviewsMonitor = yield reviewMonitor.find();
                 reviewsMonitors.push({ monitor: monitor.name, reviews: reviewsMonitor });
             }
-            console.log(review);
-            console.log(reviewsMonitors);
             return Object.assign(Object.assign({}, user._doc), { reviews: review, reviewsMonitors: reviewsMonitors });
         }
         return user;

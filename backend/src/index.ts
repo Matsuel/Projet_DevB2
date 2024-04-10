@@ -203,6 +203,7 @@ app.post('/createConversation', async (req, res) => {
     console.log(req.body);
     let { userId, creatorId } = req.body;
     creatorId = getIdFromToken(creatorId);
+    if (!creatorId) return;
     console.log(creatorId, userId);
     const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
     if (conversationExists) {
@@ -222,6 +223,7 @@ app.post('/createConversation', async (req, res) => {
 app.get('/userInfos', async (req, res) => {
     const token = req.query.token;
     const id = getIdFromToken(token as string);
+    if (!id) return;
     const user = await getUserInfosById(id);
     res.send(user);
 });
@@ -262,9 +264,12 @@ app.post('/editAutoEcolePersonnelFormations', async (req, res) => {
 
 
 const getIdFromToken = (token: string) => {
-    const decoded = jwt.verify(token, process.env.SECRET as string);
-    return decoded.id;
-
+    try {
+        const decoded = jwt.verify(token, process.env.SECRET as string);
+        return decoded.id;
+    } catch (error) {
+        return null;
+    }
 }
 
 let connectedUsers: any = {};
@@ -273,6 +278,7 @@ io.on('connection', (socket) => {
 
     socket.on('connection', (data) => {
         const id = getIdFromToken(data.id)
+        if (!id) return;
         console.log(id);
         connectedUsers[id] = socket;
     });
@@ -290,6 +296,7 @@ io.on('connection', (socket) => {
 
     socket.on('getConversations', async (data) => {
         const id = getIdFromToken(data.id);
+        if (!id) return;
         const conversations = await Conversations.find({ usersId: id });
         socket.emit('conversations', { conversations: conversations });
     });

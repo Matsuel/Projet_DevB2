@@ -8,8 +8,10 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
 import { useRouter } from 'next/router';
-import { Monitor, ReviewMonitor, ReviewsMonitor } from '@/types/Monitor';
+import { ReviewMonitor, ReviewsMonitor } from '@/types/Monitor';
 import { ReviewAutoEcole } from '@/types/AutoEcole';
+import { jwtDecode } from 'jwt-decode';
+import { getToken } from '@/Functions/Token';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
@@ -19,15 +21,7 @@ const Compte: React.FC = () => {
 
   const router = useRouter()
 
-  let token = ""
-
-  if (typeof window !== 'undefined') {
-    if (!localStorage.getItem('token')) {
-      router.push('/')
-    } else {
-      token = localStorage.getItem('token') as string
-    }
-  }
+  let token = getToken(router, jwtDecode)
 
   const {
     register,

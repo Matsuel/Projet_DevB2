@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import styles from '@/styles/autoecole.module.css';
@@ -9,12 +9,16 @@ import useSWR from 'swr';
 import { createConversation } from '@/Functions/Chat';
 import { AutoEcoleInfos } from '@/types/AutoEcole';
 import { handleMonitorClick } from '@/Functions/Router';
+import { getToken } from '@/Functions/Token';
+import {jwtDecode} from 'jwt-decode';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 const Autoecole = () => {
   const router = useRouter();
   const {id} = router.query;
+
+  let token = getToken(router, jwtDecode);
 
   const { data , error, isLoading } = useSWR<AutoEcoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
 
@@ -106,7 +110,7 @@ const Autoecole = () => {
           {reviews.map((review, index) => {
             return (
               <li key={index}
-              onClick={() => createConversation(review.creatorId, localStorage.getItem('token') as string)}
+              onClick={() => createConversation(review.creatorId, token as string)}
               >{review.rate ? review.rate + '/5 - ' : ''} {review.comment}</li>
             )
           })}

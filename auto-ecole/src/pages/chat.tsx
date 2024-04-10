@@ -8,8 +8,12 @@ import { io } from 'socket.io-client';
 import { ConversationInformations, Message } from '@/types/Chat';
 import { getMessages, sendMessage } from '@/Functions/Chat';
 import { jwtDecode } from "jwt-decode";
+import { getToken } from '@/Functions/Token';
+import { useRouter } from 'next/router';
 
 const Chat: React.FC = () => {
+
+  const router = useRouter();
 
   const [socket, setSocket] = useState<any>(null);
   const [conversationsList, setConversationsList] = useState<ConversationInformations[]>([]);
@@ -17,17 +21,18 @@ const Chat: React.FC = () => {
   const [conversationActive, setConversationActive] = useState<string>('');
   const [userId , setUserId] = useState<string>('');
 
+  let token = getToken(router, jwtDecode);
+
   const handleConversationActive = (id: string) => {
     if(id === conversationActive) return;
     setConversationActive(id);
-    getMessages(id, localStorage.getItem('token') as string, socket);
+    getMessages(id, token as string, socket);
   };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const newSocket = io('http://localhost:4000');
       setSocket(newSocket);
-      const token = localStorage.getItem('token');
       if (token) {
         setUserId((jwtDecode(token) as { id: string }).id);
         newSocket.emit('connection', { id: token });
@@ -75,7 +80,7 @@ const Chat: React.FC = () => {
             <div className={styles.inputHolder}>
               <input placeholder='write' className={styles.input} onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  sendMessage(conversationActive, localStorage.getItem('token') as string, e.currentTarget.value, socket);
+                  sendMessage(conversationActive, token as string, e.currentTarget.value, socket);
                   e.currentTarget.value = '';
               }}}/>
               <button type="submit" >Send</button>
