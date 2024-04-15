@@ -18,7 +18,7 @@ const Autoecole = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  let token = getToken(router, jwtDecode);
+  // let token = getToken(router, jwtDecode);
 
   const { data, error, isLoading } = useSWR<AutoEcoleInfos>(id && `http://localhost:3500/autoecole/${id}`, fetcher)
 
@@ -110,7 +110,7 @@ const Autoecole = () => {
           {reviews.map((review, index) => {
             return (
               <li key={index}
-                onClick={() => createConversation(review.creatorId, token as string, router)}
+                // onClick={() => createConversation(review.creatorId, token as string, router)}
               >{review.rate ? review.rate + '/5 - ' : ''} {review.comment}</li>
             )
           })}

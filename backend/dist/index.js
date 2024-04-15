@@ -277,6 +277,24 @@ app.post('/editAutoEcolePersonnelFormations', (req, res) => __awaiter(void 0, vo
     const id = req.body.id;
     res.send({ edited: yield (0, mongo_1.editAutoEcolePersonnelFormations)(id, req.body.data) });
 }));
+app.get('/autosecolesclass', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const autoEcoles = yield Users_1.AutoEcole.find().select('name note');
+    const autoEcolesSorted = autoEcoles.sort((a, b) => Number(b.note) - Number(a.note));
+    res.send({ autoEcoles: autoEcolesSorted });
+}));
+app.get('/moniteursclass', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const moniteurs = yield Users_1.AutoEcole.find().select('monitors');
+    let moniteursList = [];
+    for (let i = 0; i < moniteurs.length; i++) {
+        const monitorsWithAvgPromises = moniteurs[i].monitors.map((monitor) => __awaiter(void 0, void 0, void 0, function* () {
+            return (Object.assign(Object.assign({}, monitor.toObject()), { avg: yield (0, mongo_1.getMonitorAvg)(monitor._id.toString()) }));
+        }));
+        const monitorsWithAvg = yield Promise.all(monitorsWithAvgPromises);
+        moniteursList.push(...monitorsWithAvg);
+    }
+    const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
+    res.send({ moniteurs: moniteursSorted });
+}));
 const getIdFromToken = (token) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);

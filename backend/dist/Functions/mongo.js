@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAccount = exports.editNotifications = exports.editAutoEcolePersonnelFormations = exports.editAutoEcoleInfos = exports.editAccount = exports.getAccountType = exports.getUserInfosById = exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.saveToFile = exports.genereatePassword = exports.studentAlreadySave = exports.registerStudents = exports.registerChercheur = exports.createReviewsCollections = exports.registerAutoEcole = void 0;
+exports.getMonitorAvg = exports.deleteAccount = exports.editNotifications = exports.editAutoEcolePersonnelFormations = exports.editAutoEcoleInfos = exports.editAccount = exports.getAccountType = exports.getUserInfosById = exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.saveToFile = exports.genereatePassword = exports.studentAlreadySave = exports.registerStudents = exports.registerChercheur = exports.createReviewsCollections = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const Review_1 = require("../MongoModels/Review");
@@ -331,5 +331,17 @@ function deleteAccount(id) {
     });
 }
 exports.deleteAccount = deleteAccount;
+function getMonitorAvg(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let moniteurReviews = mongoose_1.default.model('reviewsMonitor_' + id, Review_1.reviewMonitorSchema);
+        let reviews = yield moniteurReviews.find();
+        let avg = 0;
+        reviews.forEach((review) => {
+            avg += review.rate;
+        });
+        return avg / reviews.length;
+    });
+}
+exports.getMonitorAvg = getMonitorAvg;
 exports.default = connectToMongo;
 //# sourceMappingURL=mongo.js.map

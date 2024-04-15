@@ -4,6 +4,7 @@ import { AutoEcole, Student, User } from "../MongoModels/Users";
 import { reviewAutoecoleSchema, reviewMonitorSchema } from "../MongoModels/Review";
 import bcrypt from 'bcrypt';
 import { ConversationShema } from "../MongoModels/Conversation";
+import { ReviewMonitor } from "../Types/Review";
 
 function connectToMongo() {
     mongoose.connect("mongodb://localhost:27017/autoecoles", {
@@ -275,6 +276,16 @@ export async function deleteAccount(id: string) {
         return true;
     }
     return false;
+}
+
+export async function getMonitorAvg(id: string) {
+    let moniteurReviews = mongoose.model('reviewsMonitor_' + id, reviewMonitorSchema);
+    let reviews = await moniteurReviews.find();
+    let avg = 0;
+    reviews.forEach((review: any) => {
+        avg += review.rate;
+    });
+    return avg / reviews.length;
 }
 
 export default connectToMongo;

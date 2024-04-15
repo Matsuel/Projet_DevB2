@@ -3,7 +3,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications, getAutoEcole, getAutosEcoles, getMessages, getUserInfosById, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
+import connectToMongo, { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications, getAutoEcole, getAutosEcoles, getMessages, getMonitorAvg, getUserInfosById, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
 import { AutoEcoleInterface, UserInterface } from './Types/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
@@ -257,6 +257,27 @@ app.post('/editAutoEcolePersonnelFormations', async (req, res) => {
     console.log(req.body);
     const id = req.body.id;
     res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
+});
+
+app.get('/autosecolesclass', async (req, res) => {
+    const autoEcoles = await AutoEcole.find().select('name note');
+    const autoEcolesSorted = autoEcoles.sort((a, b) => Number(b.note) - Number(a.note));
+    res.send({ autoEcoles: autoEcolesSorted });
+});
+
+app.get('/moniteursclass', async (req, res) => {
+    const moniteurs = await AutoEcole.find().select('monitors');
+    let moniteursList: any[] = [];
+    for (let i = 0; i < moniteurs.length; i++) {
+        const monitorsWithAvgPromises = moniteurs[i].monitors.map(async monitor => ({
+            ...monitor.toObject(),
+            avg: await getMonitorAvg(monitor._id.toString())
+        }));
+        const monitorsWithAvg = await Promise.all(monitorsWithAvgPromises);
+        moniteursList.push(...monitorsWithAvg);
+    }
+    const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
+    res.send({ moniteurs: moniteursSorted });
 });
 
 
