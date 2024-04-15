@@ -22,7 +22,7 @@ const Chat: React.FC = () => {
   const [userId, setUserId] = useState<string>('');
 
   let token = getToken(router, jwtDecode);
-
+  
   const handleConversationActive = (id: string) => {
     if (id === conversationActive) return;
     setConversationActive(id);
