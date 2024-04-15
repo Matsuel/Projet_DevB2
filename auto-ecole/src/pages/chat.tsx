@@ -22,7 +22,7 @@ const Chat: React.FC = () => {
   const [userId, setUserId] = useState<string>('');
 
   let token = getToken(router, jwtDecode);
-  
+
   const handleConversationActive = (id: string) => {
     if (id === conversationActive) return;
     setConversationActive(id);
@@ -39,6 +39,7 @@ const Chat: React.FC = () => {
 
         newSocket.emit('getConversations', { id: token });
         newSocket.on('conversations', (data) => {
+          console.log(data);
           setConversationsList(data.conversations);
         });
 
@@ -65,7 +66,12 @@ const Chat: React.FC = () => {
             {
               conversationsList.map((conversation) => {
                 return (
-                  <ConvCard date='Il y a 3 jours' id={conversation._id} message='bonjourno' handleConversationActive={handleConversationActive} />
+                  <ConvCard
+                    date={conversation.date.toString()}
+                    id={conversation._id}
+                    message={conversation.lastMessage}
+                    handleConversationActive={handleConversationActive}
+                  />
                 );
               })
             }

@@ -200,13 +200,14 @@ app.post('/createConversation', async (req, res) => {
     let { userId, creatorId } = req.body;
     creatorId = getIdFromToken(creatorId);
     if (!creatorId) return;
-    console.log(creatorId, userId);
     const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
     if (conversationExists) {
         res.send({ created: false });
     } else {
         const newConversation = new Conversations({
-            usersId: [userId, creatorId]
+            usersId: [userId, creatorId],
+            date: new Date(),
+            lastMessage: ''
         });
         await newConversation.save();
         const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
@@ -318,8 +319,13 @@ io.on('connection', (socket) => {
             date: new Date()
         };
         await conversationShema.create(newMessage);
+        const conversation = await Conversations.findById(conversationId);
+        conversation.lastMessage = content;
+        conversation.date = new Date();
+        await conversation.save();
         await synchroneMessages(conversationId, id);
         socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
+        socket.emit('conversations', { conversations: await Conversations.find({ usersId: id }) });
     });
 });
 

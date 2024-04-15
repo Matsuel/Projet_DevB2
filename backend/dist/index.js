@@ -110,8 +110,6 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 }));
 app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // console.log(await getAutoEcole(req.params.id));
-    // res.send({ autoEcole: await getAutoEcole(req.params.id) });
     const autoEcole = yield (0, mongo_1.getAutoEcole)(req.params.id);
     const reviews = mongoose_1.default.model('reviewsAutoecole_' + req.params.id, Review_1.reviewAutoecoleSchema);
     const reviewsList = yield reviews.find();
@@ -165,8 +163,6 @@ app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     res.send({ autoEcoles: autoEcoles });
 }));
 app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //réparer ici la collection reviewsAutoecole+autoecoleId
-    console.log(req.body);
     const reviewContent = req.body.review;
     const token = req.body.token;
     const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
@@ -228,14 +224,15 @@ app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, 
     creatorId = getIdFromToken(creatorId);
     if (!creatorId)
         return;
-    console.log(creatorId, userId);
     const conversationExists = yield Conversation_1.Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
     if (conversationExists) {
         res.send({ created: false });
     }
     else {
         const newConversation = new Conversation_1.Conversations({
-            usersId: [userId, creatorId]
+            usersId: [userId, creatorId],
+            date: new Date(),
+            lastMessage: ''
         });
         yield newConversation.save();
         const conversationShema = mongoose_1.default.model('conversation_' + newConversation._id, Conversation_1.ConversationShema);
@@ -335,8 +332,13 @@ io.on('connection', (socket) => {
             date: new Date()
         };
         yield conversationShema.create(newMessage);
+        const conversation = yield Conversation_1.Conversations.findById(conversationId);
+        conversation.lastMessage = content;
+        conversation.date = new Date();
+        yield conversation.save();
         yield synchroneMessages(conversationId, id);
         socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
+        socket.emit('conversations', { conversations: yield Conversation_1.Conversations.find({ usersId: id }) });
     }));
 });
 function synchroneMessages(conversationId, userId) {
@@ -362,28 +364,4 @@ app.listen(3500, () => {
 server.listen(4000, () => {
     console.log('Socket is running on port 4000');
 });
-//Canaux de communication websockets
-// login/register
-// getConversations
-// getMessages permet de récupérer les messages d'une conversation
-// sendMessage permet d'envoyer un message dans une conversation
-// createConversation permet de créer une conversation entre deux utilisateurs
-// deleteConversation permet de supprimer une conversation
-// getComments permet de récupérer les commentaires sur une auto école/moniteur
-// postComment permet de poster un commentaire sur une auto école/moniteur
-// deleteComment permet de supprimer un commentaire sur une auto école/moniteur
-// postReview permet de poster un avis sur une auto école/moniteur
-// deleteReview permet de supprimer un avis sur une auto école/moniteur
-// getProfile permet de récupérer le profil de l'utilisateur connecté, en fonction de son type (auto école/moniteur/élève)
-// updateProfile permet de mettre à jour le profil de l'utilisateur connecté, en fonction de son type (auto école/moniteur/élève)
-// getAutoEcole permet de récupérer les informations d'une auto école
-// search permet de rechercher une auto école ou une ville afin de récupérer les auto écoles correspondantes
-// getMoniteur permet de récupérer les commentaires et avis d'un moniteur
-// getAutoEcole permet de récupérer les commentaires et avis d'une auto école
-// synchroMessages permet de synchroniser les messages d'une conversation entre deux utilisateurs si le destinataire n'est pas connecté on envoie un mail pour le notifier s'il a activé l'option
-// Fonctions
-// sendMail permet d'envoyer un mail
-// synchroneMessages permet de synchroniser les messages d'une conversation entre deux utilisateurs
-// voir si les autos écoles en db ont des objets avec les avis et commentaires
-//Chiffrer les données entre le front et le back
 //# sourceMappingURL=index.js.map

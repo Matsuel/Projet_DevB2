@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 const Conversations = mongoose.model("Conversations", new mongoose.Schema({
     usersId: { type: [String], required: true },
+    date: { type: Date, required: true },
+    lastMessage: { type: String, required: false },
 }));
 
 const ConversationShema = new mongoose.Schema({

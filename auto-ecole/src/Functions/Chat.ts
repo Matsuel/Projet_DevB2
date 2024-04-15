@@ -1,9 +1,8 @@
 import axios from "axios"
 
-const createConversation = async (userId : string, creatorId : string) => {
+const createConversation = async (userId : string, creatorId : string, router: any) => {
     const conversation = await axios.post("http://localhost:3500/createConversation", {userId, creatorId})
-    console.log(conversation.data)
-    return conversation.data
+    conversation.data.created ? router.push("/chat/") : router.push("/chat/")
     //voir pour rediriger vers la page de chat/id
     //try catch si ça existe pas
 }

@@ -7,6 +7,8 @@ exports.ConversationShema = exports.Conversations = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Conversations = mongoose_1.default.model("Conversations", new mongoose_1.default.Schema({
     usersId: { type: [String], required: true },
+    date: { type: Date, required: true },
+    lastMessage: { type: String, required: false },
 }));
 exports.Conversations = Conversations;
 const ConversationShema = new mongoose_1.default.Schema({

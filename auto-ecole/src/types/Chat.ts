@@ -1,6 +1,8 @@
 export type ConversationInformations = {
     _id: string;
     usersId: string[];
+    date: Date;
+    lastMessage: string;
 };
 
 export type Message = {
