@@ -23,10 +23,6 @@ const Compte: React.FC = () => {
 
   let token = getToken(router, jwtDecode)
 
-  if (typeof window !== 'undefined') {
-    router.push('/login')
-  }
-
   const {
     register,
     handleSubmit
@@ -165,51 +161,53 @@ const Compte: React.FC = () => {
           </form>
 
           {/* Infos de l'auto-école */}
-          <form onSubmit={handleSubmitInfos(onSubmitInfos)}>
-            <div>
-              {data?.address &&
-                Object.entries(data).filter(([key, value]) => typeof value === 'boolean').map(([key, value]) => {
+          {data?.address &&
+            <form onSubmit={handleSubmitInfos(onSubmitInfos)}>
+              <div>
+                {data?.address &&
+                  Object.entries(data).filter(([key, value]) => typeof value === 'boolean').map(([key, value]) => {
 
-                  return (
-                    <>
-                      <label htmlFor={key}>{key}</label>
-                      <input
-                        type="checkbox"
-                        id={key}
-                        defaultChecked={value as boolean}
-                        {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
-                      />
-                    </>
-                  )
-                })
-              }
+                    return (
+                      <>
+                        <label htmlFor={key}>{key}</label>
+                        <input
+                          type="checkbox"
+                          id={key}
+                          defaultChecked={value as boolean}
+                          {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
+                        />
+                      </>
+                    )
+                  })
+                }
 
-              {data?.address &&
-                Object.entries(data).filter(([key, value]) => typeof value !== 'boolean' && typeof value === "string" && key.toString() !== "_id" && key !== "email" || key === "zip").map(([key, value]) => {
-                  return (
-                    <>
-                      <label htmlFor={key}>{key}</label>
-                      <input
-                        type="text"
-                        id={key}
-                        defaultValue={value as string}
-                        {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
-                      />
-                    </>
-                  )
-                })
-              }
+                {data?.address &&
+                  Object.entries(data).filter(([key, value]) => typeof value !== 'boolean' && typeof value === "string" && key.toString() !== "_id" && key !== "email" || key === "zip").map(([key, value]) => {
+                    return (
+                      <>
+                        <label htmlFor={key}>{key}</label>
+                        <input
+                          type="text"
+                          id={key}
+                          defaultValue={value as string}
+                          {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
+                        />
+                      </>
+                    )
+                  })
+                }
 
-              <button
-                type="submit"
-              >
-                Modifier les informations de votre auto-école
-              </button>
-            </div>
-            <div>
+                <button
+                  type="submit"
+                >
+                  Modifier les informations de votre auto-école
+                </button>
+              </div>
+              <div>
 
-            </div>
-          </form>
+              </div>
+            </form>
+          }
 
           {data?.address ?
             <div>
@@ -261,16 +259,17 @@ const Compte: React.FC = () => {
                   }}
                 />
               </div>
+
+
+
+
+              <button
+                onClick={() => editAutoEcolePersonnelFormations(data._id, { formations, students })}
+              >
+                Modifier les formations, moniteurs et élèves
+              </button>
             </div>
             : null}
-
-
-
-          <button
-            onClick={() => editAutoEcolePersonnelFormations(data._id, { formations, students })}
-          >
-            Modifier les formations, moniteurs et élèves
-          </button>
 
 
 
@@ -303,7 +302,7 @@ const Compte: React.FC = () => {
         {
           data?.address &&
           <div>
-            {reviews.length>0 && <h2>Commentaires</h2>}
+            {reviews.length > 0 && <h2>Commentaires</h2>}
             {reviews.map((review: ReviewAutoEcole) => {
               return (
                 <div>
@@ -338,7 +337,7 @@ const Compte: React.FC = () => {
           </div>
         }
 
-          </main>
+      </main>
     </div>
   );
 };
