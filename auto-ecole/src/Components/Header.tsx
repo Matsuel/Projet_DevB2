@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Header.module.css'; // Assuming you have a CSS module for styling
 
 const Header: React.FC = () => {
+
+  const [token, setToken] = useState<string>('')
+
+  useEffect(() => {
+  if (typeof window !== 'undefined') {
+    setToken(localStorage.getItem('token') || '')
+  }
+  }, [])
+
   return (
     <header className={styles.header}>
       <nav>
@@ -12,8 +21,19 @@ const Header: React.FC = () => {
           </li>
           <li>
             <div className={styles.links}>
-              <Link href="/add">Ajouter</Link>
-              <Link href="/login">Connexion</Link>
+              {token !== "" ?
+                <>
+                  <Link href="/chat">Chat</Link>
+                  <Link href="/add">Ajouter</Link>
+                  <Link href="/logout">Déconnexion</Link>
+                  <Link href="/compte">Compte</Link>
+                </>
+                :
+                <>
+                  <Link href="/login">Connexion</Link>
+                  <Link href="/register">Inscription</Link>
+                </>
+              }
             </div>
           </li>
         </ul>
