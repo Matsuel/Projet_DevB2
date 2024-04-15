@@ -1,5 +1,3 @@
-// import jwtDecode from 'jwt-decode'
-
 export function getToken(router: any, jwt:Function) {
     let token = ''
     if (typeof window !== 'undefined') {

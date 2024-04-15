@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { ReviewMonitor } from '@/types/Monitor';
 import { getToken } from '@/Functions/Token';
 import {jwtDecode} from 'jwt-decode';
+import { fetchData, handleSubmitAutoecole, handleSubmitMonitor } from '@/Functions/Add';
 
 interface AutoEcoleReview {
   stars: number;
@@ -23,40 +24,9 @@ const Add: React.FC = () => {
 
   let token = getToken(router, jwtDecode);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setMonitorsReview([]);
-      const response = await axios.post('http://localhost:3500/autoecoleinfos', { token: token });
-      if (response.data.autoEcole) {
-        const newMonitorsReview = response.data.autoEcole.monitors.map((monitor: any) => {
-          return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
-        });
-        setMonitorsReview(newMonitorsReview);
-      } else {
-        router.push('/');
-      }
-    };
-    token !== '' ? fetchData() : null;
+  useEffect(() => {    
+    token && token !== '' ? fetchData(setMonitorsReview, token as string, router) : router.push('/login');
   }, []);
-
-  const handleSubmitAutoecole = async () => {
-    const response = await axios.post('http://localhost:3500/reviewsautoecole', { review: autoecoleReview, token: token });
-    if (response.data.posted) {
-      router.push('/autoecole/' + response.data.autoEcoleId);
-    } else {
-      alert('Erreur lors de la publication de l\'avis');
-    }
-  };
-
-  const handleSubmitMonitor = async (monitor: ReviewMonitor) => {
-    const response = await axios.post('http://localhost:3500/reviewsmonitor', { review: monitor, token: token });
-    console.log(response.data);
-    if (response.data.posted) {
-      router.push('/autoecole/' + response.data.autoEcoleId);
-    } else {
-      alert('Erreur lors de la publication de l\'avis');
-    }
-  };
 
   return (
     <div>
@@ -75,7 +45,7 @@ const Add: React.FC = () => {
             onChange={(newRating) => setAutoecoleReview({ ...autoecoleReview, stars: newRating })}
           />
           <textarea id="autoecole-comment" placeholder='Commentaire' className={styles.add} required onChange={(e) => setAutoecoleReview({ ...autoecoleReview, comment: e.target.value })} />
-          <button type="button" onClick={handleSubmitAutoecole}>avis autoecole</button>
+          <button type="button" onClick={()=>handleSubmitAutoecole(router, autoecoleReview,token as string)}>avis autoecole</button>
 
           {monitorsReview.map((monitor, index) => {
             return (
@@ -97,7 +67,7 @@ const Add: React.FC = () => {
                   newMonitorsReview[index].comment = e.target.value;
                   setMonitorsReview(newMonitorsReview);
                 }} />
-                <button type="button" onClick={() => handleSubmitMonitor(monitor)}>
+                <button type="button" onClick={() => handleSubmitMonitor(monitor, token as string, router)}>
                   avis prof1</button>
               </div>
             )

@@ -23,6 +23,10 @@ const Compte: React.FC = () => {
 
   let token = getToken(router, jwtDecode)
 
+  if (typeof window !== 'undefined') {
+    router.push('/login')
+  }
+
   const {
     register,
     handleSubmit
@@ -36,7 +40,6 @@ const Compte: React.FC = () => {
   const {
     register: registerAutoEcoleInfos,
     handleSubmit: handleSubmitInfos,
-    watch: watchAutoEcoleInfos
   } = useForm<AutoEcoleInfosInputs>()
 
   const [editError, setEditError] = useState<boolean>(false)
