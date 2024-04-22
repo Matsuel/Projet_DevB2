@@ -16,6 +16,7 @@ import { ConversationShema, Conversations } from './MongoModels/Conversation';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { MessageReceived } from './Types/Chat';
+import { getIdFromToken } from './Functions/token';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -118,8 +119,7 @@ app.get('/autosecoles', async (req, res) => {
 
 app.post('/autoecoleinfos', async (req, res) => {
     const token = req.body.token;
-    const decoded = jwt.verify(token, process.env.SECRET as string);
-    const id = decoded.id;
+    const id = getIdFromToken(token);
     const student = await Student.findById(id);
     if (student) {
         const autoEcole = await AutoEcole.findById(student.autoEcoleId).select('monitors name');
@@ -143,8 +143,7 @@ app.get('/results', async (req, res) => {
 app.post('/reviewsautoecole', async (req, res) => {
     const reviewContent = req.body.review;
     const token = req.body.token;
-    const decoded = jwt.verify(token, process.env.SECRET as string);
-    const id = decoded.id;
+    const id = getIdFromToken(token);
     const student = await Student.findById(id);
     if (student) {
         let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
@@ -171,8 +170,7 @@ app.post('/reviewsautoecole', async (req, res) => {
 app.post('/reviewsmonitor', async (req, res) => {
     const content: ReviewMonitor = req.body.review;
     const token = req.body.token;
-    const decoded = jwt.verify(token, process.env.SECRET as string);
-    const id = decoded.id;
+    const id = getIdFromToken(token);
     const student = await Student.findById(id);
     if (student) {
         let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
@@ -281,14 +279,7 @@ app.get('/moniteursclass', async (req, res) => {
 });
 
 
-const getIdFromToken = (token: string) => {
-    try {
-        const decoded = jwt.verify(token, process.env.SECRET as string);
-        return decoded.id;
-    } catch (error) {
-        return null;
-    }
-}
+
 
 let connectedUsers: any = {};
 
