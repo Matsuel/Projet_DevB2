@@ -22,6 +22,8 @@ export type AutoEcoleInterface = {
     fin_francetravail: boolean;
     formations: string[];
     students: string[];
+    note: number;
+    noteCount: number;
 }
 
 export type UserInterface = {

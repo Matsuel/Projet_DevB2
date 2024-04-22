@@ -50,6 +50,9 @@ const Users_1 = require("./MongoModels/Users");
 const Conversation_1 = require("./MongoModels/Conversation");
 const socket_io_1 = require("socket.io");
 const http_1 = require("http");
+const token_1 = require("./Functions/token");
+const note_1 = require("./Functions/note");
+const review_1 = require("./Functions/review");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -111,27 +114,23 @@ app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const autoEcole = yield (0, mongo_1.getAutoEcole)(req.params.id);
-    const reviews = mongoose_1.default.model('reviewsAutoecole_' + req.params.id, Review_1.reviewAutoecoleSchema);
-    const reviewsList = yield reviews.find();
+    const reviewsList = yield (0, review_1.findAutoEcoleReviews)(req.params.id);
     let monitorsReviews = [];
     // @ts-ignore
     for (let i = 0; i < autoEcole.monitors.length; i++) {
         // @ts-ignore
-        let monitorReviews = mongoose_1.default.model('reviewsMonitor_' + autoEcole.monitors[i]._id, Review_1.reviewAutoecoleSchema);
-        let monitorReview = yield monitorReviews.find();
-        monitorsReviews.push(monitorReview);
+        monitorsReviews.push(yield (0, review_1.findMonitorReviews)(autoEcole.monitors[i]._id));
     }
     res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
 }));
 app.get('/monitor/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.params.id);
     const autoEcole = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name');
     const monitor = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
     if (monitor) {
         const monitorReviewCollection = mongoose_1.default.model('reviewsMonitor_' + req.params.id, Review_1.reviewAutoecoleSchema);
         const monitorReviews = yield monitorReviewCollection.find();
         console.log(monitorReviews);
-        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: monitorReviews });
+        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: yield (0, review_1.findMonitorReviews)(req.params.id) });
     }
     else {
         res.send({ monitor: null });
@@ -142,8 +141,7 @@ app.get('/autosecoles', (req, res) => __awaiter(void 0, void 0, void 0, function
 }));
 app.post('/autoecoleinfos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.body.token;
-    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
-    const id = decoded.id;
+    const id = (0, token_1.getIdFromToken)(token);
     const student = yield Users_1.Student.findById(id);
     if (student) {
         const autoEcole = yield Users_1.AutoEcole.findById(student.autoEcoleId).select('monitors name');
@@ -165,22 +163,14 @@ app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const reviewContent = req.body.review;
     const token = req.body.token;
-    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
-    const id = decoded.id;
+    const id = (0, token_1.getIdFromToken)(token);
     const student = yield Users_1.Student.findById(id);
     if (student) {
         let autoEcoleModel = mongoose_1.default.model('reviewsAutoecole_' + student.autoEcoleId, Review_1.reviewAutoecoleSchema);
-        let newReview = {
-            rate: reviewContent.stars > 0 ? reviewContent.stars : null,
-            comment: reviewContent.comment,
-            creatorId: id,
-            date: new Date()
-        };
-        yield autoEcoleModel.create(newReview);
+        yield autoEcoleModel.create((0, review_1.createReview)(reviewContent, id));
         if (reviewContent.stars !== 0) {
             let autoEcole = yield Users_1.AutoEcole.findById(student.autoEcoleId);
-            let note = ((Number(autoEcole.note) * Number(autoEcole.noteCount)) + Number(reviewContent.stars)) / (Number(autoEcole.noteCount) + 1);
-            autoEcole.note = note;
+            autoEcole.note = (0, note_1.updateNote)(autoEcole, reviewContent);
             autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
             yield autoEcole.save();
         }
@@ -193,8 +183,7 @@ app.post('/reviewsautoecole', (req, res) => __awaiter(void 0, void 0, void 0, fu
 app.post('/reviewsmonitor', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const content = req.body.review;
     const token = req.body.token;
-    const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
-    const id = decoded.id;
+    const id = (0, token_1.getIdFromToken)(token);
     const student = yield Users_1.Student.findById(id);
     if (student) {
         let monitors = yield Users_1.AutoEcole.findById(student.autoEcoleId).select('monitors');
@@ -221,7 +210,7 @@ app.post('/reviewsmonitor', (req, res) => __awaiter(void 0, void 0, void 0, func
 app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     let { userId, creatorId } = req.body;
-    creatorId = getIdFromToken(creatorId);
+    creatorId = (0, token_1.getIdFromToken)(creatorId);
     if (!creatorId)
         return;
     const conversationExists = yield Conversation_1.Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
@@ -242,7 +231,7 @@ app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 app.get('/userInfos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.query.token;
-    const id = getIdFromToken(token);
+    const id = (0, token_1.getIdFromToken)(token);
     if (!id)
         return;
     const user = yield (0, mongo_1.getUserInfosById)(id);
@@ -295,19 +284,10 @@ app.get('/moniteursclass', (req, res) => __awaiter(void 0, void 0, void 0, funct
     const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
     res.send({ moniteurs: moniteursSorted });
 }));
-const getIdFromToken = (token) => {
-    try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET);
-        return decoded.id;
-    }
-    catch (error) {
-        return null;
-    }
-};
 let connectedUsers = {};
 io.on('connection', (socket) => {
     socket.on('connection', (data) => {
-        const id = getIdFromToken(data.id);
+        const id = (0, token_1.getIdFromToken)(data.id);
         if (!id)
             return;
         console.log(id);
@@ -323,7 +303,7 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('getConversations', (data) => __awaiter(void 0, void 0, void 0, function* () {
-        const id = getIdFromToken(data.id);
+        const id = (0, token_1.getIdFromToken)(data.id);
         if (!id)
             return;
         const conversations = yield Conversation_1.Conversations.find({ usersId: id });

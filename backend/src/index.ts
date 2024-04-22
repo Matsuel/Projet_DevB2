@@ -17,6 +17,8 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { MessageReceived } from './Types/Chat';
 import { getIdFromToken } from './Functions/token';
+import { updateNote } from './Functions/note';
+import { createReview, findAutoEcoleReviews, findMonitorReviews } from './Functions/review';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -86,28 +88,21 @@ app.post('/registerChercheur', async (req, res) => {
 
 app.get('/autoecole/:id', async (req, res) => {
     const autoEcole = await getAutoEcole(req.params.id);
-    const reviews = mongoose.model('reviewsAutoecole_' + req.params.id, reviewAutoecoleSchema);
-    const reviewsList = await reviews.find();
+    const reviewsList = await findAutoEcoleReviews(req.params.id);
     let monitorsReviews: any[] = [];
     // @ts-ignore
     for (let i = 0; i < autoEcole.monitors.length; i++) {
         // @ts-ignore
-        let monitorReviews = mongoose.model('reviewsMonitor_' + autoEcole.monitors[i]._id, reviewAutoecoleSchema);
-        let monitorReview = await monitorReviews.find();
-        monitorsReviews.push(monitorReview);
+        monitorsReviews.push(await findMonitorReviews(autoEcole.monitors[i]._id));
     }
     res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
 });
 
 app.get('/monitor/:id', async (req, res) => {
-    console.log(req.params.id);
     const autoEcole = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name')
     const monitor = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
     if (monitor) {
-        const monitorReviewCollection = mongoose.model('reviewsMonitor_' + req.params.id, reviewAutoecoleSchema);
-        const monitorReviews = await monitorReviewCollection.find();
-        console.log(monitorReviews);
-        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: monitorReviews });
+        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: await findMonitorReviews(req.params.id) });
     } else {
         res.send({ monitor: null });
     }
@@ -147,17 +142,10 @@ app.post('/reviewsautoecole', async (req, res) => {
     const student = await Student.findById(id);
     if (student) {
         let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
-        let newReview = {
-            rate: reviewContent.stars > 0 ? reviewContent.stars : null,
-            comment: reviewContent.comment,
-            creatorId: id,
-            date: new Date()
-        };
-        await autoEcoleModel.create(newReview);
+        await autoEcoleModel.create(createReview(reviewContent, id));
         if (reviewContent.stars !== 0) {
             let autoEcole = await AutoEcole.findById(student.autoEcoleId);
-            let note = ((Number(autoEcole.note) * Number(autoEcole.noteCount)) + Number(reviewContent.stars)) / (Number(autoEcole.noteCount) + 1);
-            autoEcole.note = note;
+            autoEcole.note = updateNote(autoEcole, reviewContent);
             autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
             await autoEcole.save();
         }
