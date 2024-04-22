@@ -53,6 +53,7 @@ const http_1 = require("http");
 const token_1 = require("./Functions/token");
 const note_1 = require("./Functions/note");
 const review_1 = require("./Functions/review");
+const chat_1 = require("./Functions/chat");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -127,9 +128,6 @@ app.get('/monitor/:id', (req, res) => __awaiter(void 0, void 0, void 0, function
     const autoEcole = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name');
     const monitor = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
     if (monitor) {
-        const monitorReviewCollection = mongoose_1.default.model('reviewsMonitor_' + req.params.id, Review_1.reviewAutoecoleSchema);
-        const monitorReviews = yield monitorReviewCollection.find();
-        console.log(monitorReviews);
         res.send({ autoEcole: autoEcole, monitor: monitor, reviews: yield (0, review_1.findMonitorReviews)(req.params.id) });
     }
     else {
@@ -290,11 +288,9 @@ io.on('connection', (socket) => {
         const id = (0, token_1.getIdFromToken)(data.id);
         if (!id)
             return;
-        console.log(id);
         connectedUsers[id] = socket;
     });
     socket.on('disconnect', () => {
-        console.log('disconnected');
         for (let user in connectedUsers) {
             if (connectedUsers[user] === socket) {
                 delete connectedUsers[user];
@@ -323,13 +319,7 @@ io.on('connection', (socket) => {
         const decoded = jsonwebtoken_1.default.verify(userId, process.env.SECRET);
         const id = decoded.id;
         const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);
-        const newMessage = {
-            senderId: id,
-            conversation_id: conversationId,
-            content: content,
-            date: new Date()
-        };
-        yield conversationShema.create(newMessage);
+        yield conversationShema.create((0, chat_1.createMessage)(id, conversationId, content));
         const conversation = yield Conversation_1.Conversations.findById(conversationId);
         conversation.lastMessage = content;
         conversation.date = new Date();
@@ -344,9 +334,7 @@ function synchroneMessages(conversationId, userId) {
         const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);
         const messages = yield conversationShema.find();
         const otherUser = (yield Conversation_1.Conversations.findOne({ _id: conversationId }).select('usersId')).usersId.filter((id) => id !== userId)[0];
-        console.log(otherUser);
         if (connectedUsers[otherUser]) {
-            console.log('connected');
             connectedUsers[otherUser].emit('getMessages', { messages: messages });
         }
         else {

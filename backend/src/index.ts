@@ -19,6 +19,7 @@ import { MessageReceived } from './Types/Chat';
 import { getIdFromToken } from './Functions/token';
 import { updateNote } from './Functions/note';
 import { createReview, findAutoEcoleReviews, findMonitorReviews } from './Functions/review';
+import { createMessage } from './Functions/chat';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -276,13 +277,10 @@ io.on('connection', (socket) => {
     socket.on('connection', (data) => {
         const id = getIdFromToken(data.id)
         if (!id) return;
-        console.log(id);
         connectedUsers[id] = socket;
     });
 
-    socket.on('disconnect', () => {
-        console.log('disconnected')
-        
+    socket.on('disconnect', () => {        
         for (let user in connectedUsers) {
             if (connectedUsers[user] === socket) {
                 delete connectedUsers[user];
@@ -312,13 +310,7 @@ io.on('connection', (socket) => {
         const decoded = jwt.verify(userId, process.env.SECRET as string);
         const id = decoded.id;
         const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
-        const newMessage = {
-            senderId: id,
-            conversation_id: conversationId,
-            content: content,
-            date: new Date()
-        };
-        await conversationShema.create(newMessage);
+        await conversationShema.create(createMessage(id, conversationId, content));
         const conversation = await Conversations.findById(conversationId);
         conversation.lastMessage = content;
         conversation.date = new Date();
@@ -333,9 +325,7 @@ async function synchroneMessages(conversationId: string, userId: string) {
     const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
     const messages = await conversationShema.find();
     const otherUser = (await Conversations.findOne({ _id: conversationId}).select('usersId')).usersId.filter((id: string) => id !== userId)[0]
-    console.log(otherUser);
     if (connectedUsers[otherUser]) {
-        console.log('connected');
         connectedUsers[otherUser].emit('getMessages', { messages: messages })
     } else {
         console.log('not connected');
