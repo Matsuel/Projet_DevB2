@@ -4,17 +4,20 @@ import { AutoEcole, Student, User } from "../MongoModels/Users";
 import { reviewAutoecoleSchema, reviewMonitorSchema } from "../MongoModels/Review";
 import bcrypt from 'bcrypt';
 import { ConversationShema } from "../MongoModels/Conversation";
-import { ReviewMonitor } from "../Types/Review";
 
 function connectToMongo() {
-    mongoose.connect("mongodb://localhost:27017/autoecoles", {
-    })
-        .then(() => {
-            console.log("Connected to MongoDB");
+    try {
+        mongoose.connect("mongodb://localhost:27017/autoecoles", {
         })
-        .catch((err) => {
-            console.error("Error connecting to MongoDB", err);
-        });
+            .then(() => {
+                console.log("Connected to MongoDB");
+            })
+            .catch((err) => {
+                console.error("Error connecting to MongoDB", err);
+            });
+    } catch (error) {
+        console.error("Error connecting to MongoDB", error);
+    }
 }
 
 export async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
@@ -208,16 +211,16 @@ export async function getAccountType(id: string) {
     let user = await Student.findById(id);
     let isStudent = true;
     let isUser = false;
-    console.log(user,"student");
+    console.log(user, "student");
     if (!user) {
         user = await User.findById(id);
-        console.log(user,"user");
+        console.log(user, "user");
         isStudent = false;
         isUser = true;
 
         if (!user) {
             user = await AutoEcole.findById(id);
-            console.log(user,"autoecole");
+            console.log(user, "autoecole");
             isUser = false;
         }
     }
@@ -255,7 +258,7 @@ export async function editAutoEcolePersonnelFormations(id: string, data: any) {
     autoEcole.formations = data.formations;
     autoEcole.students = data.students;
     await autoEcole.save();
-    
+
     return true;
 }
 
