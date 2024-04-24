@@ -29,13 +29,17 @@ export const handleSubmitMonitor = async (monitor: ReviewMonitor, token: string,
 };
 
 export const fetchData = async (setMonitorsReview: Function, token: string, router: any) => {
-  const response = await axios.post('http://localhost:3500/autoecoleinfos', { token: token });
-  if (response.data.autoEcole) {
-    const newMonitorsReview = response.data.autoEcole.monitors.map((monitor: any) => {
-      return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
-    });
-    setMonitorsReview(newMonitorsReview);
-  } else {
-    router.push('/');
+  try {
+    const response = await axios.post('http://localhost:3500/autoecoleinfos', { token: token });
+    if (response.data.autoEcole) {
+      const newMonitorsReview = response.data.autoEcole.monitors.map((monitor: any) => {
+        return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
+      });
+      setMonitorsReview(newMonitorsReview);
+    } else {
+      router.push('/');
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
