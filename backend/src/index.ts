@@ -3,7 +3,24 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications, getAutoEcole, getAutosEcoles, getMessages, getMonitorAvg, getUserInfosById, login, registerAutoEcole, registerChercheur, searchAutoEcole } from './Functions/mongo';
+import connectToMongo, 
+{ 
+    deleteAccount, 
+    editAccount, 
+    editAutoEcoleInfos, 
+    editAutoEcolePersonnelFormations, 
+    editNotifications, 
+    getAutoEcole, 
+    getAutosEcoles, 
+    getMessages, 
+    getMonitorAvg, 
+    getUserInfosById, 
+    login, 
+    registerAutoEcole, 
+    registerChercheur, 
+    searchAutoEcole
+
+ } from './Functions/mongo';
 import { AutoEcoleInterface, UserInterface } from './Types/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
@@ -20,6 +37,7 @@ import { getIdFromToken } from './Functions/token';
 import { updateNote } from './Functions/note';
 import { createReview, findAutoEcoleReviews, findMonitorReviews } from './Functions/review';
 import { createMessage } from './Functions/chat';
+import { LoginHandler } from './Handlers/Login';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -49,18 +67,22 @@ app.use(session({
     }
 }));
 
-app.post('/login', async (req, res) => {
-    const { mail, password } = req.body;
-    const user = await login({ mail, password });
 
-    if (user.login) {
-        req.session.userId = user.id;
-        const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
-        res.send({ login: true, token: token });
-    } else {
-        res.send({ login: false });
-    }
-});
+
+app.post('/login', LoginHandler);
+
+// app.post('/login', async (req, res) => {
+//     const { mail, password } = req.body;
+//     const user = await login({ mail, password });
+
+//     if (user.login) {
+//         req.session.userId = user.id;
+//         const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
+//         res.send({ login: true, token: token });
+//     } else {
+//         res.send({ login: false });
+//     }
+// });
 
 app.post('/registerAutoEcole', upload.single('pics'), async (req, res) => {
     const data = req.body as AutoEcoleInterface;

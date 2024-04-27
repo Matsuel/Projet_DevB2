@@ -76,18 +76,35 @@ app.use((0, express_session_1.default)({
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
-app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { mail, password } = req.body;
-    const user = yield (0, mongo_1.login)({ mail, password });
-    if (user.login) {
-        req.session.userId = user.id;
-        const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, { expiresIn: '24h' });
-        res.send({ login: true, token: token });
+const LoginHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { mail, password } = req.body;
+        const user = yield (0, mongo_1.login)({ mail, password });
+        if (user.login) {
+            req.session.userId = user.id;
+            const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, { expiresIn: '24h' });
+            res.send({ login: true, token: token });
+        }
+        else {
+            res.send({ login: false });
+        }
     }
-    else {
+    catch (error) {
         res.send({ login: false });
     }
-}));
+});
+app.post('/login', LoginHandler);
+// app.post('/login', async (req, res) => {
+//     const { mail, password } = req.body;
+//     const user = await login({ mail, password });
+//     if (user.login) {
+//         req.session.userId = user.id;
+//         const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
+//         res.send({ login: true, token: token });
+//     } else {
+//         res.send({ login: false });
+//     }
+// });
 app.post('/registerAutoEcole', upload.single('pics'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
     const file = req.file;

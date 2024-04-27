@@ -19,13 +19,18 @@ const Review_1 = require("../MongoModels/Review");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const Conversation_1 = require("../MongoModels/Conversation");
 function connectToMongo() {
-    mongoose_1.default.connect("mongodb://localhost:27017/autoecoles", {})
-        .then(() => {
-        console.log("Connected to MongoDB");
-    })
-        .catch((err) => {
-        console.error("Error connecting to MongoDB", err);
-    });
+    try {
+        mongoose_1.default.connect("mongodb://localhost:27017/autoecoles", {})
+            .then(() => {
+            console.log("Connected to MongoDB");
+        })
+            .catch((err) => {
+            console.error("Error connecting to MongoDB", err);
+        });
+    }
+    catch (error) {
+        console.error("Error connecting to MongoDB", error);
+    }
 }
 function registerAutoEcole(data, file) {
     return __awaiter(this, void 0, void 0, function* () {
