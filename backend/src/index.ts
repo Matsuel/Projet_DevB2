@@ -20,6 +20,7 @@ import { monitorHandler, monitorsSortedHandler, reviewMonitorHandler } from './H
 import { deleteAccountHandler, editAEInfosHandler, editAEPersonnelHandler, editAccountHandler, editNotifsHandler, userInfosHandler } from './Handlers/Account';
 import { resultsHandler, searchHandler } from './Handlers/Search';
 import { createConversationHandler, getConversationsHandler, getMessagesHandler, sendMessageHandler } from './Handlers/Conversation';
+import { connectionHandler, disconnectionHandler } from './Handlers/Ws';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -83,22 +84,8 @@ app.get('/results', resultsHandler);
 export let connectedUsers: any = {};
 
 io.on('connection', (socket) => {
-
-    socket.on('connection', (data) => {
-        const id = getIdFromToken(data.id)
-        if (!id) return;
-        connectedUsers[id] = socket;
-    });
-
-    socket.on('disconnect', () => {        
-        for (let user in connectedUsers) {
-            if (connectedUsers[user] === socket) {
-                delete connectedUsers[user];
-                break
-            }
-        }
-    });
-
+    socket.on('connection', connectionHandler(socket, connectedUsers));
+    socket.on('disconnect', disconnectionHandler(socket, connectedUsers));
     socket.on('getConversations', getConversationsHandler(socket));
     socket.on('getMessages', getMessagesHandler(socket));
     socket.on('sendMessage', sendMessageHandler(socket));

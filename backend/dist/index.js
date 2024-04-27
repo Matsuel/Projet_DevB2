@@ -13,7 +13,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const multer_1 = __importDefault(require("multer"));
 const socket_io_1 = require("socket.io");
 const http_1 = require("http");
-const token_1 = require("./Functions/token");
 const Login_1 = require("./Handlers/Login");
 const Register_1 = require("./Handlers/Register");
 const AutoEcole_1 = require("./Handlers/AutoEcole");
@@ -21,6 +20,7 @@ const Monitor_1 = require("./Handlers/Monitor");
 const Account_1 = require("./Handlers/Account");
 const Search_1 = require("./Handlers/Search");
 const Conversation_1 = require("./Handlers/Conversation");
+const Ws_1 = require("./Handlers/Ws");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -66,20 +66,8 @@ app.get('/search', Search_1.searchHandler);
 app.get('/results', Search_1.resultsHandler);
 exports.connectedUsers = {};
 io.on('connection', (socket) => {
-    socket.on('connection', (data) => {
-        const id = (0, token_1.getIdFromToken)(data.id);
-        if (!id)
-            return;
-        exports.connectedUsers[id] = socket;
-    });
-    socket.on('disconnect', () => {
-        for (let user in exports.connectedUsers) {
-            if (exports.connectedUsers[user] === socket) {
-                delete exports.connectedUsers[user];
-                break;
-            }
-        }
-    });
+    socket.on('connection', (0, Ws_1.connectionHandler)(socket, exports.connectedUsers));
+    socket.on('disconnect', (0, Ws_1.disconnectionHandler)(socket, exports.connectedUsers));
     socket.on('getConversations', (0, Conversation_1.getConversationsHandler)(socket));
     socket.on('getMessages', (0, Conversation_1.getMessagesHandler)(socket));
     socket.on('sendMessage', (0, Conversation_1.sendMessageHandler)(socket));
