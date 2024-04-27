@@ -37,6 +37,7 @@ import { LoginHandler } from './Handlers/Login';
 import { registerAutoEcoleHandler, registerNewDriverHandler } from './Handlers/Register';
 import { AESortedHandler, autoEcoleHandler, autoEcoleInfosHandler, autoEcolesHandler, reviewsAEHandler } from './Handlers/AutoEcole';
 import { monitorHandler, monitorsSortedHandler, reviewMonitorHandler } from './Handlers/Monitor';
+import { deleteAccountHandler, editAEInfosHandler, editAEPersonnelHandler, editAccountHandler, editNotifsHandler, userInfosHandler } from './Handlers/Account';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -74,6 +75,11 @@ app.post('/registerChercheur', registerNewDriverHandler);
 app.post('/autoecoleinfos', autoEcoleInfosHandler);
 app.post('/reviewsautoecole', reviewsAEHandler);
 app.post('/reviewsmonitor', reviewMonitorHandler);
+app.post('/editAccount', editAccountHandler);
+app.post('/editNotifications', editNotifsHandler);
+app.post('/deleteAccount', deleteAccountHandler);
+app.post('/editAutoEcoleInfos', editAEInfosHandler);
+app.post('/editAutoEcolePersonnelFormations', editAEPersonnelHandler);
 
 
 app.get('/autoecole/:id', autoEcoleHandler);
@@ -81,6 +87,7 @@ app.get('/monitor/:id', monitorHandler);
 app.get('/autosecoles', autoEcolesHandler);
 app.get('/autosecolesclass', AESortedHandler);
 app.get('/moniteursclass', monitorsSortedHandler);
+app.get('/userInfos', userInfosHandler);
 
 
 
@@ -117,54 +124,7 @@ app.post('/createConversation', async (req, res) => {
         conversationShema.createCollection();
         res.send({ created: true });
     }
-
 });
-
-app.get('/userInfos', async (req, res) => {
-    const token = req.query.token;
-    const id = getIdFromToken(token as string);
-    if (!id) return;
-    const user = await getUserInfosById(id);
-    res.send(user);
-});
-
-app.post('/editAccount', async (req, res) => {
-    console.log(req.body);
-    const id = req.body.id;
-    const edit = await editAccount(id, req.body.data);
-    const token = edit ? jwt.sign({ id: id }, process.env.SECRET as string, { expiresIn: '24h' }) : null;
-    res.send({ edited: edit, token: token });    
-});
-
-app.post('/editNotifications', async (req, res) => {
-    console.log(req.body);
-    const id = req.body.id;
-    const { acceptNotifications } = req.body.data;
-    await editNotifications(id, acceptNotifications);
-    res.send({ edited: true });
-});
-
-app.post('/deleteAccount', async (req, res) => {
-    const id = req.body.id;
-    res.send({ deleted: await deleteAccount(id) });
-});
-
-app.post('/editAutoEcoleInfos', async (req, res) => {
-    console.log(req.body);
-    const id = req.body.id;
-    console.log(id);
-    res.send({ edited: await editAutoEcoleInfos(id, req.body.data) });
-});
-
-app.post('/editAutoEcolePersonnelFormations', async (req, res) => {
-    console.log(req.body);
-    const id = req.body.id;
-    res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
-});
-
-
-
-
 
 
 let connectedUsers: any = {};

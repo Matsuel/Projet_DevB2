@@ -54,6 +54,7 @@ const Login_1 = require("./Handlers/Login");
 const Register_1 = require("./Handlers/Register");
 const AutoEcole_1 = require("./Handlers/AutoEcole");
 const Monitor_1 = require("./Handlers/Monitor");
+const Account_1 = require("./Handlers/Account");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -83,11 +84,17 @@ app.post('/registerChercheur', Register_1.registerNewDriverHandler);
 app.post('/autoecoleinfos', AutoEcole_1.autoEcoleInfosHandler);
 app.post('/reviewsautoecole', AutoEcole_1.reviewsAEHandler);
 app.post('/reviewsmonitor', Monitor_1.reviewMonitorHandler);
+app.post('/editAccount', Account_1.editAccountHandler);
+app.post('/editNotifications', Account_1.editNotifsHandler);
+app.post('/deleteAccount', Account_1.deleteAccountHandler);
+app.post('/editAutoEcoleInfos', Account_1.editAEInfosHandler);
+app.post('/editAutoEcolePersonnelFormations', Account_1.editAEPersonnelHandler);
 app.get('/autoecole/:id', AutoEcole_1.autoEcoleHandler);
 app.get('/monitor/:id', Monitor_1.monitorHandler);
 app.get('/autosecoles', AutoEcole_1.autoEcolesHandler);
 app.get('/autosecolesclass', AutoEcole_1.AESortedHandler);
 app.get('/moniteursclass', Monitor_1.monitorsSortedHandler);
+app.get('/userInfos', Account_1.userInfosHandler);
 app.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const cities = yield (0, search_1.searchInCitiesFiles)(req.query.search);
     const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
@@ -118,43 +125,6 @@ app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, 
         conversationShema.createCollection();
         res.send({ created: true });
     }
-}));
-app.get('/userInfos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.query.token;
-    const id = (0, token_1.getIdFromToken)(token);
-    if (!id)
-        return;
-    const user = yield (0, mongo_1.getUserInfosById)(id);
-    res.send(user);
-}));
-app.post('/editAccount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
-    const id = req.body.id;
-    const edit = yield (0, mongo_1.editAccount)(id, req.body.data);
-    const token = edit ? jsonwebtoken_1.default.sign({ id: id }, process.env.SECRET, { expiresIn: '24h' }) : null;
-    res.send({ edited: edit, token: token });
-}));
-app.post('/editNotifications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
-    const id = req.body.id;
-    const { acceptNotifications } = req.body.data;
-    yield (0, mongo_1.editNotifications)(id, acceptNotifications);
-    res.send({ edited: true });
-}));
-app.post('/deleteAccount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.body.id;
-    res.send({ deleted: yield (0, mongo_1.deleteAccount)(id) });
-}));
-app.post('/editAutoEcoleInfos', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
-    const id = req.body.id;
-    console.log(id);
-    res.send({ edited: yield (0, mongo_1.editAutoEcoleInfos)(id, req.body.data) });
-}));
-app.post('/editAutoEcolePersonnelFormations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
-    const id = req.body.id;
-    res.send({ edited: yield (0, mongo_1.editAutoEcolePersonnelFormations)(id, req.body.data) });
 }));
 let connectedUsers = {};
 io.on('connection', (socket) => {
