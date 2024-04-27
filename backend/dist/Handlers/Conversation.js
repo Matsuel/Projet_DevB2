@@ -93,7 +93,7 @@ const sendMessageHandler = (socket) => {
             conversation.lastMessage = content;
             conversation.date = new Date();
             yield conversation.save();
-            yield (0, __1.synchroneMessages)(conversationId, id);
+            yield (0, chat_1.synchroneMessages)(conversationId, id, __1.connectedUsers);
             socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
             socket.emit('conversations', { conversations: yield Conversation_1.Conversations.find({ usersId: id }) });
         }

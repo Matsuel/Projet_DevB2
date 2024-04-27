@@ -80,7 +80,7 @@ app.get('/results', resultsHandler);
 
 
 
-let connectedUsers: any = {};
+export let connectedUsers: any = {};
 
 io.on('connection', (socket) => {
 
@@ -103,18 +103,6 @@ io.on('connection', (socket) => {
     socket.on('getMessages', getMessagesHandler(socket));
     socket.on('sendMessage', sendMessageHandler(socket));
 });
-
-export async function synchroneMessages(conversationId: string, userId: string) {
-    const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
-    const messages = await conversationShema.find();
-    const otherUser = (await Conversations.findOne({ _id: conversationId}).select('usersId')).usersId.filter((id: string) => id !== userId)[0]
-    if (connectedUsers[otherUser]) {
-        connectedUsers[otherUser].emit('getMessages', { messages: messages })
-    } else {
-        console.log('not connected');
-        //sendMail
-    }
-}
 
 connectToMongo();
 

@@ -4,8 +4,8 @@ import { ConversationShema, Conversations } from "../MongoModels/Conversation";
 import { getMessages } from "../Functions/mongo";
 import jwt from 'jsonwebtoken';
 import { MessageReceived } from "../Types/Chat";
-import { createMessage } from "../Functions/chat";
-import { synchroneMessages } from "..";
+import { createMessage, synchroneMessages } from "../Functions/chat";
+import { connectedUsers } from "..";
 
 export const createConversationHandler = async (req, res) => {
     try {
@@ -74,7 +74,7 @@ export const sendMessageHandler = (socket) => {
             conversation.lastMessage = content;
             conversation.date = new Date();
             await conversation.save();
-            await synchroneMessages(conversationId, id);
+            await synchroneMessages(conversationId, id, connectedUsers);
             socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
             socket.emit('conversations', { conversations: await Conversations.find({ usersId: id }) });
         } catch (error) {
