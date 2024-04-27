@@ -15,6 +15,7 @@ import { deleteAccountHandler, editAEInfosHandler, editAEPersonnelHandler, editA
 import { resultsHandler, searchHandler } from './Handlers/Search';
 import { createConversationHandler, getConversationsHandler, getMessagesHandler, sendMessageHandler } from './Handlers/Conversation';
 import { connectionHandler, disconnectionHandler } from './Handlers/Ws';
+import { Route } from './Types/Route';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -44,36 +45,43 @@ app.use(session({
     }
 }));
 
+const routesPost: Route[] = [
+    { name: '/login', handler: LoginHandler },
+    { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
+    { name: '/registerChercheur', handler: registerNewDriverHandler },
+    { name: '/autoecoleinfos', handler: autoEcoleInfosHandler },
+    { name: '/reviewsautoecole', handler: reviewsAEHandler },
+    { name: '/reviewsmonitor', handler: reviewMonitorHandler },
+    { name: '/editAccount', handler: editAccountHandler },
+    { name: '/editNotifications', handler: editNotifsHandler },
+    { name: '/deleteAccount', handler: deleteAccountHandler },
+    { name: '/editAutoEcoleInfos', handler: editAEInfosHandler },
+    { name: '/editAutoEcolePersonnelFormations', handler: editAEPersonnelHandler },
+    { name: '/createConversation', handler: createConversationHandler },
+];
 
-// boucle qui permet de créer les routes de manière dynamique
-app.post('/login', LoginHandler);
-app.post('/registerAutoEcole', upload.single('pics'), registerAutoEcoleHandler);
-app.post('/registerChercheur', registerNewDriverHandler);
-app.post('/autoecoleinfos', autoEcoleInfosHandler);
-app.post('/reviewsautoecole', reviewsAEHandler);
-app.post('/reviewsmonitor', reviewMonitorHandler);
-app.post('/editAccount', editAccountHandler);
-app.post('/editNotifications', editNotifsHandler);
-app.post('/deleteAccount', deleteAccountHandler);
-app.post('/editAutoEcoleInfos', editAEInfosHandler);
-app.post('/editAutoEcolePersonnelFormations', editAEPersonnelHandler);
-app.post('/createConversation', createConversationHandler);
+const routesGet: Route[] = [
+    { name: '/autoecole/:id', handler: autoEcoleHandler },
+    { name: '/monitor/:id', handler: monitorHandler },
+    { name: '/autosecoles', handler: autoEcolesHandler },
+    { name: '/autosecolesclass', handler: AESortedHandler },
+    { name: '/moniteursclass', handler: monitorsSortedHandler },
+    { name: '/userInfos', handler: userInfosHandler },
+    { name: '/search', handler: searchHandler },
+    { name: '/results', handler: resultsHandler }
+];
 
+routesPost.forEach(route => {
+    if (route.upload) {
+        app.post(route.name, route.upload, route.handler);
+    } else {
+        app.post(route.name, route.handler);
+    }
+});
 
-app.get('/autoecole/:id', autoEcoleHandler);
-app.get('/monitor/:id', monitorHandler);
-app.get('/autosecoles', autoEcolesHandler);
-app.get('/autosecolesclass', AESortedHandler);
-app.get('/moniteursclass', monitorsSortedHandler);
-app.get('/userInfos', userInfosHandler);
-app.get('/search', searchHandler);
-app.get('/results', resultsHandler);
-
-
-
-
-
-
+routesGet.forEach(route => {
+    app.get(route.name, route.handler);
+});
 
 export let connectedUsers: any = {};
 

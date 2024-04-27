@@ -43,27 +43,41 @@ app.use((0, express_session_1.default)({
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
-// boucle qui permet de créer les routes de manière dynamique
-app.post('/login', Login_1.LoginHandler);
-app.post('/registerAutoEcole', upload.single('pics'), Register_1.registerAutoEcoleHandler);
-app.post('/registerChercheur', Register_1.registerNewDriverHandler);
-app.post('/autoecoleinfos', AutoEcole_1.autoEcoleInfosHandler);
-app.post('/reviewsautoecole', AutoEcole_1.reviewsAEHandler);
-app.post('/reviewsmonitor', Monitor_1.reviewMonitorHandler);
-app.post('/editAccount', Account_1.editAccountHandler);
-app.post('/editNotifications', Account_1.editNotifsHandler);
-app.post('/deleteAccount', Account_1.deleteAccountHandler);
-app.post('/editAutoEcoleInfos', Account_1.editAEInfosHandler);
-app.post('/editAutoEcolePersonnelFormations', Account_1.editAEPersonnelHandler);
-app.post('/createConversation', Conversation_1.createConversationHandler);
-app.get('/autoecole/:id', AutoEcole_1.autoEcoleHandler);
-app.get('/monitor/:id', Monitor_1.monitorHandler);
-app.get('/autosecoles', AutoEcole_1.autoEcolesHandler);
-app.get('/autosecolesclass', AutoEcole_1.AESortedHandler);
-app.get('/moniteursclass', Monitor_1.monitorsSortedHandler);
-app.get('/userInfos', Account_1.userInfosHandler);
-app.get('/search', Search_1.searchHandler);
-app.get('/results', Search_1.resultsHandler);
+const routesPost = [
+    { name: '/login', handler: Login_1.LoginHandler },
+    { name: '/registerAutoEcole', upload: upload.single('pics'), handler: Register_1.registerAutoEcoleHandler },
+    { name: '/registerChercheur', handler: Register_1.registerNewDriverHandler },
+    { name: '/autoecoleinfos', handler: AutoEcole_1.autoEcoleInfosHandler },
+    { name: '/reviewsautoecole', handler: AutoEcole_1.reviewsAEHandler },
+    { name: '/reviewsmonitor', handler: Monitor_1.reviewMonitorHandler },
+    { name: '/editAccount', handler: Account_1.editAccountHandler },
+    { name: '/editNotifications', handler: Account_1.editNotifsHandler },
+    { name: '/deleteAccount', handler: Account_1.deleteAccountHandler },
+    { name: '/editAutoEcoleInfos', handler: Account_1.editAEInfosHandler },
+    { name: '/editAutoEcolePersonnelFormations', handler: Account_1.editAEPersonnelHandler },
+    { name: '/createConversation', handler: Conversation_1.createConversationHandler },
+];
+const routesGet = [
+    { name: '/autoecole/:id', handler: AutoEcole_1.autoEcoleHandler },
+    { name: '/monitor/:id', handler: Monitor_1.monitorHandler },
+    { name: '/autosecoles', handler: AutoEcole_1.autoEcolesHandler },
+    { name: '/autosecolesclass', handler: AutoEcole_1.AESortedHandler },
+    { name: '/moniteursclass', handler: Monitor_1.monitorsSortedHandler },
+    { name: '/userInfos', handler: Account_1.userInfosHandler },
+    { name: '/search', handler: Search_1.searchHandler },
+    { name: '/results', handler: Search_1.resultsHandler }
+];
+routesPost.forEach(route => {
+    if (route.upload) {
+        app.post(route.name, route.upload, route.handler);
+    }
+    else {
+        app.post(route.name, route.handler);
+    }
+});
+routesGet.forEach(route => {
+    app.get(route.name, route.handler);
+});
 exports.connectedUsers = {};
 io.on('connection', (socket) => {
     socket.on('connection', (0, Ws_1.connectionHandler)(socket, exports.connectedUsers));
