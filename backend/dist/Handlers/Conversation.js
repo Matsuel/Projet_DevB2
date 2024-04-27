@@ -12,10 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createConversationHandler = void 0;
+exports.sendMessageHandler = exports.getMessagesHandler = exports.getConversationsHandler = exports.createConversationHandler = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const token_1 = require("../Functions/token");
 const Conversation_1 = require("../MongoModels/Conversation");
+const mongo_1 = require("../Functions/mongo");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const chat_1 = require("../Functions/chat");
+const __1 = require("..");
 const createConversationHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(req.body);
@@ -44,4 +48,59 @@ const createConversationHandler = (req, res) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.createConversationHandler = createConversationHandler;
+// Websockets handlers
+const getConversationsHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const id = (0, token_1.getIdFromToken)(data.id);
+            if (!id)
+                return;
+            const conversations = yield Conversation_1.Conversations.find({ usersId: id });
+            socket.emit('conversations', { conversations: conversations });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
+exports.getConversationsHandler = getConversationsHandler;
+const getMessagesHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { conversationId, userId } = data;
+            const decoded = jsonwebtoken_1.default.verify(userId, process.env.SECRET);
+            const id = decoded.id;
+            socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
+exports.getMessagesHandler = getMessagesHandler;
+const sendMessageHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { conversationId, userId, content } = data;
+            console.log(data);
+            if (content.trim() === '')
+                return;
+            const decoded = jsonwebtoken_1.default.verify(userId, process.env.SECRET);
+            const id = decoded.id;
+            const conversationShema = mongoose_1.default.model('conversation_' + conversationId, Conversation_1.ConversationShema);
+            yield conversationShema.create((0, chat_1.createMessage)(id, conversationId, content));
+            const conversation = yield Conversation_1.Conversations.findById(conversationId);
+            conversation.lastMessage = content;
+            conversation.date = new Date();
+            yield conversation.save();
+            yield (0, __1.synchroneMessages)(conversationId, id);
+            socket.emit('getMessages', { messages: yield (0, mongo_1.getMessages)(conversationId, id) });
+            socket.emit('conversations', { conversations: yield Conversation_1.Conversations.find({ usersId: id }) });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
+exports.sendMessageHandler = sendMessageHandler;
 //# sourceMappingURL=Conversation.js.map

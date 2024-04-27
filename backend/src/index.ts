@@ -19,7 +19,7 @@ import { AESortedHandler, autoEcoleHandler, autoEcoleInfosHandler, autoEcolesHan
 import { monitorHandler, monitorsSortedHandler, reviewMonitorHandler } from './Handlers/Monitor';
 import { deleteAccountHandler, editAEInfosHandler, editAEPersonnelHandler, editAccountHandler, editNotifsHandler, userInfosHandler } from './Handlers/Account';
 import { resultsHandler, searchHandler } from './Handlers/Search';
-import { createConversationHandler } from './Handlers/Conversation';
+import { createConversationHandler, getConversationsHandler, getMessagesHandler, sendMessageHandler } from './Handlers/Conversation';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -99,39 +99,12 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('getConversations', async (data) => {
-        const id = getIdFromToken(data.id);
-        if (!id) return;
-        const conversations = await Conversations.find({ usersId: id });
-        socket.emit('conversations', { conversations: conversations });
-    });
-
-    socket.on('getMessages', async (data) => {
-        const { conversationId, userId } = data;
-        const decoded = jwt.verify(userId, process.env.SECRET as string);
-        const id = decoded.id;
-        socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
-    });
-
-    socket.on('sendMessage', async (data) => {
-        const { conversationId, userId, content }: MessageReceived = data;
-        console.log(data);
-        if (content.trim() === '') return;
-        const decoded = jwt.verify(userId, process.env.SECRET as string);
-        const id = decoded.id;
-        const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
-        await conversationShema.create(createMessage(id, conversationId, content));
-        const conversation = await Conversations.findById(conversationId);
-        conversation.lastMessage = content;
-        conversation.date = new Date();
-        await conversation.save();
-        await synchroneMessages(conversationId, id);
-        socket.emit('getMessages', { messages: await getMessages(conversationId, id) });
-        socket.emit('conversations', { conversations: await Conversations.find({ usersId: id }) });
-    });
+    socket.on('getConversations', getConversationsHandler(socket));
+    socket.on('getMessages', getMessagesHandler(socket));
+    socket.on('sendMessage', sendMessageHandler(socket));
 });
 
-async function synchroneMessages(conversationId: string, userId: string) {
+export async function synchroneMessages(conversationId: string, userId: string) {
     const conversationShema = mongoose.model('conversation_' + conversationId, ConversationShema);
     const messages = await conversationShema.find();
     const otherUser = (await Conversations.findOne({ _id: conversationId}).select('usersId')).usersId.filter((id: string) => id !== userId)[0]
