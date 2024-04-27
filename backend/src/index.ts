@@ -3,41 +3,23 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import connectToMongo, 
-{ 
-    deleteAccount, 
-    editAccount, 
-    editAutoEcoleInfos, 
-    editAutoEcolePersonnelFormations, 
-    editNotifications, 
-    getAutoEcole, 
-    getAutosEcoles, 
-    getMessages, 
-    getMonitorAvg, 
-    getUserInfosById,
-    searchAutoEcole
-
- } from './Functions/mongo';
+import connectToMongo, { getMessages } from './Functions/mongo';
 import dotenv from 'dotenv';
 import multer from 'multer';
-import { searchInCitiesFiles } from './Functions/search';
 import mongoose from 'mongoose';
-import { reviewAutoecoleSchema } from './MongoModels/Review';
-import { AutoEcole, Student } from './MongoModels/Users';
-import { ReviewMonitor } from './Types/Review';
 import { ConversationShema, Conversations } from './MongoModels/Conversation';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { MessageReceived } from './Types/Chat';
 import { getIdFromToken } from './Functions/token';
-import { updateNote } from './Functions/note';
-import { createReview, findAutoEcoleReviews, findMonitorReviews } from './Functions/review';
 import { createMessage } from './Functions/chat';
 import { LoginHandler } from './Handlers/Login';
 import { registerAutoEcoleHandler, registerNewDriverHandler } from './Handlers/Register';
 import { AESortedHandler, autoEcoleHandler, autoEcoleInfosHandler, autoEcolesHandler, reviewsAEHandler } from './Handlers/AutoEcole';
 import { monitorHandler, monitorsSortedHandler, reviewMonitorHandler } from './Handlers/Monitor';
 import { deleteAccountHandler, editAEInfosHandler, editAEPersonnelHandler, editAccountHandler, editNotifsHandler, userInfosHandler } from './Handlers/Account';
+import { resultsHandler, searchHandler } from './Handlers/Search';
+import { createConversationHandler } from './Handlers/Conversation';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -80,6 +62,7 @@ app.post('/editNotifications', editNotifsHandler);
 app.post('/deleteAccount', deleteAccountHandler);
 app.post('/editAutoEcoleInfos', editAEInfosHandler);
 app.post('/editAutoEcolePersonnelFormations', editAEPersonnelHandler);
+app.post('/createConversation', createConversationHandler);
 
 
 app.get('/autoecole/:id', autoEcoleHandler);
@@ -88,43 +71,13 @@ app.get('/autosecoles', autoEcolesHandler);
 app.get('/autosecolesclass', AESortedHandler);
 app.get('/moniteursclass', monitorsSortedHandler);
 app.get('/userInfos', userInfosHandler);
+app.get('/search', searchHandler);
+app.get('/results', resultsHandler);
 
 
 
 
-app.get('/search', async (req, res) => {
-    const cities = await searchInCitiesFiles(req.query.search as string);
-    const autoEcoles = await searchAutoEcole(req.query.search as string);
-    res.send({ cities: cities, autoEcoles: autoEcoles });
-});
 
-app.get('/results', async (req, res) => {
-    const autoEcoles = await searchAutoEcole(req.query.search as string);
-    res.send({ autoEcoles: autoEcoles });
-});
-
-
-
-app.post('/createConversation', async (req, res) => {
-    console.log(req.body);
-    let { userId, creatorId } = req.body;
-    creatorId = getIdFromToken(creatorId);
-    if (!creatorId) return;
-    const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
-    if (conversationExists) {
-        res.send({ created: false });
-    } else {
-        const newConversation = new Conversations({
-            usersId: [userId, creatorId],
-            date: new Date(),
-            lastMessage: ''
-        });
-        await newConversation.save();
-        const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
-        conversationShema.createCollection();
-        res.send({ created: true });
-    }
-});
 
 
 let connectedUsers: any = {};

@@ -43,7 +43,6 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const mongo_1 = __importStar(require("./Functions/mongo"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const multer_1 = __importDefault(require("multer"));
-const search_1 = require("./Functions/search");
 const mongoose_1 = __importDefault(require("mongoose"));
 const Conversation_1 = require("./MongoModels/Conversation");
 const socket_io_1 = require("socket.io");
@@ -55,6 +54,8 @@ const Register_1 = require("./Handlers/Register");
 const AutoEcole_1 = require("./Handlers/AutoEcole");
 const Monitor_1 = require("./Handlers/Monitor");
 const Account_1 = require("./Handlers/Account");
+const Search_1 = require("./Handlers/Search");
+const Conversation_2 = require("./Handlers/Conversation");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -89,43 +90,15 @@ app.post('/editNotifications', Account_1.editNotifsHandler);
 app.post('/deleteAccount', Account_1.deleteAccountHandler);
 app.post('/editAutoEcoleInfos', Account_1.editAEInfosHandler);
 app.post('/editAutoEcolePersonnelFormations', Account_1.editAEPersonnelHandler);
+app.post('/createConversation', Conversation_2.createConversationHandler);
 app.get('/autoecole/:id', AutoEcole_1.autoEcoleHandler);
 app.get('/monitor/:id', Monitor_1.monitorHandler);
 app.get('/autosecoles', AutoEcole_1.autoEcolesHandler);
 app.get('/autosecolesclass', AutoEcole_1.AESortedHandler);
 app.get('/moniteursclass', Monitor_1.monitorsSortedHandler);
 app.get('/userInfos', Account_1.userInfosHandler);
-app.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const cities = yield (0, search_1.searchInCitiesFiles)(req.query.search);
-    const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
-    res.send({ cities: cities, autoEcoles: autoEcoles });
-}));
-app.get('/results', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
-    res.send({ autoEcoles: autoEcoles });
-}));
-app.post('/createConversation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
-    let { userId, creatorId } = req.body;
-    creatorId = (0, token_1.getIdFromToken)(creatorId);
-    if (!creatorId)
-        return;
-    const conversationExists = yield Conversation_1.Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
-    if (conversationExists) {
-        res.send({ created: false });
-    }
-    else {
-        const newConversation = new Conversation_1.Conversations({
-            usersId: [userId, creatorId],
-            date: new Date(),
-            lastMessage: ''
-        });
-        yield newConversation.save();
-        const conversationShema = mongoose_1.default.model('conversation_' + newConversation._id, Conversation_1.ConversationShema);
-        conversationShema.createCollection();
-        res.send({ created: true });
-    }
-}));
+app.get('/search', Search_1.searchHandler);
+app.get('/results', Search_1.resultsHandler);
 let connectedUsers = {};
 io.on('connection', (socket) => {
     socket.on('connection', (data) => {
