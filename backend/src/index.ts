@@ -35,6 +35,8 @@ import { createReview, findAutoEcoleReviews, findMonitorReviews } from './Functi
 import { createMessage } from './Functions/chat';
 import { LoginHandler } from './Handlers/Login';
 import { registerAutoEcoleHandler, registerNewDriverHandler } from './Handlers/Register';
+import { AESortedHandler, autoEcoleHandler, autoEcoleInfosHandler, autoEcolesHandler, reviewsAEHandler } from './Handlers/AutoEcole';
+import { monitorHandler, monitorsSortedHandler, reviewMonitorHandler } from './Handlers/Monitor';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -65,49 +67,23 @@ app.use(session({
 }));
 
 
-
+// boucle qui permet de créer les routes de manière dynamique
 app.post('/login', LoginHandler);
 app.post('/registerAutoEcole', upload.single('pics'), registerAutoEcoleHandler);
 app.post('/registerChercheur', registerNewDriverHandler);
+app.post('/autoecoleinfos', autoEcoleInfosHandler);
+app.post('/reviewsautoecole', reviewsAEHandler);
+app.post('/reviewsmonitor', reviewMonitorHandler);
 
 
-app.get('/autoecole/:id', async (req, res) => {
-    const autoEcole = await getAutoEcole(req.params.id);
-    const reviewsList = await findAutoEcoleReviews(req.params.id);
-    let monitorsReviews: any[] = [];
-    // @ts-ignore
-    for (let i = 0; i < autoEcole.monitors.length; i++) {
-        // @ts-ignore
-        monitorsReviews.push(await findMonitorReviews(autoEcole.monitors[i]._id));
-    }
-    res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
-});
+app.get('/autoecole/:id', autoEcoleHandler);
+app.get('/monitor/:id', monitorHandler);
+app.get('/autosecoles', autoEcolesHandler);
+app.get('/autosecolesclass', AESortedHandler);
+app.get('/moniteursclass', monitorsSortedHandler);
 
-app.get('/monitor/:id', async (req, res) => {
-    const autoEcole = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name')
-    const monitor = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
-    if (monitor) {
-        res.send({ autoEcole: autoEcole, monitor: monitor, reviews: await findMonitorReviews(req.params.id) });
-    } else {
-        res.send({ monitor: null });
-    }
-});
 
-app.get('/autosecoles', async (req, res) => {
-    res.send({ autoEcoles: await getAutosEcoles() });
-});
 
-app.post('/autoecoleinfos', async (req, res) => {
-    const token = req.body.token;
-    const id = getIdFromToken(token);
-    const student = await Student.findById(id);
-    if (student) {
-        const autoEcole = await AutoEcole.findById(student.autoEcoleId).select('monitors name');
-        res.send({ autoEcole: autoEcole });
-    } else {
-        res.send({ autoEcole: null });
-    }
-});
 
 app.get('/search', async (req, res) => {
     const cities = await searchInCitiesFiles(req.query.search as string);
@@ -120,51 +96,7 @@ app.get('/results', async (req, res) => {
     res.send({ autoEcoles: autoEcoles });
 });
 
-app.post('/reviewsautoecole', async (req, res) => {
-    const reviewContent = req.body.review;
-    const token = req.body.token;
-    const id = getIdFromToken(token);
-    const student = await Student.findById(id);
-    if (student) {
-        let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
-        await autoEcoleModel.create(createReview(reviewContent, id));
-        if (reviewContent.stars !== 0) {
-            let autoEcole = await AutoEcole.findById(student.autoEcoleId);
-            autoEcole.note = updateNote(autoEcole, reviewContent);
-            autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
-            await autoEcole.save();
-        }
-        res.send({ posted: true, autoEcoleId: student.autoEcoleId });
-    } else {
-        res.send({ posted: false });
-    }
-});
 
-app.post('/reviewsmonitor', async (req, res) => {
-    const content: ReviewMonitor = req.body.review;
-    const token = req.body.token;
-    const id = getIdFromToken(token);
-    const student = await Student.findById(id);
-    if (student) {
-        let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
-        let monitorIndex = monitors.monitors.findIndex((monitor: any) => monitor._id.toString() === content._id);
-        if (monitorIndex !== -1) {
-            let monitorReviewModel = mongoose.model('reviewsMonitor_' + content._id, reviewAutoecoleSchema);
-            let newReview = {
-                rate: content.stars > 0 ? content.stars : null,
-                comment: content.comment,
-                creatorId: id,
-                date: new Date()
-            };
-            await monitorReviewModel.create(newReview);
-            res.send({ posted: true, autoEcoleId: student.autoEcoleId });
-        } else {
-            res.send({ posted: false });
-        }
-    } else {
-        res.send({ posted: false });
-    }
-});
 
 app.post('/createConversation', async (req, res) => {
     console.log(req.body);
@@ -230,26 +162,7 @@ app.post('/editAutoEcolePersonnelFormations', async (req, res) => {
     res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
 });
 
-app.get('/autosecolesclass', async (req, res) => {
-    const autoEcoles = await AutoEcole.find().select('name note');
-    const autoEcolesSorted = autoEcoles.sort((a, b) => Number(b.note) - Number(a.note));
-    res.send({ autoEcoles: autoEcolesSorted });
-});
 
-app.get('/moniteursclass', async (req, res) => {
-    const moniteurs = await AutoEcole.find().select('monitors');
-    let moniteursList: any[] = [];
-    for (let i = 0; i < moniteurs.length; i++) {
-        const monitorsWithAvgPromises = moniteurs[i].monitors.map(async monitor => ({
-            ...monitor.toObject(),
-            avg: await getMonitorAvg(monitor._id.toString())
-        }));
-        const monitorsWithAvg = await Promise.all(monitorsWithAvgPromises);
-        moniteursList.push(...monitorsWithAvg);
-    }
-    const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
-    res.send({ moniteurs: moniteursSorted });
-});
 
 
 
