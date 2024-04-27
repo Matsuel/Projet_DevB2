@@ -65,7 +65,7 @@ export async function createReviewsCollections(mail: string) {
     });
 }
 
-export async function registerChercheur(data: UserInterface) {
+export async function registerNewDriver(data: UserInterface) {
     const user = await User.findOne({ email: data.mail });
     if (user) {
         return { register: false };

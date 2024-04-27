@@ -54,6 +54,8 @@ const token_1 = require("./Functions/token");
 const note_1 = require("./Functions/note");
 const review_1 = require("./Functions/review");
 const chat_1 = require("./Functions/chat");
+const Login_1 = require("./Handlers/Login");
+const Register_1 = require("./Handlers/Register");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -76,60 +78,20 @@ app.use((0, express_session_1.default)({
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
-const LoginHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { mail, password } = req.body;
-        const user = yield (0, mongo_1.login)({ mail, password });
-        if (user.login) {
-            req.session.userId = user.id;
-            const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, { expiresIn: '24h' });
-            res.send({ login: true, token: token });
-        }
-        else {
-            res.send({ login: false });
-        }
-    }
-    catch (error) {
-        res.send({ login: false });
-    }
-});
-app.post('/login', LoginHandler);
-// app.post('/login', async (req, res) => {
-//     const { mail, password } = req.body;
-//     const user = await login({ mail, password });
-//     if (user.login) {
-//         req.session.userId = user.id;
-//         const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
-//         res.send({ login: true, token: token });
+app.post('/login', Login_1.LoginHandler);
+app.post('/registerAutoEcole', upload.single('pics'), Register_1.registerAutoEcoleHandler);
+app.post('/registerChercheur', Register_1.registerNewDriverHandler);
+// app.post('/registerChercheur', async (req, res) => {
+//     const data = req.body as UserInterface;
+//     const response = await registerChercheur(data);
+//     if (response) {
+//         req.session.userId = response.id;
+//         const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
+//         res.send({ register: true, token: token });
 //     } else {
-//         res.send({ login: false });
+//         res.send({ register: false });
 //     }
 // });
-app.post('/registerAutoEcole', upload.single('pics'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = req.body;
-    const file = req.file;
-    const response = yield (0, mongo_1.registerAutoEcole)(data, file);
-    if (response) {
-        req.session.userId = response.id;
-        const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
-        res.send({ register: true, token: token });
-    }
-    else {
-        res.send({ register: false });
-    }
-}));
-app.post('/registerChercheur', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = req.body;
-    const response = yield (0, mongo_1.registerChercheur)(data);
-    if (response) {
-        req.session.userId = response.id;
-        const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
-        res.send({ register: true, token: token });
-    }
-    else {
-        res.send({ register: false });
-    }
-}));
 app.get('/autoecole/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const autoEcole = yield (0, mongo_1.getAutoEcole)(req.params.id);
     const reviewsList = yield (0, review_1.findAutoEcoleReviews)(req.params.id);

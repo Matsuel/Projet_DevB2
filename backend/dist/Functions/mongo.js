@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMonitorAvg = exports.deleteAccount = exports.editNotifications = exports.editAutoEcolePersonnelFormations = exports.editAutoEcoleInfos = exports.editAccount = exports.getAccountType = exports.getUserInfosById = exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.saveToFile = exports.genereatePassword = exports.studentAlreadySave = exports.registerStudents = exports.registerChercheur = exports.createReviewsCollections = exports.registerAutoEcole = void 0;
+exports.getMonitorAvg = exports.deleteAccount = exports.editNotifications = exports.editAutoEcolePersonnelFormations = exports.editAutoEcoleInfos = exports.editAccount = exports.getAccountType = exports.getUserInfosById = exports.getMessages = exports.searchAutoEcole = exports.getAutosEcoles = exports.getAutoEcole = exports.login = exports.saveToFile = exports.genereatePassword = exports.studentAlreadySave = exports.registerStudents = exports.registerNewDriver = exports.createReviewsCollections = exports.registerAutoEcole = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const Users_1 = require("../MongoModels/Users");
 const Review_1 = require("../MongoModels/Review");
@@ -85,7 +85,7 @@ function createReviewsCollections(mail) {
     });
 }
 exports.createReviewsCollections = createReviewsCollections;
-function registerChercheur(data) {
+function registerNewDriver(data) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield Users_1.User.findOne({ email: data.mail });
         if (user) {
@@ -103,7 +103,7 @@ function registerChercheur(data) {
         }
     });
 }
-exports.registerChercheur = registerChercheur;
+exports.registerNewDriver = registerNewDriver;
 // fonction à appeler pour enregistrer les élèves si l'auto-école est validée
 function registerStudents(emailAutoEcole) {
     return __awaiter(this, void 0, void 0, function* () {

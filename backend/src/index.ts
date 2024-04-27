@@ -14,14 +14,10 @@ import connectToMongo,
     getAutosEcoles, 
     getMessages, 
     getMonitorAvg, 
-    getUserInfosById, 
-    login, 
-    registerAutoEcole, 
-    registerChercheur, 
+    getUserInfosById,
     searchAutoEcole
 
  } from './Functions/mongo';
-import { AutoEcoleInterface, UserInterface } from './Types/Users';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import { searchInCitiesFiles } from './Functions/search';
@@ -38,6 +34,7 @@ import { updateNote } from './Functions/note';
 import { createReview, findAutoEcoleReviews, findMonitorReviews } from './Functions/review';
 import { createMessage } from './Functions/chat';
 import { LoginHandler } from './Handlers/Login';
+import { registerAutoEcoleHandler, registerNewDriverHandler } from './Handlers/Register';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -70,44 +67,9 @@ app.use(session({
 
 
 app.post('/login', LoginHandler);
+app.post('/registerAutoEcole', upload.single('pics'), registerAutoEcoleHandler);
+app.post('/registerChercheur', registerNewDriverHandler);
 
-// app.post('/login', async (req, res) => {
-//     const { mail, password } = req.body;
-//     const user = await login({ mail, password });
-
-//     if (user.login) {
-//         req.session.userId = user.id;
-//         const token = jwt.sign({ id: user.id }, process.env.SECRET as string, { expiresIn: '24h' });
-//         res.send({ login: true, token: token });
-//     } else {
-//         res.send({ login: false });
-//     }
-// });
-
-app.post('/registerAutoEcole', upload.single('pics'), async (req, res) => {
-    const data = req.body as AutoEcoleInterface;
-    const file = req.file;
-    const response = await registerAutoEcole(data, file);
-    if (response) {
-        req.session.userId = response.id;
-        const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
-        res.send({ register: true, token: token });
-    } else {
-        res.send({ register: false });
-    }
-});
-
-app.post('/registerChercheur', async (req, res) => {
-    const data = req.body as UserInterface;
-    const response = await registerChercheur(data);
-    if (response) {
-        req.session.userId = response.id;
-        const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
-        res.send({ register: true, token: token });
-    } else {
-        res.send({ register: false });
-    }
-});
 
 app.get('/autoecole/:id', async (req, res) => {
     const autoEcole = await getAutoEcole(req.params.id);
