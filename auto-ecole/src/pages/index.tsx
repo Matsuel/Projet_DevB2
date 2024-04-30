@@ -40,6 +40,8 @@ export default function Home() {
             <input placeholder="Rechercher une ville ou une auto-ecole" className={styles.rechercher} onChange={(e) => handleSearch(e.target.value)} />
           </div>
         </div>
+      <div className={styles.resultscont}>
+        <div>
         
         {
           searchAutoEcoles.length > 0 &&
@@ -63,6 +65,8 @@ export default function Home() {
             )
           })
         }
+        </div>
+        <div>
                 {
           searchCities.length > 0 &&
           <h1 className={styles.top}>Villes:</h1>
@@ -80,7 +84,8 @@ export default function Home() {
             )
           })
         }
-
+        </div>
+      </div>
       </main>
     </div>
   );

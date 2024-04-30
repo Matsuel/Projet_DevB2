@@ -35,9 +35,6 @@
     margin-bottom: 3px;
 }
 
-.top{
-    margin-top: 40px
-}
 
 .home{
     width: 30px
@@ -46,4 +43,12 @@
 .city_container{
     /* width: 700px; */
     cursor: pointer;
+}
+
+.resultscont{
+    display: flex;
+    /* background-color: red; */
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 40px;
 }
