@@ -1,13 +1,22 @@
 .main{
     width: 100%;
-    background-color: red;
+    /* background-color: red; */
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+.title{
+    font-size: 60px;
+    margin-top: 40px;
+}
+
+.searchcont{
+    margin-top: 50px;
+}
+
 .rechercher{
-    width: 500px;
+    width: 900px;
     height: 70px
 }
 

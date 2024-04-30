@@ -35,10 +35,9 @@ export default function Home() {
       <main>
         <Header />
         <div className={styles.main}>
-          <h1>Bienvenue sur adopteunmoniteur.fr</h1>
-          <div>
+          <h1 className={styles.title}>Bienvenue sur adopteunmoniteur.fr</h1>
+          <div className={styles.searchcont}>
             <input placeholder="Rechercher une ville ou une auto-ecole" className={styles.rechercher} onChange={(e) => handleSearch(e.target.value)} />
-            <button className={styles.search}>Rechercher</button>
           </div>
         </div>
         
