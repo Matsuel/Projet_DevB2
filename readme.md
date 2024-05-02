@@ -54,6 +54,10 @@ Tous les utilisateurs ont la possibilité d'accéder à leur compte pour modifie
 git clone https://github.com/Matsuel/Projet_DevB2
 ```
 
+```bash
+docker run -d -p 27017:27017 mongo
+```
+
 ### Installation
 
 ```bash
