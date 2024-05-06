@@ -6,48 +6,52 @@ import { ReviewMonitor } from "../Types/Review";
 import { reviewAutoecoleSchema } from "../MongoModels/Review";
 import { getMonitorAvg } from "../Functions/mongo";
 
-
-export const monitorHandler = async (req, res) => {
-    try {
-        const autoEcole = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name')
-        const monitor = await AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
-        if (monitor) {
-            res.send({ autoEcole: autoEcole, monitor: monitor, reviews: await findMonitorReviews(req.params.id) });
-        } else {
-            res.send({ monitor: null });
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-export const reviewMonitorHandler = async (req, res) => {
-    try {
-        const content: ReviewMonitor = req.body.review;
-        const token = req.body.token;
-        const id = getIdFromToken(token);
-        const student = await Student.findById(id);
-        if (student) {
-            let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
-            let monitorIndex = monitors.monitors.findIndex((monitor: any) => monitor._id.toString() === content._id);
-            if (monitorIndex !== -1) {
-                let monitorReviewModel = mongoose.model('reviewsMonitor_' + content._id, reviewAutoecoleSchema);
-                let newReview = {
-                    rate: content.stars > 0 ? content.stars : null,
-                    comment: content.comment,
-                    creatorId: id,
-                    date: new Date()
-                };
-                await monitorReviewModel.create(newReview);
-                res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+export const monitorHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            const autoEcole = await AutoEcole.findOne({ 'monitors._id': data.id }, { 'monitors.$': 1 }).select('_id name')
+            const monitor = await AutoEcole.findOne({ 'monitors._id': data.id }, { 'monitors.$': 1 });
+            if (monitor) {
+                socket.emit('monitor', { autoEcole: autoEcole, monitor: monitor, reviews: await findMonitorReviews(data.id) });
             } else {
-                res.send({ posted: false });
+                socket.emit('monitor', { monitor: null });
             }
-        } else {
-            res.send({ posted: false });
+        } catch (error) {
+            socket.emit('monitor', { monitor: null });
         }
-    } catch (error) {
-        console.log(error);
+    };
+};
+
+export const reviewMonitorHandler = (socket: any) => {
+    return async (data: any) => {
+        console.log(data);
+        try {
+            const content: ReviewMonitor = data.review;
+            const token = data.token;
+            const id = getIdFromToken(token);
+            const student = await Student.findById(id);
+            if (student) {
+                let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
+                let monitorIndex = monitors.monitors.findIndex((monitor: any) => monitor._id.toString() === content._id);
+                if (monitorIndex !== -1) {
+                    let monitorReviewModel = mongoose.model('reviewsMonitor_' + content._id, reviewAutoecoleSchema);
+                    let newReview = {
+                        rate: content.stars > 0 ? content.stars : null,
+                        comment: content.comment,
+                        creatorId: id,
+                        date: new Date()
+                    };
+                    await monitorReviewModel.create(newReview);
+                    socket.emit('reviewsmonitor', { posted: true, autoEcoleId: student.autoEcoleId });
+                } else {
+                    socket.emit('reviewsmonitor', { posted: false });
+                }
+            } else {
+                socket.emit('reviewsmonitor', { posted: false });
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 

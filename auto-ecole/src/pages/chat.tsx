@@ -4,18 +4,17 @@ import Header from "@/Components/Header";
 import styles from '@/styles/chat.module.css';
 import ConvCard from '@/Components/Chat_Conv_Card';
 import ChatCard from '@/Components/Chat_Card';
-import { io } from 'socket.io-client';
 import { ConversationInformations, Message } from '@/types/Chat';
 import { getMessages, sendMessage } from '@/Functions/Chat';
 import { jwtDecode } from "jwt-decode";
 import { getToken } from '@/Functions/Token';
 import { useRouter } from 'next/router';
+import { socket } from './_app';
 
 const Chat: React.FC = () => {
 
   const router = useRouter();
 
-  const [socket, setSocket] = useState<any>(null);
   const [conversationsList, setConversationsList] = useState<ConversationInformations[]>([]);
   const [messagesList, setMessagesList] = useState<Message[]>([]);
   const [conversationActive, setConversationActive] = useState<string>('');
@@ -31,19 +30,16 @@ const Chat: React.FC = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const newSocket = io('http://localhost:4000');
-      setSocket(newSocket);
       if (token) {
         setUserId((jwtDecode(token) as { id: string }).id);
-        newSocket.emit('connection', { id: token });
+        socket.emit('connection', { id: token });
 
-        newSocket.emit('getConversations', { id: token });
-        newSocket.on('conversations', (data) => {
-          console.log(data);
+        socket.emit('getConversations', { id: token });
+        socket.on('conversations', (data) => {
           setConversationsList(data.conversations);
         });
 
-        newSocket.on('getMessages', (data) => {
+        socket.on('getMessages', (data) => {
           setMessagesList(data.messages);
         });
       } else {

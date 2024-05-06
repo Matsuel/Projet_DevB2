@@ -12,25 +12,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LoginHandler = void 0;
+exports.loginHandler = void 0;
 const mongo_1 = require("../Functions/mongo");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const LoginHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { mail, password } = req.body;
-        const user = yield (0, mongo_1.login)({ mail, password });
-        if (user.login) {
-            req.session.userId = user.id;
-            const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, { expiresIn: '24h' });
-            res.send({ login: true, token: token });
+const loginHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const { mail, password } = data;
+            const user = yield (0, mongo_1.login)({ mail, password });
+            if (user.login) {
+                const token = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET, { expiresIn: '24h' });
+                socket.emit('login', { login: true, token: token });
+            }
+            else {
+                socket.emit('login', { login: false });
+            }
         }
-        else {
-            res.send({ login: false });
+        catch (error) {
+            socket.emit('login', { login: false });
         }
-    }
-    catch (error) {
-        res.send({ login: false });
-    }
-});
-exports.LoginHandler = LoginHandler;
+    });
+};
+exports.loginHandler = loginHandler;
 //# sourceMappingURL=Login.js.map

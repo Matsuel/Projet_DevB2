@@ -1,4 +1,4 @@
-import { LoginHandler } from "../Handlers/Login";
+import { loginHandler } from "../Handlers/Login";
 import { registerAutoEcoleHandler } from "../Handlers/Register";
 
 export type Route = {

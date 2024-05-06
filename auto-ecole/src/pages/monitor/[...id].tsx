@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import styles from '@/styles/monitor.module.css';
 import { useRouter } from 'next/router';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { MonitorInfos } from '@/types/Monitor';
 import Head from 'next/head';
 import { handleAutoEcoleClick } from '@/Functions/Router';
+import { socket } from '../_app';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
@@ -19,10 +20,15 @@ const Monitor = ({ }: MonitorProps) => {
     const router = useRouter();
     const { id } = router.query;
 
-    const { data, error, isLoading } = useSWR<MonitorInfos>(id && `http://localhost:3500/monitor/${id}`, fetcher)
+    const [data, setData] = useState<MonitorInfos>();
+    if (id && !data) {
+        socket.emit('monitor', { id: id });
+        socket.on('monitor', (data: any) => {
+            setData(data);
+        });
+    }
 
-    if (isLoading || !data) return <div>Chargement...</div>
-    if (error) return <div>Erreur</div>
+    if (!data) return <div>Chargement...</div>
 
     return (
         <div className={styles.Monitor_container}>

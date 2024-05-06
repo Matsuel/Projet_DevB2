@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
-import { LoginHandler } from './Handlers/Login';
+import { loginHandler } from './Handlers/Login';
 import { registerAutoEcoleHandler, registerNewDriverHandler } from './Handlers/Register';
 import { AESortedHandler, autoEcoleHandler, autoEcoleInfosHandler, autoEcolesHandler, reviewsAEHandler } from './Handlers/AutoEcole';
 import { monitorHandler, monitorsSortedHandler, reviewMonitorHandler } from './Handlers/Monitor';
@@ -46,12 +46,8 @@ app.use(session({
 }));
 
 const routesPost: Route[] = [
-    { name: '/login', handler: LoginHandler },
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
-    { name: '/registerChercheur', handler: registerNewDriverHandler },
-    { name: '/autoecoleinfos', handler: autoEcoleInfosHandler },
-    { name: '/reviewsautoecole', handler: reviewsAEHandler },
-    { name: '/reviewsmonitor', handler: reviewMonitorHandler },
+
     { name: '/editAccount', handler: editAccountHandler },
     { name: '/editNotifications', handler: editNotifsHandler },
     { name: '/deleteAccount', handler: deleteAccountHandler },
@@ -61,8 +57,6 @@ const routesPost: Route[] = [
 ];
 
 const routesGet: Route[] = [
-    { name: '/autoecole/:id', handler: autoEcoleHandler },
-    { name: '/monitor/:id', handler: monitorHandler },
     { name: '/autosecoles', handler: autoEcolesHandler },
     { name: '/autosecolesclass', handler: AESortedHandler },
     { name: '/moniteursclass', handler: monitorsSortedHandler },
@@ -91,6 +85,13 @@ io.on('connection', (socket) => {
     socket.on('getConversations', getConversationsHandler(socket));
     socket.on('getMessages', getMessagesHandler(socket));
     socket.on('sendMessage', sendMessageHandler(socket));
+    socket.on('login', loginHandler(socket));
+    socket.on('registerChercheur', registerNewDriverHandler(socket));
+    socket.on('monitor', monitorHandler(socket));
+    socket.on('autoEcole', autoEcoleHandler(socket));
+    socket.on('autoecoleinfos', autoEcoleInfosHandler(socket));
+    socket.on('reviewsautoecole', reviewsAEHandler(socket));
+    socket.on('reviewsmonitor', reviewMonitorHandler(socket));
 });
 
 connectToMongo();

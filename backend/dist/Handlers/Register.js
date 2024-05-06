@@ -35,23 +35,38 @@ const registerAutoEcoleHandler = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.registerAutoEcoleHandler = registerAutoEcoleHandler;
-const registerNewDriverHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const data = req.body;
-        const response = yield (0, mongo_1.registerNewDriver)(data);
-        if (response) {
-            req.session.userId = response.id;
-            const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
-            res.send({ register: true, token: token });
+// export const registerNewDriverHandler = async (req, res) => {
+//     try {
+//         const data = req.body as UserInterface;
+//         const response = await registerNewDriver(data);
+//         if (response) {
+//             req.session.userId = response.id;
+//             const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
+//             res.send({ register: true, token: token });
+//         } else {
+//             res.send({ register: false });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         res.send({ register: false });
+//     }
+// }
+const registerNewDriverHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const response = yield (0, mongo_1.registerNewDriver)(data);
+            if (response) {
+                const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
+                socket.emit('registerChercheur', { register: true, token: token });
+            }
+            else {
+                socket.emit('registerChercheur', { register: false });
+            }
         }
-        else {
-            res.send({ register: false });
+        catch (error) {
+            socket.emit('registerChercheur', { register: false });
         }
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ register: false });
-    }
-});
+    });
+};
 exports.registerNewDriverHandler = registerNewDriverHandler;
 //# sourceMappingURL=Register.js.map

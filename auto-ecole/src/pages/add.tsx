@@ -7,8 +7,9 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { ReviewMonitor } from '@/types/Monitor';
 import { getToken } from '@/Functions/Token';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { fetchData, handleSubmitAutoecole, handleSubmitMonitor } from '@/Functions/Add';
+import { socket } from './_app';
 
 interface AutoEcoleReview {
   stars: number;
@@ -24,9 +25,43 @@ const Add: React.FC = () => {
 
   let token = getToken(router, jwtDecode);
 
-  useEffect(() => {    
-    token && token !== '' ? fetchData(setMonitorsReview, token as string, router) : router.push('/login');
+  // useEffect(() => {    
+  //   token && token !== '' ? fetchData(setMonitorsReview, token as string, router) : router.push('/login');
+  // }, []);
+
+  useEffect(() => {
+    if (token && token !== '') {
+      fetchData(setMonitorsReview, token as string, router);
+    } else {
+      router.push('/login');
+    }
   }, []);
+
+
+  socket.on('autoecoleinfos', (data: any) => {
+    if (data.autoEcole) {
+      const newMonitorsReview = data.autoEcole.monitors.map((monitor: any) => {
+        return { stars: 0, comment: '', name: monitor.name, _id: monitor._id };
+      });
+      setMonitorsReview(newMonitorsReview);
+    }
+  });
+
+  socket.on('reviewsautoecole', (data: any) => {
+    if (data.posted) {
+      router.push('/autoecole/' + data.autoEcoleId);
+    } else {
+      alert('Erreur lors de la publication de l\'avis');
+    }
+  });
+
+  socket.on('reviewsmonitor', (data: any) => {
+    if (data.posted) {
+      router.push('/autoecole/' + data.autoEcoleId);
+    } else {
+      alert('Erreur lors de la publication de l\'avis');
+    }
+  });       
 
   return (
     <div>
@@ -45,7 +80,7 @@ const Add: React.FC = () => {
             onChange={(newRating) => setAutoecoleReview({ ...autoecoleReview, stars: newRating })}
           />
           <textarea id="autoecole-comment" placeholder='Commentaire' className={styles.add} required onChange={(e) => setAutoecoleReview({ ...autoecoleReview, comment: e.target.value })} />
-          <button type="button" onClick={()=>handleSubmitAutoecole(router, autoecoleReview,token as string)}>avis autoecole</button>
+          <button type="button" onClick={() => handleSubmitAutoecole(router, autoecoleReview, token as string)}>avis autoecole</button>
 
           {monitorsReview.map((monitor, index) => {
             return (

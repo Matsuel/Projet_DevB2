@@ -44,12 +44,8 @@ app.use((0, express_session_1.default)({
     }
 }));
 const routesPost = [
-    { name: '/login', handler: Login_1.LoginHandler },
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: Register_1.registerAutoEcoleHandler },
-    { name: '/registerChercheur', handler: Register_1.registerNewDriverHandler },
-    { name: '/autoecoleinfos', handler: AutoEcole_1.autoEcoleInfosHandler },
-    { name: '/reviewsautoecole', handler: AutoEcole_1.reviewsAEHandler },
-    { name: '/reviewsmonitor', handler: Monitor_1.reviewMonitorHandler },
+    // { name: '/reviewsmonitor', handler: reviewMonitorHandler },
     { name: '/editAccount', handler: Account_1.editAccountHandler },
     { name: '/editNotifications', handler: Account_1.editNotifsHandler },
     { name: '/deleteAccount', handler: Account_1.deleteAccountHandler },
@@ -58,8 +54,6 @@ const routesPost = [
     { name: '/createConversation', handler: Conversation_1.createConversationHandler },
 ];
 const routesGet = [
-    { name: '/autoecole/:id', handler: AutoEcole_1.autoEcoleHandler },
-    { name: '/monitor/:id', handler: Monitor_1.monitorHandler },
     { name: '/autosecoles', handler: AutoEcole_1.autoEcolesHandler },
     { name: '/autosecolesclass', handler: AutoEcole_1.AESortedHandler },
     { name: '/moniteursclass', handler: Monitor_1.monitorsSortedHandler },
@@ -85,6 +79,13 @@ io.on('connection', (socket) => {
     socket.on('getConversations', (0, Conversation_1.getConversationsHandler)(socket));
     socket.on('getMessages', (0, Conversation_1.getMessagesHandler)(socket));
     socket.on('sendMessage', (0, Conversation_1.sendMessageHandler)(socket));
+    socket.on('login', (0, Login_1.loginHandler)(socket));
+    socket.on('registerChercheur', (0, Register_1.registerNewDriverHandler)(socket));
+    socket.on('monitor', (0, Monitor_1.monitorHandler)(socket));
+    socket.on('autoEcole', (0, AutoEcole_1.autoEcoleHandler)(socket));
+    socket.on('autoecoleinfos', (0, AutoEcole_1.autoEcoleInfosHandler)(socket));
+    socket.on('reviewsautoecole', (0, AutoEcole_1.reviewsAEHandler)(socket));
+    socket.on('reviewsmonitor', (0, Monitor_1.reviewMonitorHandler)(socket));
 });
 (0, mongo_1.default)();
 app.listen(3500, () => {

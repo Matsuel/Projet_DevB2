@@ -6,21 +6,22 @@ import { AutoEcole, Student } from "../MongoModels/Users";
 import { updateNote } from "../Functions/note";
 import { reviewAutoecoleSchema } from "../MongoModels/Review";
 
-
-export const autoEcoleHandler = async (req, res) => {
-    try {
-        const autoEcole = await getAutoEcole(req.params.id);
-        const reviewsList = await findAutoEcoleReviews(req.params.id);
-        let monitorsReviews: any[] = [];
-        // @ts-ignore
-        for (let i = 0; i < autoEcole.monitors.length; i++) {
+export const autoEcoleHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            const autoEcole = await getAutoEcole(data.id);
+            const reviewsList = await findAutoEcoleReviews(data.id);
+            let monitorsReviews: any[] = [];
             // @ts-ignore
-            monitorsReviews.push(await findMonitorReviews(autoEcole.monitors[i]._id));
+            for (let i = 0; i < autoEcole.monitors.length; i++) {
+                // @ts-ignore
+                monitorsReviews.push(await findMonitorReviews(autoEcole.monitors[i]._id));
+            }
+            socket.emit('autoEcole', { autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
+        } catch (error) {
+            console.log(error);
         }
-        res.send({ autoEcole: autoEcole, reviews: reviewsList, monitorsReviews: monitorsReviews });
-    } catch (error) {
-        console.log(error);
-    }
+    };
 }
 
 
@@ -32,43 +33,74 @@ export const autoEcolesHandler = async (req, res) => {
     }
 }
 
-export const autoEcoleInfosHandler = async (req, res) => {
-    try {
-        const token = req.body.token;
-        const id = getIdFromToken(token);
-        const student = await Student.findById(id);
-        if (student) {
-            const autoEcole = await AutoEcole.findById(student.autoEcoleId).select('monitors name');
-            res.send({ autoEcole: autoEcole });
-        } else {
-            res.send({ autoEcole: null });
+export const autoEcoleInfosHandler = (socket: any) => {
+    return async (data: any) => {
+        console.log(data);
+        try {
+            const token = data.token;
+            const id = getIdFromToken(token);
+            const student = await Student.findById(id);
+            if (student) {
+                const autoEcole = await AutoEcole.findById(student.autoEcoleId).select('monitors name');
+                socket.emit('autoecoleinfos', { autoEcole: autoEcole });
+            } else {
+                socket.emit('autoecoleinfos', { autoEcole: null });
+            }
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
 }
 
-export const reviewsAEHandler = async (req, res) => {
-    try {
-        const reviewContent = req.body.review;
-        const token = req.body.token;
-        const id = getIdFromToken(token);
-        const student = await Student.findById(id);
-        if (student) {
-            let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
-            await autoEcoleModel.create(createReview(reviewContent, id));
-            if (reviewContent.stars !== 0) {
-                let autoEcole = await AutoEcole.findById(student.autoEcoleId);
-                autoEcole.note = updateNote(autoEcole, reviewContent);
-                autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
-                await autoEcole.save();
+// export const reviewsAEHandler = async (req, res) => {
+//     try {
+//         const reviewContent = req.body.review;
+//         const token = req.body.token;
+//         const id = getIdFromToken(token);
+//         const student = await Student.findById(id);
+//         if (student) {
+//             let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
+//             await autoEcoleModel.create(createReview(reviewContent, id));
+//             if (reviewContent.stars !== 0) {
+//                 let autoEcole = await AutoEcole.findById(student.autoEcoleId);
+//                 autoEcole.note = updateNote(autoEcole, reviewContent);
+//                 autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
+//                 await autoEcole.save();
+//             }
+//             res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+//         } else {
+//             res.send({ posted: false });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+export const reviewsAEHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            console.log(data);
+            const reviewContent = data.review;
+            console.log(reviewContent);
+            const token = data.token;
+            const id = getIdFromToken(token);
+            const student = await Student.findById(id);
+            if (student) {
+                let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
+                await autoEcoleModel.create(createReview(reviewContent, id));
+                if (reviewContent.stars !== 0) {
+                    let autoEcole = await AutoEcole.findById(student.autoEcoleId);
+                    autoEcole.note = updateNote(autoEcole, reviewContent);
+                    autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
+                    await autoEcole.save();
+                }
+                socket.emit('reviewsautoecole', { posted: true, autoEcoleId: student.autoEcoleId });
+            } else {
+                socket.emit('reviewsautoecole', { posted: false });
             }
-            res.send({ posted: true, autoEcoleId: student.autoEcoleId });
-        } else {
-            res.send({ posted: false });
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
 }
 

@@ -19,54 +19,88 @@ const token_1 = require("../Functions/token");
 const Users_1 = require("../MongoModels/Users");
 const Review_1 = require("../MongoModels/Review");
 const mongo_1 = require("../Functions/mongo");
-const monitorHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const autoEcole = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 }).select('_id name');
-        const monitor = yield Users_1.AutoEcole.findOne({ 'monitors._id': req.params.id }, { 'monitors.$': 1 });
-        if (monitor) {
-            res.send({ autoEcole: autoEcole, monitor: monitor, reviews: yield (0, review_1.findMonitorReviews)(req.params.id) });
-        }
-        else {
-            res.send({ monitor: null });
-        }
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
-exports.monitorHandler = monitorHandler;
-const reviewMonitorHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const content = req.body.review;
-        const token = req.body.token;
-        const id = (0, token_1.getIdFromToken)(token);
-        const student = yield Users_1.Student.findById(id);
-        if (student) {
-            let monitors = yield Users_1.AutoEcole.findById(student.autoEcoleId).select('monitors');
-            let monitorIndex = monitors.monitors.findIndex((monitor) => monitor._id.toString() === content._id);
-            if (monitorIndex !== -1) {
-                let monitorReviewModel = mongoose_1.default.model('reviewsMonitor_' + content._id, Review_1.reviewAutoecoleSchema);
-                let newReview = {
-                    rate: content.stars > 0 ? content.stars : null,
-                    comment: content.comment,
-                    creatorId: id,
-                    date: new Date()
-                };
-                yield monitorReviewModel.create(newReview);
-                res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+const monitorHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const autoEcole = yield Users_1.AutoEcole.findOne({ 'monitors._id': data.id }, { 'monitors.$': 1 }).select('_id name');
+            const monitor = yield Users_1.AutoEcole.findOne({ 'monitors._id': data.id }, { 'monitors.$': 1 });
+            if (monitor) {
+                socket.emit('monitor', { autoEcole: autoEcole, monitor: monitor, reviews: yield (0, review_1.findMonitorReviews)(data.id) });
             }
             else {
-                res.send({ posted: false });
+                socket.emit('monitor', { monitor: null });
             }
         }
-        else {
-            res.send({ posted: false });
+        catch (error) {
+            socket.emit('monitor', { monitor: null });
         }
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+    });
+};
+exports.monitorHandler = monitorHandler;
+// export const reviewMonitorHandler = async (req, res) => {
+//     try {
+//         const content: ReviewMonitor = req.body.review;
+//         const token = req.body.token;
+//         const id = getIdFromToken(token);
+//         const student = await Student.findById(id);
+//         if (student) {
+//             let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
+//             let monitorIndex = monitors.monitors.findIndex((monitor: any) => monitor._id.toString() === content._id);
+//             if (monitorIndex !== -1) {
+//                 let monitorReviewModel = mongoose.model('reviewsMonitor_' + content._id, reviewAutoecoleSchema);
+//                 let newReview = {
+//                     rate: content.stars > 0 ? content.stars : null,
+//                     comment: content.comment,
+//                     creatorId: id,
+//                     date: new Date()
+//                 };
+//                 await monitorReviewModel.create(newReview);
+//                 res.send({ posted: true, autoEcoleId: student.autoEcoleId });
+//             } else {
+//                 res.send({ posted: false });
+//             }
+//         } else {
+//             res.send({ posted: false });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+const reviewMonitorHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(data);
+        try {
+            const content = data.review;
+            const token = data.token;
+            const id = (0, token_1.getIdFromToken)(token);
+            const student = yield Users_1.Student.findById(id);
+            if (student) {
+                let monitors = yield Users_1.AutoEcole.findById(student.autoEcoleId).select('monitors');
+                let monitorIndex = monitors.monitors.findIndex((monitor) => monitor._id.toString() === content._id);
+                if (monitorIndex !== -1) {
+                    let monitorReviewModel = mongoose_1.default.model('reviewsMonitor_' + content._id, Review_1.reviewAutoecoleSchema);
+                    let newReview = {
+                        rate: content.stars > 0 ? content.stars : null,
+                        comment: content.comment,
+                        creatorId: id,
+                        date: new Date()
+                    };
+                    yield monitorReviewModel.create(newReview);
+                    socket.emit('reviewsmonitor', { posted: true, autoEcoleId: student.autoEcoleId });
+                }
+                else {
+                    socket.emit('reviewsmonitor', { posted: false });
+                }
+            }
+            else {
+                socket.emit('reviewsmonitor', { posted: false });
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.reviewMonitorHandler = reviewMonitorHandler;
 const monitorsSortedHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
