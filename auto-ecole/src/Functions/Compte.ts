@@ -29,20 +29,27 @@ export async function deleteAccount(id: string) {
 
 export async function editAutoEcoleInfos(id: string, data: AutoEcoleInfosInputs) {
     try {
-        const response = await axios.post("http://localhost:3500/editAutoEcoleInfos", { id, data })
-        return response.data
+        socket.emit('editAutoEcoleInfos', { id, data });
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 
+// export async function editAutoEcolePersonnelFormations(id: string, data: any) {
+//     try {
+//         const response = await axios.post("http://localhost:3500/editAutoEcolePersonnelFormations", { id, data })
+//         console.log(response.data)
+//         response.data.edited ? window.location.reload() : console.log("error")
+//         return response.data
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
+
 export async function editAutoEcolePersonnelFormations(id: string, data: any) {
     try {
-        const response = await axios.post("http://localhost:3500/editAutoEcolePersonnelFormations", { id, data })
-        console.log(response.data)
-        response.data.edited ? window.location.reload() : console.log("error")
-        return response.data
+        socket.emit('editAutoEcolePersonnelFormations', { id, data });
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }

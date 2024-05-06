@@ -45,21 +45,22 @@ const Compte: React.FC = () => {
 
   useEffect(() => {
     socket.emit('userInfos', { token: token })
+    if (data && data.address) {
+      // @ts-ignore
+      setFormations(data.formations);
+      // @ts-ignore
+      setStudents(data.students);
+      // @ts-ignore
+      setReviews(data.reviews);
+      // @ts-ignore
+      setMonitorsReviews(data.reviewsMonitors)
+    }
   }, []);
 
   socket.on('userInfos', (data: any) => {
     setData(data)
   })
-  if (data && data.address) {
-    // @ts-ignore
-    setFormations(data.formations);
-    // @ts-ignore
-    setStudents(data.students);
-    // @ts-ignore
-    setReviews(data.reviews);
-    // @ts-ignore
-    setMonitorsReviews(data.reviewsMonitors)
-  }
+  
 
   socket.on('editAccount', (data: any) => {
     console.log(data)
@@ -76,6 +77,15 @@ const Compte: React.FC = () => {
     }, 3000)
   });
 
+  socket.on('editAEInfos', (data: any) => {
+    data.edited ? window.location.reload() : console.log("error")
+  });
+
+  socket.on('editAutoEcolePersonnelFormations', (data: any) => {
+    console.log(data)
+    data.edited ? window.location.reload() : console.log("error")
+  })
+
   if (!data) return <div>Chargement...</div>
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
@@ -91,10 +101,7 @@ const Compte: React.FC = () => {
   }
 
   const onSubmitInfos: SubmitHandler<AutoEcoleInfosInputs> = async infos => {
-    const response = await editAutoEcoleInfos(data._id, infos)
-    if (response.edited) {
-      window.location.reload()
-    }
+    await editAutoEcoleInfos(data._id, infos)
   }
 
   const handleDeleteAccount = async () => {

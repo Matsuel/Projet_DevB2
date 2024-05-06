@@ -16,19 +16,6 @@ export const editAccountHandler = (socket: any) => {
     }
 }
 
-// export const editNotifsHandler = async (req, res) => {
-//     try {
-//         console.log(req.body);
-//         const id = req.body.id;
-//         const { acceptNotifications } = req.body.data;
-//         await editNotifications(id, acceptNotifications);
-//         res.send({ edited: true });
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ edited: false });
-//     }
-// }
-
 export const editNotifsHandler = (socket: any) => {
     return async (data: any) => {
         try {
@@ -42,29 +29,44 @@ export const editNotifsHandler = (socket: any) => {
     }
 }
 
+export const editAEInfosHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            const id = data.id;
+            const edit = await editAutoEcoleInfos(id, data.data);
+            socket.emit('editAEInfos', { edited: edit });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
+// export const editAEPersonnelHandler = async (req, res) => {
+//     try {
+//         const id = req.body.id;
+//         res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
+//     } catch (error) {
+//         console.log(error);
+//         res.send({ edited: false });
+//     }
+// }
+
+export const editAEPersonnelHandler = (socket: any) => {
+    return async (data: any) => {
+        console.log(data);
+        try {
+            const id = data.id;
+            const edit = await editAutoEcolePersonnelFormations(id, data.data);
+            socket.emit('editAutoEcolePersonnelFormations', { edited: edit });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
+
 export const deleteAccountHandler = async (req, res) => {
     const id = req.body.id;
     res.send({ deleted: await deleteAccount(id) });
-}
-
-export const editAEInfosHandler = async (req, res) => {
-    try {
-        const id = req.body.id;
-        res.send({ edited: await editAutoEcoleInfos(id, req.body.data) });
-    } catch (error) {
-        console.log(error);
-        res.send({ edited: false });
-    }
-}
-
-export const editAEPersonnelHandler = async (req, res) => {
-    try {
-        const id = req.body.id;
-        res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
-    } catch (error) {
-        console.log(error);
-        res.send({ edited: false });
-    }
 }
 
 export const userInfosHandler = (socket: any) => {

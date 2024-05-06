@@ -45,11 +45,9 @@ app.use((0, express_session_1.default)({
 }));
 const routesPost = [
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: Register_1.registerAutoEcoleHandler },
-    // { name: '/editAccount', handler: editAccountHandler },
-    // { name: '/editNotifications', handler: editNotifsHandler },
     { name: '/deleteAccount', handler: Account_1.deleteAccountHandler },
-    { name: '/editAutoEcoleInfos', handler: Account_1.editAEInfosHandler },
-    { name: '/editAutoEcolePersonnelFormations', handler: Account_1.editAEPersonnelHandler },
+    // { name: '/editAutoEcoleInfos', handler: editAEInfosHandler },
+    // { name: '/editAutoEcolePersonnelFormations', handler: editAEPersonnelHandler },
     { name: '/createConversation', handler: Conversation_1.createConversationHandler },
 ];
 const routesGet = [
@@ -87,6 +85,8 @@ io.on('connection', (socket) => {
     socket.on('userInfos', (0, Account_1.userInfosHandler)(socket));
     socket.on('editAccount', (0, Account_1.editAccountHandler)(socket));
     socket.on('editNotifications', (0, Account_1.editNotifsHandler)(socket));
+    socket.on('editAutoEcoleInfos', (0, Account_1.editAEInfosHandler)(socket));
+    socket.on('editAutoEcolePersonnelFormations', (0, Account_1.editAEPersonnelHandler)(socket));
 });
 (0, mongo_1.default)();
 app.listen(3500, () => {

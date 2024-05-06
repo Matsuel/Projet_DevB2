@@ -48,11 +48,9 @@ app.use(session({
 const routesPost: Route[] = [
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
 
-    // { name: '/editAccount', handler: editAccountHandler },
-    // { name: '/editNotifications', handler: editNotifsHandler },
     { name: '/deleteAccount', handler: deleteAccountHandler },
-    { name: '/editAutoEcoleInfos', handler: editAEInfosHandler },
-    { name: '/editAutoEcolePersonnelFormations', handler: editAEPersonnelHandler },
+    // { name: '/editAutoEcoleInfos', handler: editAEInfosHandler },
+    // { name: '/editAutoEcolePersonnelFormations', handler: editAEPersonnelHandler },
     { name: '/createConversation', handler: createConversationHandler },
 ];
 
@@ -94,6 +92,8 @@ io.on('connection', (socket) => {
     socket.on('userInfos', userInfosHandler(socket));
     socket.on('editAccount', editAccountHandler(socket));
     socket.on('editNotifications', editNotifsHandler(socket));
+    socket.on('editAutoEcoleInfos', editAEInfosHandler(socket));
+    socket.on('editAutoEcolePersonnelFormations', editAEPersonnelHandler(socket));
 });
 
 connectToMongo();

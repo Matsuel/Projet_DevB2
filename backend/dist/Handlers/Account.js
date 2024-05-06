@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userInfosHandler = exports.editAEPersonnelHandler = exports.editAEInfosHandler = exports.deleteAccountHandler = exports.editNotifsHandler = exports.editAccountHandler = void 0;
+exports.userInfosHandler = exports.deleteAccountHandler = exports.editAEPersonnelHandler = exports.editAEInfosHandler = exports.editNotifsHandler = exports.editAccountHandler = void 0;
 const mongo_1 = require("../Functions/mongo");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const token_1 = require("../Functions/token");
@@ -31,18 +31,6 @@ const editAccountHandler = (socket) => {
     });
 };
 exports.editAccountHandler = editAccountHandler;
-// export const editNotifsHandler = async (req, res) => {
-//     try {
-//         console.log(req.body);
-//         const id = req.body.id;
-//         const { acceptNotifications } = req.body.data;
-//         await editNotifications(id, acceptNotifications);
-//         res.send({ edited: true });
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ edited: false });
-//     }
-// }
 const editNotifsHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -57,33 +45,47 @@ const editNotifsHandler = (socket) => {
     });
 };
 exports.editNotifsHandler = editNotifsHandler;
+const editAEInfosHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const id = data.id;
+            const edit = yield (0, mongo_1.editAutoEcoleInfos)(id, data.data);
+            socket.emit('editAEInfos', { edited: edit });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
+exports.editAEInfosHandler = editAEInfosHandler;
+// export const editAEPersonnelHandler = async (req, res) => {
+//     try {
+//         const id = req.body.id;
+//         res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
+//     } catch (error) {
+//         console.log(error);
+//         res.send({ edited: false });
+//     }
+// }
+const editAEPersonnelHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(data);
+        try {
+            const id = data.id;
+            const edit = yield (0, mongo_1.editAutoEcolePersonnelFormations)(id, data.data);
+            socket.emit('editAutoEcolePersonnelFormations', { edited: edit });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
+exports.editAEPersonnelHandler = editAEPersonnelHandler;
 const deleteAccountHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.body.id;
     res.send({ deleted: yield (0, mongo_1.deleteAccount)(id) });
 });
 exports.deleteAccountHandler = deleteAccountHandler;
-const editAEInfosHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.body.id;
-        res.send({ edited: yield (0, mongo_1.editAutoEcoleInfos)(id, req.body.data) });
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ edited: false });
-    }
-});
-exports.editAEInfosHandler = editAEInfosHandler;
-const editAEPersonnelHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.body.id;
-        res.send({ edited: yield (0, mongo_1.editAutoEcolePersonnelFormations)(id, req.body.data) });
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ edited: false });
-    }
-});
-exports.editAEPersonnelHandler = editAEPersonnelHandler;
 const userInfosHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
