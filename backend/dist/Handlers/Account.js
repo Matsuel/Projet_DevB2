@@ -16,33 +16,46 @@ exports.userInfosHandler = exports.editAEPersonnelHandler = exports.editAEInfosH
 const mongo_1 = require("../Functions/mongo");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const token_1 = require("../Functions/token");
-const editAccountHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(req.body);
-        const id = req.body.id;
-        const edit = yield (0, mongo_1.editAccount)(id, req.body.data);
-        const token = edit ? jsonwebtoken_1.default.sign({ id: id }, process.env.SECRET, { expiresIn: '24h' }) : null;
-        res.send({ edited: edit, token: token });
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ edited: false });
-    }
-});
+const editAccountHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(data);
+        try {
+            const id = data.id;
+            const edit = yield (0, mongo_1.editAccount)(id, data.data);
+            const token = edit ? jsonwebtoken_1.default.sign({ id: id }, process.env.SECRET, { expiresIn: '24h' }) : null;
+            socket.emit('editAccount', { edited: edit, token });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.editAccountHandler = editAccountHandler;
-const editNotifsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(req.body);
-        const id = req.body.id;
-        const { acceptNotifications } = req.body.data;
-        yield (0, mongo_1.editNotifications)(id, acceptNotifications);
-        res.send({ edited: true });
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ edited: false });
-    }
-});
+// export const editNotifsHandler = async (req, res) => {
+//     try {
+//         console.log(req.body);
+//         const id = req.body.id;
+//         const { acceptNotifications } = req.body.data;
+//         await editNotifications(id, acceptNotifications);
+//         res.send({ edited: true });
+//     } catch (error) {
+//         console.log(error);
+//         res.send({ edited: false });
+//     }
+// }
+const editNotifsHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const id = data.id;
+            const { acceptNotifications } = data.data;
+            yield (0, mongo_1.editNotifications)(id, acceptNotifications);
+            socket.emit('editNotifs', { edited: true });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.editNotifsHandler = editNotifsHandler;
 const deleteAccountHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.body.id;
@@ -71,18 +84,20 @@ const editAEPersonnelHandler = (req, res) => __awaiter(void 0, void 0, void 0, f
     }
 });
 exports.editAEPersonnelHandler = editAEPersonnelHandler;
-const userInfosHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const token = req.query.token;
-        const id = (0, token_1.getIdFromToken)(token);
-        if (!id)
-            return;
-        const user = yield (0, mongo_1.getUserInfosById)(id);
-        res.send(user);
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+const userInfosHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const token = data.token;
+            const id = (0, token_1.getIdFromToken)(token);
+            if (!id)
+                return;
+            const user = yield (0, mongo_1.getUserInfosById)(id);
+            socket.emit('userInfos', user);
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.userInfosHandler = userInfosHandler;
 //# sourceMappingURL=Account.js.map

@@ -2,6 +2,9 @@ export type UserInfos = {
     _id: string,
     email: string,
     acceptNotifications: boolean,
+    address?: string,
+    city?: string,
+    zip?: string,
 }
 
 export type AccountInputs = {

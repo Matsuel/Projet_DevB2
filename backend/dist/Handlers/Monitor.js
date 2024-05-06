@@ -37,35 +37,6 @@ const monitorHandler = (socket) => {
     });
 };
 exports.monitorHandler = monitorHandler;
-// export const reviewMonitorHandler = async (req, res) => {
-//     try {
-//         const content: ReviewMonitor = req.body.review;
-//         const token = req.body.token;
-//         const id = getIdFromToken(token);
-//         const student = await Student.findById(id);
-//         if (student) {
-//             let monitors = await AutoEcole.findById(student.autoEcoleId).select('monitors');
-//             let monitorIndex = monitors.monitors.findIndex((monitor: any) => monitor._id.toString() === content._id);
-//             if (monitorIndex !== -1) {
-//                 let monitorReviewModel = mongoose.model('reviewsMonitor_' + content._id, reviewAutoecoleSchema);
-//                 let newReview = {
-//                     rate: content.stars > 0 ? content.stars : null,
-//                     comment: content.comment,
-//                     creatorId: id,
-//                     date: new Date()
-//                 };
-//                 await monitorReviewModel.create(newReview);
-//                 res.send({ posted: true, autoEcoleId: student.autoEcoleId });
-//             } else {
-//                 res.send({ posted: false });
-//             }
-//         } else {
-//             res.send({ posted: false });
-//         }
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
 const reviewMonitorHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(data);

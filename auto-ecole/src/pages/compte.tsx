@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import styles from '@/styles/Compte.module.css';
-import useSWR from 'swr';
-import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
@@ -12,9 +10,7 @@ import { ReviewMonitor, ReviewsMonitor } from '@/types/Monitor';
 import { ReviewAutoEcole } from '@/types/AutoEcole';
 import { jwtDecode } from 'jwt-decode';
 import { getToken } from '@/Functions/Token';
-
-const fetcher = (url: string) => axios.get(url).then(res => res.data)
-
+import { socket } from './_app';
 
 
 const Compte: React.FC = () => {
@@ -45,35 +41,53 @@ const Compte: React.FC = () => {
   const [reviews, setReviews] = useState<ReviewAutoEcole[]>([])
   const [monitorsReviews, setMonitorsReviews] = useState<ReviewsMonitor[]>([])
 
-  const { data, error, isLoading } = useSWR<UserInfos | any>('http://localhost:3500/userInfos?token=' + token, fetcher)
+  const [data, setData] = useState<UserInfos>()
+
   useEffect(() => {
-    if (data && data.address) {
-      setFormations(data.formations);
-      setStudents(data.students);
-      setReviews(data.reviews);
-      setMonitorsReviews(data.reviewsMonitors)
-    }
-  }, [data]);
-  if (isLoading || !data) return <div>Chargement...</div>
-  if (error) return <div>Erreur</div>
-  console.log(data)
+    socket.emit('userInfos', { token: token })
+  }, []);
+
+  socket.on('userInfos', (data: any) => {
+    setData(data)
+  })
+  if (data && data.address) {
+    // @ts-ignore
+    setFormations(data.formations);
+    // @ts-ignore
+    setStudents(data.students);
+    // @ts-ignore
+    setReviews(data.reviews);
+    // @ts-ignore
+    setMonitorsReviews(data.reviewsMonitors)
+  }
+
+  socket.on('editAccount', (data: any) => {
+    console.log(data)
+    data.edited ? (
+      localStorage.setItem('token', data.token),
+      window.location.reload()
+    ) : setEditError(true)
+  });
+
+  socket.on('editNotifications', (data: any) => {
+    data.edited ? setNotificationsEdit(true) : setNotificationsEdit(false)
+    setTimeout(() => {
+      setNotificationsEdit(false)
+    }, 3000)
+  });
+
+  if (!data) return <div>Chargement...</div>
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
     if (infos.newPassword !== infos.newPasswordConfirm) {
       setEditError(true)
       return
     }
-    const response = await editAccount(data._id, infos)
-    response.edited ? localStorage.setItem('token', response.token) : setEditError(true)
-    window.location.reload()
+    await editAccount(data._id, infos)
   }
 
   const onSubmitNotifications: SubmitHandler<NotificationsInputs> = async infos => {
-    const response = await editNotifications(data._id, infos)
-    response.edited ? setNotificationsEdit(true) : setNotificationsEdit(false)
-    setTimeout(() => {
-      setNotificationsEdit(false)
-    }, 3000)
+    await editNotifications(data._id, infos)
   }
 
   const onSubmitInfos: SubmitHandler<AutoEcoleInfosInputs> = async infos => {
@@ -271,10 +285,6 @@ const Compte: React.FC = () => {
             </div>
             : null}
 
-
-
-
-          {data.acceptNotifications &&
             <form onSubmit={handleSubmitNotifications(onSubmitNotifications)}>
               <input
                 type="checkbox"
@@ -289,7 +299,6 @@ const Compte: React.FC = () => {
                 Modifier
               </button>
             </form>
-          }
 
           <button
             onClick={() => handleDeleteAccount()}
