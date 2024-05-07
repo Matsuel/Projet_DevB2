@@ -14,6 +14,16 @@ Sur notre site, différents types d'utilisateurs peuvent interagir :
 
 Tous les utilisateurs ont la possibilité d'accéder à leur compte pour modifier leurs informations de base telles que le mot de passe et l'adresse e-mail.
 
+## 🔋 Fonctionnalités majeures
+
+- Recherche d'auto-école par nom ou par localisation
+- Création d'auto-école ou de futur conducteur
+- Edition/Suppresion du compte
+- Ajout d'avis et de commentaire sur les auto-écoles/moniteurs
+- Fonction de chat avec les utilisateurs ayant posté des commentaires
+- Consultation de la page auto-école/moniteur
+- Classement des meilleurs auto-écoles/moniteurs
+
 ## 🛠 Technologies utilisées
 
 <details>
@@ -94,9 +104,13 @@ npm run dev
 
 *Ensuite rendez-vous sur votre navigateur http://localhost:3000*
 
+## 📷 Screenshots
+
+
+
 ## 👥 Auteurs
 
-### 👤 [Ninjawill543](https://github.com/ninjawill543)
-### 👤 [Matsuel](https://github.com/Matsuel)
+### 👤 [Ninjawill543](https://github.com/ninjawill543): Front-End
+### 👤 [Matsuel](https://github.com/Matsuel): Back-End
 
 
