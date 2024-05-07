@@ -1,0 +1,108 @@
+.oui {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+.buttons_choice {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    margin-top: 20px;
+
+    .button_choice {
+        width: 100px;
+        height: 50px;
+        border-radius: 12px;
+        background-color: #ebf3ff;
+        border: none;
+        cursor: pointer;
+    }
+}
+
+.form {
+    width: 80%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+
+    .inputText {
+        width: 45%;
+        height: 50px;
+        margin-bottom: 20px;
+        margin-left: 1%;
+        border-radius: 12px;
+        border: 1px solid #d3d3d3;
+        padding: 10px;
+    }
+
+    .inputText:focus {
+        outline: none;
+        border: 1px solid #007bff;
+    }
+
+    .inputFile {
+        display: none;
+    }
+
+    .inputFileLabel {
+        width: 91%;
+        height: 50px;
+        margin-bottom: 20px;
+        margin-left: 1%;
+        border-radius: 12px;
+        border: 1px solid #d3d3d3;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+    }
+}
+
+.button_register {
+    width: 150px;
+    height: 50px;
+    border-radius: 12px;
+    background-color: #ebf3ff;
+    border: none;
+    cursor: pointer;
+}
+
+.inputs {
+    flex-direction: column;
+    margin-bottom: 50px;
+}
+
+.checkboxs {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+
+    .checkbox {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .checkboxLabel {
+        font-size: 20px;
+        margin-right: 10px;
+    }
+}
