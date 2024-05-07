@@ -7,34 +7,60 @@ import { MessageReceived } from "../Types/Chat";
 import { createMessage, synchroneMessages } from "../Functions/chat";
 import { connectedUsers } from "..";
 
-export const createConversationHandler = async (req, res) => {
-    try {
-        console.log(req.body);
-        let { userId, creatorId } = req.body;
-        creatorId = getIdFromToken(creatorId);
-        if (!creatorId) return;
-        const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
-        if (conversationExists) {
-            res.send({ created: false });
-        } else {
-            const newConversation = new Conversations({
-                usersId: [userId, creatorId],
-                date: new Date(),
-                lastMessage: ''
-            });
-            await newConversation.save();
-            const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
-            conversationShema.createCollection();
-            res.send({ created: true });
+// export const createConversationHandler = async (req, res) => {
+//     try {
+//         console.log(req.body);
+//         let { userId, creatorId } = req.body;
+//         creatorId = getIdFromToken(creatorId);
+//         if (!creatorId) return;
+//         const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
+//         if (conversationExists) {
+//             res.send({ created: false });
+//         } else {
+//             const newConversation = new Conversations({
+//                 usersId: [userId, creatorId],
+//                 date: new Date(),
+//                 lastMessage: ''
+//             });
+//             await newConversation.save();
+//             const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
+//             conversationShema.createCollection();
+//             res.send({ created: true });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+export const createConversationHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            let { userId, creatorId } = data;
+            creatorId = getIdFromToken(creatorId);
+            if (!creatorId) return;
+            const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
+            if (conversationExists) {
+                socket.emit('createConversation', { created: false });
+            } else {
+                const newConversation = new Conversations({
+                    usersId: [userId, creatorId],
+                    date: new Date(),
+                    lastMessage: ''
+                });
+                await newConversation.save();
+                const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
+                conversationShema.createCollection();
+                socket.emit('createConversation', { created: true });
+            }
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
     }
 }
 
 
 // Websockets handlers
-export const getConversationsHandler = (socket) => {
+export const getConversationsHandler = (socket:any) => {
     return async (data) => {
         try {
             const id = getIdFromToken(data.id);

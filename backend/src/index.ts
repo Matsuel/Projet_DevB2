@@ -47,11 +47,6 @@ app.use(session({
 
 const routesPost: Route[] = [
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
-
-    { name: '/deleteAccount', handler: deleteAccountHandler },
-    // { name: '/editAutoEcoleInfos', handler: editAEInfosHandler },
-    // { name: '/editAutoEcolePersonnelFormations', handler: editAEPersonnelHandler },
-    { name: '/createConversation', handler: createConversationHandler },
 ];
 
 const routesGet: Route[] = [
@@ -94,6 +89,8 @@ io.on('connection', (socket) => {
     socket.on('editNotifications', editNotifsHandler(socket));
     socket.on('editAutoEcoleInfos', editAEInfosHandler(socket));
     socket.on('editAutoEcolePersonnelFormations', editAEPersonnelHandler(socket));
+    socket.on('deleteAccount', deleteAccountHandler(socket));
+    socket.on('createConversation', createConversationHandler(socket));
 });
 
 connectToMongo();

@@ -5,12 +5,9 @@ import styles from '@/styles/autoecole.module.css';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import useSWR from 'swr';
 import { createConversation } from '@/Functions/Chat';
 import { AutoEcoleInfos } from '@/types/AutoEcole';
 import { handleMonitorClick } from '@/Functions/Router';
-import { getToken } from '@/Functions/Token';
-import { jwtDecode } from 'jwt-decode';
 import { socket } from '../_app';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data)
@@ -27,6 +24,12 @@ const Autoecole = () => {
       setData(data);
     });
   }
+
+  socket.on('createConversation', (data: any) => {
+    if (data.created) {
+      router.push(`/chat/${data.conversationId}`)
+    }
+  })
 
   if (!data) return <div>Chargement...</div>
 
