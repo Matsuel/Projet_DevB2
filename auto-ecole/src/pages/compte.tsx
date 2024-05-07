@@ -86,6 +86,15 @@ const Compte: React.FC = () => {
     data.edited ? window.location.reload() : console.log("error")
   })
 
+  socket.on('deleteAccount', (data: any) => {
+    if (data.deleted) {
+      localStorage.removeItem('token')
+      router.push('/login')
+    } else {
+      console.log("error")
+    }
+  })
+
   if (!data) return <div>Chargement...</div>
 
   const onSubmit: SubmitHandler<AccountInputs> = async (infos) => {
@@ -105,11 +114,7 @@ const Compte: React.FC = () => {
   }
 
   const handleDeleteAccount = async () => {
-    const response = await deleteAccount(data._id)
-    if (response.deleted) {
-      localStorage.removeItem('token')
-      window.location.href = '/'
-    }
+    await deleteAccount(data._id)
   }
 
   const addFormation = (e: React.KeyboardEvent<HTMLInputElement>) => {

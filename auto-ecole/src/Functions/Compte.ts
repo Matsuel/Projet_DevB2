@@ -18,12 +18,20 @@ export async function editNotifications(id: string, data: any) {
     }
 }
 
+// export async function deleteAccount(id: string) {
+//     try {
+//         const response = await axios.post("http://localhost:3500/deleteAccount", { id })
+//         return response.data
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
+
 export async function deleteAccount(id: string) {
     try {
-        const response = await axios.post("http://localhost:3500/deleteAccount", { id })
-        return response.data
+        socket.emit('deleteAccount', { id });
     } catch (error) {
-        console.log(error)
+        console.log(error);
     }
 }
 

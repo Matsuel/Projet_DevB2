@@ -41,16 +41,6 @@ export const editAEInfosHandler = (socket: any) => {
     }
 }
 
-// export const editAEPersonnelHandler = async (req, res) => {
-//     try {
-//         const id = req.body.id;
-//         res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ edited: false });
-//     }
-// }
-
 export const editAEPersonnelHandler = (socket: any) => {
     return async (data: any) => {
         console.log(data);
@@ -64,9 +54,15 @@ export const editAEPersonnelHandler = (socket: any) => {
     }
 }
 
-export const deleteAccountHandler = async (req, res) => {
-    const id = req.body.id;
-    res.send({ deleted: await deleteAccount(id) });
+export const deleteAccountHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            const id = data.id;
+            socket.emit('deleteAccount', { deleted: await deleteAccount(id) });
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
 export const userInfosHandler = (socket: any) => {
