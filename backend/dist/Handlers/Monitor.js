@@ -73,24 +73,6 @@ const reviewMonitorHandler = (socket) => {
     });
 };
 exports.reviewMonitorHandler = reviewMonitorHandler;
-// export const monitorsSortedHandler = async (req, res) => {
-//     try {
-//         const moniteurs = await AutoEcole.find().select('monitors');
-//         let moniteursList: any[] = [];
-//         for (let i = 0; i < moniteurs.length; i++) {
-//             const monitorsWithAvgPromises = moniteurs[i].monitors.map(async monitor => ({
-//                 ...monitor.toObject(),
-//                 avg: await getMonitorAvg(monitor._id.toString())
-//             }));
-//             const monitorsWithAvg = await Promise.all(monitorsWithAvgPromises);
-//             moniteursList.push(...monitorsWithAvg);
-//         }
-//         const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
-//         res.send({ moniteurs: moniteursSorted });
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
 const monitorsSortedHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {

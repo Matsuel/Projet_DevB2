@@ -35,22 +35,6 @@ const registerAutoEcoleHandler = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.registerAutoEcoleHandler = registerAutoEcoleHandler;
-// export const registerNewDriverHandler = async (req, res) => {
-//     try {
-//         const data = req.body as UserInterface;
-//         const response = await registerNewDriver(data);
-//         if (response) {
-//             req.session.userId = response.id;
-//             const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
-//             res.send({ register: true, token: token });
-//         } else {
-//             res.send({ register: false });
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ register: false });
-//     }
-// }
 const registerNewDriverHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {

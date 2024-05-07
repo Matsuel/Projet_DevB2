@@ -49,21 +49,12 @@ const routesPost: Route[] = [
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
 ];
 
-const routesGet: Route[] = [
-    { name: '/search', handler: searchHandler },
-    { name: '/results', handler: resultsHandler }
-];
-
 routesPost.forEach(route => {
     if (route.upload) {
         app.post(route.name, route.upload, route.handler);
     } else {
         app.post(route.name, route.handler);
     }
-});
-
-routesGet.forEach(route => {
-    app.get(route.name, route.handler);
 });
 
 export let connectedUsers: any = {};
@@ -91,6 +82,8 @@ io.on('connection', (socket) => {
     socket.on('autosecoles', autoEcolesHandler(socket));
     socket.on('autosecolesclass', AESortedHandler(socket));
     socket.on('moniteursclass', monitorsSortedHandler(socket));
+    socket.on('search', searchHandler(socket));
+    socket.on('results', resultsHandler(socket));
 });
 
 connectToMongo();

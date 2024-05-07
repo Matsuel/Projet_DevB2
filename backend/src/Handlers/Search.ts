@@ -1,24 +1,27 @@
 import { searchAutoEcole } from "../Functions/mongo";
 import { searchInCitiesFiles } from "../Functions/search";
 
-
-export const searchHandler = async (req, res) => {
-    try {
-        const cities = await searchInCitiesFiles(req.query.search as string);
-        const autoEcoles = await searchAutoEcole(req.query.search as string);
-        res.send({ cities: cities, autoEcoles: autoEcoles });
-    } catch (error) {
-        console.log(error);
-        res.send({ cities: [], autoEcoles: [] });
+export const searchHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            const cities = await searchInCitiesFiles(data.search);
+            const autoEcoles = await searchAutoEcole(data.search);
+            socket.emit('search', { cities: cities, autoEcoles: autoEcoles });
+        } catch (error) {
+            console.log(error);
+            socket.emit('search', { cities: [], autoEcoles: [] });
+        }
     }
 }
 
-export const resultsHandler = async (req, res) => {
-    try {
-        const autoEcoles = await searchAutoEcole(req.query.search as string);
-        res.send({ autoEcoles: autoEcoles });
-    } catch (error) {
-        console.log(error);
-        res.send({ autoEcoles: [] });
+export const resultsHandler = (socket: any) => {
+    return async (data: any) => {
+        try {
+            const autoEcoles = await searchAutoEcole(data.search);
+            socket.emit('results', { autoEcoles: autoEcoles });
+        } catch (error) {
+            console.log(error);
+            socket.emit('results', { autoEcoles: [] });
+        }
     }
 }

@@ -12,27 +12,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resultsHandler = exports.searchHandler = void 0;
 const mongo_1 = require("../Functions/mongo");
 const search_1 = require("../Functions/search");
-const searchHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const cities = yield (0, search_1.searchInCitiesFiles)(req.query.search);
-        const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
-        res.send({ cities: cities, autoEcoles: autoEcoles });
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ cities: [], autoEcoles: [] });
-    }
-});
+// export const searchHandler = async (req, res) => {
+//     try {
+//         const cities = await searchInCitiesFiles(req.query.search as string);
+//         const autoEcoles = await searchAutoEcole(req.query.search as string);
+//         res.send({ cities: cities, autoEcoles: autoEcoles });
+//     } catch (error) {
+//         console.log(error);
+//         res.send({ cities: [], autoEcoles: [] });
+//     }
+// }
+const searchHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const cities = yield (0, search_1.searchInCitiesFiles)(data.search);
+            const autoEcoles = yield (0, mongo_1.searchAutoEcole)(data.search);
+            socket.emit('search', { cities: cities, autoEcoles: autoEcoles });
+        }
+        catch (error) {
+            console.log(error);
+            socket.emit('search', { cities: [], autoEcoles: [] });
+        }
+    });
+};
 exports.searchHandler = searchHandler;
-const resultsHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const autoEcoles = yield (0, mongo_1.searchAutoEcole)(req.query.search);
-        res.send({ autoEcoles: autoEcoles });
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ autoEcoles: [] });
-    }
-});
+// export const resultsHandler = async (req, res) => {
+//     try {
+//         const autoEcoles = await searchAutoEcole(req.query.search as string);
+//         res.send({ autoEcoles: autoEcoles });
+//     } catch (error) {
+//         console.log(error);
+//         res.send({ autoEcoles: [] });
+//     }
+// }
+const resultsHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const autoEcoles = yield (0, mongo_1.searchAutoEcole)(data.search);
+            socket.emit('results', { autoEcoles: autoEcoles });
+        }
+        catch (error) {
+            console.log(error);
+            socket.emit('results', { autoEcoles: [] });
+        }
+    });
+};
 exports.resultsHandler = resultsHandler;
 //# sourceMappingURL=Search.js.map

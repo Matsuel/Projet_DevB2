@@ -5,6 +5,7 @@ import Carte from '@/Components/Carte_Resultats';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { handleAutoEcoleClick } from '@/Functions/Router';
+import { socket } from './_app';
 
 const Resultats: React.FC = () => {
   const router = useRouter();
@@ -16,10 +17,10 @@ const Resultats: React.FC = () => {
     const fetchData = async () => {
       if (query.city) {
         setCity(query.city as string);
-        const response = await axios.get('http://localhost:3500/results', { params: { search: query.city } })
-        console.log(response.data);
-        setResults(response.data.autoEcoles);
-
+        socket.emit('results', { search: query.city });
+        socket.on('results', (data: any) => {
+          setResults(data.autoEcoles);
+        });
       }
     }
     fetchData();
