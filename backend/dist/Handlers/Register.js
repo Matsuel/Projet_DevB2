@@ -15,25 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerNewDriverHandler = exports.registerAutoEcoleHandler = void 0;
 const mongo_1 = require("../Functions/mongo");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const registerAutoEcoleHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const data = req.body;
-        const file = req.file;
-        const response = yield (0, mongo_1.registerAutoEcole)(data, file);
-        if (response) {
-            req.session.userId = response.id;
-            const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
-            res.send({ register: true, token: token });
+const registerAutoEcoleHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(data);
+        try {
+            const response = yield (0, mongo_1.registerAutoEcole)(data, data.pics);
+            console.log(response, 'response');
+            if (response) {
+                const token = jsonwebtoken_1.default.sign({ id: response.id }, process.env.SECRET, { expiresIn: '24h' });
+                socket.emit('registerAutoEcole', { register: true, token: token });
+            }
+            else {
+                socket.emit('registerAutoEcole', { register: false });
+            }
         }
-        else {
-            res.send({ register: false });
+        catch (error) {
+            socket.emit('registerAutoEcole', { register: false });
         }
-    }
-    catch (error) {
-        console.log(error);
-        res.send({ register: false });
-    }
-});
+    });
+};
 exports.registerAutoEcoleHandler = registerAutoEcoleHandler;
 const registerNewDriverHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {

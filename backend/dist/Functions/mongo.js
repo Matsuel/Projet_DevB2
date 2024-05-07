@@ -34,10 +34,12 @@ function connectToMongo() {
 }
 function registerAutoEcole(data, file) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log("registerAutoEcole", data);
         // ajouter champ pour les anciens élèves
         // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
         const autoEcole = yield Users_1.AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
         if (autoEcole) {
+            console.log("autoecole déjà enregistrée");
             return { register: false };
         }
         else {
@@ -68,6 +70,7 @@ function registerAutoEcole(data, file) {
             yield newAutoEcole.save();
             yield registerStudents(data.mail);
             yield createReviewsCollections(data.mail);
+            console.log("autoecole enregistrée");
             return { register: true, id: newAutoEcole._id };
         }
     });

@@ -3,7 +3,6 @@ import Head from 'next/head';
 import Header from "@/Components/Header";
 import Carte from '@/Components/Carte_Resultats';
 import { useRouter } from 'next/router';
-import axios from 'axios';
 import { handleAutoEcoleClick } from '@/Functions/Router';
 import { socket } from './_app';
 
@@ -35,10 +34,9 @@ const Resultats: React.FC = () => {
       </Head>
       <main>
         <Header />
+        {city && <h1>Résultats pour {city}</h1>}
+        {results.length === 0 && <h1>Aucun résultat</h1>}
         <ul>
-          <li><Carte nom="oui" address="non" stars={3.5} /></li>
-          <li><Carte nom="bruh" address="non" stars={0.5} /></li>
-          <li><Carte nom="odzedzdeui" address="dzedezdddd" stars={5} /></li>
           {results.map((autoEcole) => {
             return (
               <li key={autoEcole._id} onClick={() => handleAutoEcoleClick(autoEcole._id, router)}>

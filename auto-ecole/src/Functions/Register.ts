@@ -63,39 +63,10 @@ const registerAutoEcole = async (e: React.FormEvent<HTMLFormElement>, setRegiste
         students: [students.value]
     };
 
-    let formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('mail', data.mail);
-    formData.append('password', data.password);
-    formData.append('address', data.address);
-    formData.append('zip', data.zip);
-    formData.append('city', data.city);
-    formData.append('pics', data.pics as Blob);
-    formData.append('monitors', JSON.stringify(data.monitors));
-    formData.append('phone', data.phone);
-    formData.append('card', data.card.toString());
-    formData.append('cheque', data.cheque.toString());
-    formData.append('especes', data.especes.toString());
-    formData.append('qualiopi', data.qualiopi.toString());
-    formData.append('label_qualite', data.label_qualite.toString());
-    formData.append('qualicert', data.qualicert.toString());
-    formData.append('garantie_fin', data.garantie_fin.toString());
-    formData.append('datadocke', data.datadocke.toString());
-    formData.append('cpf', data.cpf.toString());
-    formData.append('aide_apprentis', data.aide_apprentis.toString());
-    formData.append('permis1', data.permis1.toString());
-    formData.append('fin_francetravail', data.fin_francetravail.toString());
-    formData.append('formations', JSON.stringify(data.formations));
-    formData.append('students', JSON.stringify(data.students));
-
-    // socket.emit('registerAutoEcole', data);
     try {
-        const response = await axios.post('http://localhost:3500/registerAutoEcole', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        setRegister(response.data.register);
-        response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
-        response.data.register === true ? setToken(response.data.token) : setToken('');
+        socket.emit('registerAutoEcole', data);        
     } catch (error) {
-        console.log(error);
+        console.log(error);        
     }
 
 };
@@ -114,10 +85,6 @@ const registerChercheur = async (e: React.FormEvent<HTMLFormElement>, setRegiste
     };
 
     try {
-        // const response = await axios.post('http://localhost:3500/registerChercheur', data);
-        // setRegister(response.data.register);
-        // response.data.register === false ? setRegisterError('Problème lors de l\'enregistrement') : setRegisterError('');
-        // response.data.register === true ? setToken(response.data.token) : setToken('');
         socket.emit('registerChercheur', data);
         socket.on('registerChercheur', (data: any) => {
             if (data.register) {

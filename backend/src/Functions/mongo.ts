@@ -21,10 +21,12 @@ function connectToMongo() {
 }
 
 export async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
+    console.log("registerAutoEcole", data);
     // ajouter champ pour les anciens élèves
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
+        console.log("autoecole déjà enregistrée");
         return { register: false };
     } else {
         typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
@@ -51,6 +53,7 @@ export async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
         await newAutoEcole.save();
         await registerStudents(data.mail);
         await createReviewsCollections(data.mail);
+        console.log("autoecole enregistrée");
         return { register: true, id: newAutoEcole._id };
     }
 }

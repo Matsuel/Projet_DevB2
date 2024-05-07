@@ -3,9 +3,14 @@ import Head from 'next/head';
 import styles from '@/styles/Register.module.css';
 import { registerAutoEcole, registerChercheur } from '@/Functions/Register';
 import Header from "@/Components/Header";
+import { useRouter } from 'next/router';
+import { socket } from './_app';
 
 
 const Register: React.FC = () => {
+
+  const router = useRouter();
+
   const [register , setRegister] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string>('');
   const [token, setToken] = useState<string>('');
@@ -38,9 +43,19 @@ const Register: React.FC = () => {
   useEffect(() => {
     if (register) {
       localStorage.setItem('token', token);
-      window.location.href = '/';
+      router.push('/');
     }
   }, [register]);
+
+  socket.on('registerAutoEcole', (data: any) => {
+    console.log(data);
+    if (data.register) {
+      setRegister(true);
+      setToken(data.token);
+    } else {
+      setRegisterError('Erreur lors de l\'inscription');
+    }
+  });
 
   return (
     <div>
@@ -118,19 +133,6 @@ const Register: React.FC = () => {
               </div>
             </div>
           </form>
-
-          {/* <form id="ancien-eleve">
-            <div className={styles.oui3}>
-              <h1>ancien eleve</h1>
-              <input type="email" placeholder='email' id="ancien-eleve-mail" />
-              <input type="password" placeholder='password' id="ancien-eleve-password" />
-              <div className={styles.oui4}>
-                  <input type="checkbox" id="ancien-eleve-notifs" />
-                  <label htmlFor="ancien-eleve-notifs">notifs?</label>
-                </div>
-              <button type="submit" className={styles.button_register}>Inscription ancien eleve</button>
-            </div>
-          </form> */}
 
           <form id="nouveau" onSubmit={ (e) => registerChercheur(e, setRegister, setRegisterError, setToken) }>
           <div id="show-nouveau" className={styles.hidden}>

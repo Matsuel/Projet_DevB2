@@ -67,11 +67,14 @@ export const deleteAccountHandler = (socket: any) => {
 
 export const userInfosHandler = (socket: any) => {
     return async (data: any) => {
+        console.log(data);
         try {
             const token = data.token;
             const id = getIdFromToken(token);
+            console.log(id);
             if (!id) return;
             const user = await getUserInfosById(id);
+            console.log(user);
             socket.emit('userInfos', user);
         } catch (error) {
             console.log(error);

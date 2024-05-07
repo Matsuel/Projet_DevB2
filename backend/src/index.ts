@@ -15,9 +15,6 @@ import { deleteAccountHandler, editAEInfosHandler, editAEPersonnelHandler, editA
 import { resultsHandler, searchHandler } from './Handlers/Search';
 import { createConversationHandler, getConversationsHandler, getMessagesHandler, sendMessageHandler } from './Handlers/Conversation';
 import { connectionHandler, disconnectionHandler } from './Handlers/Ws';
-import { Route } from './Types/Route';
-
-const upload = multer({ storage: multer.memoryStorage() });
 
 dotenv.config();
 
@@ -44,18 +41,6 @@ app.use(session({
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
-
-const routesPost: Route[] = [
-    { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
-];
-
-routesPost.forEach(route => {
-    if (route.upload) {
-        app.post(route.name, route.upload, route.handler);
-    } else {
-        app.post(route.name, route.handler);
-    }
-});
 
 export let connectedUsers: any = {};
 
@@ -84,13 +69,10 @@ io.on('connection', (socket) => {
     socket.on('moniteursclass', monitorsSortedHandler(socket));
     socket.on('search', searchHandler(socket));
     socket.on('results', resultsHandler(socket));
+    socket.on('registerAutoEcole', registerAutoEcoleHandler(socket));
 });
 
 connectToMongo();
-
-app.listen(3500, () => {
-    console.log('Server is running on port 3500');
-});
 
 server.listen(4000, () => {
     console.log('Socket is running on port 4000');

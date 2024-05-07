@@ -12,16 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resultsHandler = exports.searchHandler = void 0;
 const mongo_1 = require("../Functions/mongo");
 const search_1 = require("../Functions/search");
-// export const searchHandler = async (req, res) => {
-//     try {
-//         const cities = await searchInCitiesFiles(req.query.search as string);
-//         const autoEcoles = await searchAutoEcole(req.query.search as string);
-//         res.send({ cities: cities, autoEcoles: autoEcoles });
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ cities: [], autoEcoles: [] });
-//     }
-// }
 const searchHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -36,15 +26,6 @@ const searchHandler = (socket) => {
     });
 };
 exports.searchHandler = searchHandler;
-// export const resultsHandler = async (req, res) => {
-//     try {
-//         const autoEcoles = await searchAutoEcole(req.query.search as string);
-//         res.send({ autoEcoles: autoEcoles });
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ autoEcoles: [] });
-//     }
-// }
 const resultsHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {

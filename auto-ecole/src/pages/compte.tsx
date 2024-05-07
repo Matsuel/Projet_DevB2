@@ -45,6 +45,9 @@ const Compte: React.FC = () => {
 
   useEffect(() => {
     socket.emit('userInfos', { token: token })
+  }, []);
+
+  useEffect(() => {
     if (data && data.address) {
       // @ts-ignore
       setFormations(data.formations);
@@ -55,7 +58,7 @@ const Compte: React.FC = () => {
       // @ts-ignore
       setMonitorsReviews(data.reviewsMonitors)
     }
-  }, []);
+  }, [data])
 
   socket.on('userInfos', (data: any) => {
     setData(data)

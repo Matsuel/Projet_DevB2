@@ -44,12 +44,8 @@ app.use((0, express_session_1.default)({
     }
 }));
 const routesPost = [
-    { name: '/registerAutoEcole', upload: upload.single('pics'), handler: Register_1.registerAutoEcoleHandler },
+// { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
 ];
-// const routesGet: Route[] = [
-//     // { name: '/search', handler: searchHandler },
-//     // { name: '/results', handler: resultsHandler }
-// ];
 routesPost.forEach(route => {
     if (route.upload) {
         app.post(route.name, route.upload, route.handler);
@@ -58,9 +54,6 @@ routesPost.forEach(route => {
         app.post(route.name, route.handler);
     }
 });
-// routesGet.forEach(route => {
-//     app.get(route.name, route.handler);
-// });
 exports.connectedUsers = {};
 io.on('connection', (socket) => {
     socket.on('connection', (0, Ws_1.connectionHandler)(socket, exports.connectedUsers));
@@ -87,6 +80,7 @@ io.on('connection', (socket) => {
     socket.on('moniteursclass', (0, Monitor_1.monitorsSortedHandler)(socket));
     socket.on('search', (0, Search_1.searchHandler)(socket));
     socket.on('results', (0, Search_1.resultsHandler)(socket));
+    socket.on('registerAutoEcole', (0, Register_1.registerAutoEcoleHandler)(socket));
 });
 (0, mongo_1.default)();
 app.listen(3500, () => {

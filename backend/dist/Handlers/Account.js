@@ -86,12 +86,15 @@ const deleteAccountHandler = (socket) => {
 exports.deleteAccountHandler = deleteAccountHandler;
 const userInfosHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(data);
         try {
             const token = data.token;
             const id = (0, token_1.getIdFromToken)(token);
+            console.log(id);
             if (!id)
                 return;
             const user = yield (0, mongo_1.getUserInfosById)(id);
+            console.log(user);
             socket.emit('userInfos', user);
         }
         catch (error) {
