@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import styles from '@/styles/Login.module.css'; 
+import styles from '@/styles/Login.module.scss'; 
 import Header from "@/Components/Header";
 import Link from 'next/link';
 import { login } from '@/Functions/Login';
@@ -29,11 +29,11 @@ const Login: React.FC = () => {
       </Head>
       <main>
         <Header />
-        <h1>login</h1>
+        <h1>Login</h1>
         <p>{loginError}</p>
-        <form id="login" onSubmit={(e) => login(e, setLoginResponse, setLoginError, setToken, socket)}>
-            <input type="text" placeholder='email' id="login-email"/>
-            <input type="password" placeholder='Password' id="login-password"/>
+        <form id="login" onSubmit={(e) => login(e, setLoginResponse, setLoginError, setToken, socket)} className={styles.form}>
+            <input className={styles.inputText} type="text" placeholder='email' id="login-email"/>
+            <input className={styles.inputText} type="password" placeholder='Password' id="login-password"/>
             <button type="submit" className={styles.button_login}>Login</button>
         </form>
         <Link href="/register"><button className={styles.button_login}>Go to register</button></Link>
