@@ -1,21 +1,26 @@
 import React from 'react';
-import styles from '@/styles/ChatCard.module.css';
+import styles from '@/styles/ChatCard.module.scss';
 
 interface CarteProps {
   id: string;
   message: string;
   date: string;
   position: 'left' | 'right';
+  ref ?: any;
 }
 
-const Carte: React.FC<CarteProps> = ({ id, message, date, position }) => {
+const Carte: React.FC<CarteProps> = ({ id, message, date, position, ref }) => {
   const cardClass = position === 'left' ? styles.left : styles.right;
 
+  if (ref) {
+    ref.current?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   return (
-    <div className={`${styles.main} ${cardClass}`}>
-      <h2>{id}</h2>
-      <h3>{message}</h3>
-      <h3>
+    <div className={`${styles.main} ${cardClass}`} ref={ref}>
+      {/* <h2>{id}</h2> */}
+      <h3 className={styles.messageText}>{message}</h3>
+      <h3 className={styles.messageDate}>
         {
           new Date(date).getHours() + ":" +
           (new Date(date).getMinutes().toString().padStart(2, '0'))

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
-import styles from '@/styles/chat.module.css';
+import styles from '@/styles/chat.module.scss';
 import ConvCard from '@/Components/Chat_Conv_Card';
 import ChatCard from '@/Components/Chat_Card';
 import { ConversationInformations, Message } from '@/types/Chat';
@@ -48,6 +48,8 @@ const Chat: React.FC = () => {
     }
   }, []);
 
+  const ref = React.createRef<HTMLDivElement>();
+
   return (
     <div>
       <Head>
@@ -75,9 +77,9 @@ const Chat: React.FC = () => {
           </div>
           <div className={styles.rightColumn}>
             <div>
-              {messagesList.map((message) => {
+              {messagesList.map((message,index) => {
                 return (
-                  <ChatCard id={message.senderId} message={message.content} date={message.date.toString()} position={message.senderId === userId ? 'right' : 'left'} />
+                  <ChatCard id={message.senderId} message={message.content} date={message.date.toString()} position={message.senderId === userId ? 'right' : 'left'} ref={index === messagesList.length - 1 ? ref : undefined} />
                 );
               })}
             </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '@/styles/ConvCard.module.css';
+import styles from '@/styles/ConvCard.module.scss';
 
 interface CarteProps {
   id: string;
