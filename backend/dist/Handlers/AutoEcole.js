@@ -39,14 +39,16 @@ const autoEcoleHandler = (socket) => {
     });
 };
 exports.autoEcoleHandler = autoEcoleHandler;
-const autoEcolesHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        res.send({ autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+const autoEcolesHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            socket.emit('autoEcoles', { autoEcoles: yield (0, mongo_1.getAutosEcoles)() });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.autoEcolesHandler = autoEcolesHandler;
 const autoEcoleInfosHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
@@ -69,29 +71,6 @@ const autoEcoleInfosHandler = (socket) => {
     });
 };
 exports.autoEcoleInfosHandler = autoEcoleInfosHandler;
-// export const reviewsAEHandler = async (req, res) => {
-//     try {
-//         const reviewContent = req.body.review;
-//         const token = req.body.token;
-//         const id = getIdFromToken(token);
-//         const student = await Student.findById(id);
-//         if (student) {
-//             let autoEcoleModel = mongoose.model('reviewsAutoecole_' + student.autoEcoleId, reviewAutoecoleSchema);
-//             await autoEcoleModel.create(createReview(reviewContent, id));
-//             if (reviewContent.stars !== 0) {
-//                 let autoEcole = await AutoEcole.findById(student.autoEcoleId);
-//                 autoEcole.note = updateNote(autoEcole, reviewContent);
-//                 autoEcole.noteCount = Number(autoEcole.noteCount) + 1;
-//                 await autoEcole.save();
-//             }
-//             res.send({ posted: true, autoEcoleId: student.autoEcoleId });
-//         } else {
-//             res.send({ posted: false });
-//         }
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
 const reviewsAEHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -122,15 +101,26 @@ const reviewsAEHandler = (socket) => {
     });
 };
 exports.reviewsAEHandler = reviewsAEHandler;
-const AESortedHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const autoEcoles = yield Users_1.AutoEcole.find().select('name note');
-        const autoEcolesSorted = autoEcoles.sort((a, b) => Number(b.note) - Number(a.note));
-        res.send({ autoEcoles: autoEcolesSorted });
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+// export const AESortedHandler = async (req, res) => {
+//     try {
+//         const autoEcoles = await AutoEcole.find().select('name note');
+//         const autoEcolesSorted = autoEcoles.sort((a, b) => Number(b.note) - Number(a.note));
+//         res.send({ autoEcoles: autoEcolesSorted });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+const AESortedHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const autoEcoles = yield Users_1.AutoEcole.find().select('name note');
+            const autoEcolesSorted = autoEcoles.sort((a, b) => Number(b.note) - Number(a.note));
+            socket.emit('autosecolesclass', { autoEcoles: autoEcolesSorted });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.AESortedHandler = AESortedHandler;
 //# sourceMappingURL=AutoEcole.js.map

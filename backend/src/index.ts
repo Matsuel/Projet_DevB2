@@ -50,9 +50,6 @@ const routesPost: Route[] = [
 ];
 
 const routesGet: Route[] = [
-    { name: '/autosecoles', handler: autoEcolesHandler },
-    { name: '/autosecolesclass', handler: AESortedHandler },
-    { name: '/moniteursclass', handler: monitorsSortedHandler },
     { name: '/search', handler: searchHandler },
     { name: '/results', handler: resultsHandler }
 ];
@@ -91,6 +88,9 @@ io.on('connection', (socket) => {
     socket.on('editAutoEcolePersonnelFormations', editAEPersonnelHandler(socket));
     socket.on('deleteAccount', deleteAccountHandler(socket));
     socket.on('createConversation', createConversationHandler(socket));
+    socket.on('autosecoles', autoEcolesHandler(socket));
+    socket.on('autosecolesclass', AESortedHandler(socket));
+    socket.on('moniteursclass', monitorsSortedHandler(socket));
 });
 
 connectToMongo();

@@ -20,33 +20,58 @@ const mongo_1 = require("../Functions/mongo");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const chat_1 = require("../Functions/chat");
 const __1 = require("..");
-const createConversationHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(req.body);
-        let { userId, creatorId } = req.body;
-        creatorId = (0, token_1.getIdFromToken)(creatorId);
-        if (!creatorId)
-            return;
-        const conversationExists = yield Conversation_1.Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
-        if (conversationExists) {
-            res.send({ created: false });
+// export const createConversationHandler = async (req, res) => {
+//     try {
+//         console.log(req.body);
+//         let { userId, creatorId } = req.body;
+//         creatorId = getIdFromToken(creatorId);
+//         if (!creatorId) return;
+//         const conversationExists = await Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
+//         if (conversationExists) {
+//             res.send({ created: false });
+//         } else {
+//             const newConversation = new Conversations({
+//                 usersId: [userId, creatorId],
+//                 date: new Date(),
+//                 lastMessage: ''
+//             });
+//             await newConversation.save();
+//             const conversationShema = mongoose.model('conversation_' + newConversation._id, ConversationShema);
+//             conversationShema.createCollection();
+//             res.send({ created: true });
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+const createConversationHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            let { userId, creatorId } = data;
+            creatorId = (0, token_1.getIdFromToken)(creatorId);
+            if (!creatorId)
+                return;
+            const conversationExists = yield Conversation_1.Conversations.findOne({ usersId: { $all: [userId, creatorId] } });
+            if (conversationExists) {
+                socket.emit('createConversation', { created: false });
+            }
+            else {
+                const newConversation = new Conversation_1.Conversations({
+                    usersId: [userId, creatorId],
+                    date: new Date(),
+                    lastMessage: ''
+                });
+                yield newConversation.save();
+                const conversationShema = mongoose_1.default.model('conversation_' + newConversation._id, Conversation_1.ConversationShema);
+                conversationShema.createCollection();
+                socket.emit('createConversation', { created: true });
+            }
         }
-        else {
-            const newConversation = new Conversation_1.Conversations({
-                usersId: [userId, creatorId],
-                date: new Date(),
-                lastMessage: ''
-            });
-            yield newConversation.save();
-            const conversationShema = mongoose_1.default.model('conversation_' + newConversation._id, Conversation_1.ConversationShema);
-            conversationShema.createCollection();
-            res.send({ created: true });
+        catch (error) {
+            console.log(error);
         }
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+    });
+};
 exports.createConversationHandler = createConversationHandler;
 // Websockets handlers
 const getConversationsHandler = (socket) => {

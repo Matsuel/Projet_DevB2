@@ -58,15 +58,6 @@ const editAEInfosHandler = (socket) => {
     });
 };
 exports.editAEInfosHandler = editAEInfosHandler;
-// export const editAEPersonnelHandler = async (req, res) => {
-//     try {
-//         const id = req.body.id;
-//         res.send({ edited: await editAutoEcolePersonnelFormations(id, req.body.data) });
-//     } catch (error) {
-//         console.log(error);
-//         res.send({ edited: false });
-//     }
-// }
 const editAEPersonnelHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(data);
@@ -81,10 +72,17 @@ const editAEPersonnelHandler = (socket) => {
     });
 };
 exports.editAEPersonnelHandler = editAEPersonnelHandler;
-const deleteAccountHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.body.id;
-    res.send({ deleted: yield (0, mongo_1.deleteAccount)(id) });
-});
+const deleteAccountHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const id = data.id;
+            socket.emit('deleteAccount', { deleted: yield (0, mongo_1.deleteAccount)(id) });
+        }
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.deleteAccountHandler = deleteAccountHandler;
 const userInfosHandler = (socket) => {
     return (data) => __awaiter(void 0, void 0, void 0, function* () {

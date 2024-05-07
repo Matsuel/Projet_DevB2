@@ -1,32 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import Header from '@/Components/Header';
 import Head from 'next/head';
-import useSWR from 'swr';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
-
+import { socket } from './_app';
 
 const Classement = () => {
-
-    const router = useRouter();
 
     const [showAutoEcole, setShowAutoEcole] = useState<boolean>(false);
     const [showMoniteur, setShowMoniteur] = useState<boolean>(false);
     const [autosEcoles, setAutosEcoles] = useState<any[]>([]);
     const [moniteurs, setMoniteurs] = useState<any[]>([]);
 
-    const { data: autoEcoleData } = useSWR('http://localhost:3500/autosecolesclass', fetcher);
-    const { data: moniteurData } = useSWR('http://localhost:3500/moniteursclass', fetcher);
-    console.log(moniteurData);
     useEffect(() => {
-        if(autoEcoleData && moniteurData) {
-            setAutosEcoles(autoEcoleData.autoEcoles);
-            setMoniteurs(moniteurData.moniteurs);
-        }
-    }, [autoEcoleData, moniteurData]);
-    if(!autoEcoleData || !moniteurs) return <div>Chargement...</div>;
+        socket.emit('autosecolesclass');
+        socket.on('autosecolesclass', (data: any) => {
+            setAutosEcoles(data.autoEcoles);
+        });
+        socket.emit('moniteursclass');
+        socket.on('moniteursclass', (data: any) => {
+            setMoniteurs(data.moniteurs);
+        });
+    }, []);
 
     return (
         <div>

@@ -45,15 +45,9 @@ app.use((0, express_session_1.default)({
 }));
 const routesPost = [
     { name: '/registerAutoEcole', upload: upload.single('pics'), handler: Register_1.registerAutoEcoleHandler },
-    { name: '/deleteAccount', handler: Account_1.deleteAccountHandler },
-    // { name: '/editAutoEcoleInfos', handler: editAEInfosHandler },
-    // { name: '/editAutoEcolePersonnelFormations', handler: editAEPersonnelHandler },
-    { name: '/createConversation', handler: Conversation_1.createConversationHandler },
 ];
 const routesGet = [
-    { name: '/autosecoles', handler: AutoEcole_1.autoEcolesHandler },
-    { name: '/autosecolesclass', handler: AutoEcole_1.AESortedHandler },
-    { name: '/moniteursclass', handler: Monitor_1.monitorsSortedHandler },
+    // { name: '/moniteursclass', handler: monitorsSortedHandler },
     { name: '/search', handler: Search_1.searchHandler },
     { name: '/results', handler: Search_1.resultsHandler }
 ];
@@ -87,6 +81,11 @@ io.on('connection', (socket) => {
     socket.on('editNotifications', (0, Account_1.editNotifsHandler)(socket));
     socket.on('editAutoEcoleInfos', (0, Account_1.editAEInfosHandler)(socket));
     socket.on('editAutoEcolePersonnelFormations', (0, Account_1.editAEPersonnelHandler)(socket));
+    socket.on('deleteAccount', (0, Account_1.deleteAccountHandler)(socket));
+    socket.on('createConversation', (0, Conversation_1.createConversationHandler)(socket));
+    socket.on('autosecoles', (0, AutoEcole_1.autoEcolesHandler)(socket));
+    socket.on('autosecolesclass', (0, AutoEcole_1.AESortedHandler)(socket));
+    socket.on('moniteursclass', (0, Monitor_1.monitorsSortedHandler)(socket));
 });
 (0, mongo_1.default)();
 app.listen(3500, () => {

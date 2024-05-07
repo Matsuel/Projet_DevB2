@@ -73,23 +73,43 @@ const reviewMonitorHandler = (socket) => {
     });
 };
 exports.reviewMonitorHandler = reviewMonitorHandler;
-const monitorsSortedHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const moniteurs = yield Users_1.AutoEcole.find().select('monitors');
-        let moniteursList = [];
-        for (let i = 0; i < moniteurs.length; i++) {
-            const monitorsWithAvgPromises = moniteurs[i].monitors.map((monitor) => __awaiter(void 0, void 0, void 0, function* () {
-                return (Object.assign(Object.assign({}, monitor.toObject()), { avg: yield (0, mongo_1.getMonitorAvg)(monitor._id.toString()) }));
-            }));
-            const monitorsWithAvg = yield Promise.all(monitorsWithAvgPromises);
-            moniteursList.push(...monitorsWithAvg);
+// export const monitorsSortedHandler = async (req, res) => {
+//     try {
+//         const moniteurs = await AutoEcole.find().select('monitors');
+//         let moniteursList: any[] = [];
+//         for (let i = 0; i < moniteurs.length; i++) {
+//             const monitorsWithAvgPromises = moniteurs[i].monitors.map(async monitor => ({
+//                 ...monitor.toObject(),
+//                 avg: await getMonitorAvg(monitor._id.toString())
+//             }));
+//             const monitorsWithAvg = await Promise.all(monitorsWithAvgPromises);
+//             moniteursList.push(...monitorsWithAvg);
+//         }
+//         const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
+//         res.send({ moniteurs: moniteursSorted });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+const monitorsSortedHandler = (socket) => {
+    return (data) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const moniteurs = yield Users_1.AutoEcole.find().select('monitors');
+            let moniteursList = [];
+            for (let i = 0; i < moniteurs.length; i++) {
+                const monitorsWithAvgPromises = moniteurs[i].monitors.map((monitor) => __awaiter(void 0, void 0, void 0, function* () {
+                    return (Object.assign(Object.assign({}, monitor.toObject()), { avg: yield (0, mongo_1.getMonitorAvg)(monitor._id.toString()) }));
+                }));
+                const monitorsWithAvg = yield Promise.all(monitorsWithAvgPromises);
+                moniteursList.push(...monitorsWithAvg);
+            }
+            const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
+            socket.emit('moniteursclass', { moniteurs: moniteursSorted });
         }
-        const moniteursSorted = moniteursList.sort((a, b) => Number(b.avg) - Number(a.avg));
-        res.send({ moniteurs: moniteursSorted });
-    }
-    catch (error) {
-        console.log(error);
-    }
-});
+        catch (error) {
+            console.log(error);
+        }
+    });
+};
 exports.monitorsSortedHandler = monitorsSortedHandler;
 //# sourceMappingURL=Monitor.js.map
