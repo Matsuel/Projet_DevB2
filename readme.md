@@ -105,8 +105,13 @@ npm run dev
 *Ensuite rendez-vous sur votre navigateur http://localhost:3000*
 
 ## 📷 Screenshots
+![image](https://github.com/Matsuel/Projet_DevB2/assets/112950582/89838420-48e8-49ff-a4b0-b103f5af0213)
 
+![image2](https://github.com/Matsuel/Projet_DevB2/assets/112950582/2b6b9626-a2ac-4850-aa25-ee4e972707b6)
 
+![image3](https://github.com/Matsuel/Projet_DevB2/assets/112950582/46e02a88-ce11-4d86-b416-346c369d33c8)
+
+![image4](https://github.com/Matsuel/Projet_DevB2/assets/112950582/71137558-e56a-4bab-a66a-d19137e655e6)
 
 ## 👥 Auteurs
 
