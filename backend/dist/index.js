@@ -10,7 +10,6 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const mongo_1 = __importDefault(require("./Functions/mongo"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const multer_1 = __importDefault(require("multer"));
 const socket_io_1 = require("socket.io");
 const http_1 = require("http");
 const Login_1 = require("./Handlers/Login");
@@ -21,7 +20,6 @@ const Account_1 = require("./Handlers/Account");
 const Search_1 = require("./Handlers/Search");
 const Conversation_1 = require("./Handlers/Conversation");
 const Ws_1 = require("./Handlers/Ws");
-const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -43,17 +41,6 @@ app.use((0, express_session_1.default)({
         maxAge: 24 * 60 * 60 * 1000
     }
 }));
-const routesPost = [
-// { name: '/registerAutoEcole', upload: upload.single('pics'), handler: registerAutoEcoleHandler },
-];
-routesPost.forEach(route => {
-    if (route.upload) {
-        app.post(route.name, route.upload, route.handler);
-    }
-    else {
-        app.post(route.name, route.handler);
-    }
-});
 exports.connectedUsers = {};
 io.on('connection', (socket) => {
     socket.on('connection', (0, Ws_1.connectionHandler)(socket, exports.connectedUsers));
@@ -83,9 +70,6 @@ io.on('connection', (socket) => {
     socket.on('registerAutoEcole', (0, Register_1.registerAutoEcoleHandler)(socket));
 });
 (0, mongo_1.default)();
-app.listen(3500, () => {
-    console.log('Server is running on port 3500');
-});
 server.listen(4000, () => {
     console.log('Socket is running on port 4000');
 });

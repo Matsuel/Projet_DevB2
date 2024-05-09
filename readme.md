@@ -22,6 +22,7 @@ Tous les utilisateurs ont la possibilité d'accéder à leur compte pour modifie
 - Ajout d'avis et de commentaire sur les auto-écoles/moniteurs
 - Fonction de chat avec les utilisateurs ayant posté des commentaires
 - Consultation de la page auto-école/moniteur
+- Consultation de la position sur leur page personnel
 - Classement des meilleurs auto-écoles/moniteurs
 
 ## 🛠 Technologies utilisées
@@ -79,9 +80,28 @@ cd auto-ecole
 npm i
 ```
 
+*Pour le fonctionnement du site vous devrez vous créer une clé d'API sur le site [MapBox](https://account.mapbox.com/), afin de pouvoir consulter la position des auto-écoles sur une carte*
+*Ensuite créez un fichier .env à la racine du dossier "auto-ecole" avec ce contenu*
+
+```.env
+NEXT_PUBLIC_MAP_API="Votre_cle_api_ici"
+```
+
 ```bash
 cd backend
 npm i
+```
+
+*Pour le fonctionnement du site vous devrez créer uen clé secrète qui vous permettra de sécuriser les tokens de session à l'aide la fonction à lancer comme suit:*
+
+```bash
+node ./dist/Functions/createSecret.js
+```
+
+*Ensuite créez un fichier .env à la racine du dossier "auto-ecole" avec ce contenu*
+
+```.env
+SECRET="Le_resultat_de_la_fonction"
 ```
 
 ### Utilisation
