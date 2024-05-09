@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
 import styles from '@/styles/autoecole.module.scss';
@@ -7,10 +7,14 @@ import Image from 'next/image';
 import { AutoEcoleInfos } from '@/types/AutoEcole';
 import { handleMonitorClick } from '@/Functions/Router';
 import { socket } from '../_app';
+import { geocode } from '@/Functions/Map';
+import Map from '@/Components/Map';
+import { LngLatLike } from 'mapbox-gl';
 
 const Autoecole = () => {
   const router = useRouter();
   const { id } = router.query;
+  const [center, setCenter] = useState<number[] | null>(null)
 
   const [data, setData] = useState<AutoEcoleInfos>();
 
@@ -26,6 +30,18 @@ const Autoecole = () => {
       router.push(`/chat/${data.conversationId}`)
     }
   })
+
+  useEffect(() => {
+    const fetchGeocode = async () => {
+      if (data) {
+        const a = await geocode(data.autoEcole.address, data.autoEcole.city, data.autoEcole.zip);
+        if (a) {
+          setCenter(a)
+        }
+      }
+    }
+    fetchGeocode();
+  }, [data])
 
   if (!data) return <div>Chargement...</div>
 
@@ -59,6 +75,18 @@ const Autoecole = () => {
             {
               data.autoEcole.pics != "" && <Image src={`data:image/jpeg;base64,${data.autoEcole.pics}`} alt="photo" className={styles.photo} width={0} height={0} />
             }
+          </div>
+
+          <div className={styles.map}>
+
+            <h2 className={styles.title}>Localisation</h2>
+            <h3 className={styles.contactText}>
+              {data.autoEcole.address} {data.autoEcole.zip} {data.autoEcole.city}
+            </h3>
+            {center &&
+              <Map
+                coordinates={center as LngLatLike}
+              />}
           </div>
 
 
@@ -132,6 +160,7 @@ const Autoecole = () => {
             })}
           </div>
         </div>
+
       </main>
     </div>
   );
