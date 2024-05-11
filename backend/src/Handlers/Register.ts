@@ -4,10 +4,8 @@ import jwt from "jsonwebtoken";
 
 export const registerAutoEcoleHandler = (socket: any) => {
     return async (data: AutoEcoleInterface) => {
-        console.log(data);
         try {
             const response = await registerAutoEcole(data, data.pics);
-            console.log(response, 'response');
             if (response) {
                 const token = jwt.sign({ id: response.id }, process.env.SECRET as string, { expiresIn: '24h' });
                 socket.emit('registerAutoEcole', { register: true, token: token });

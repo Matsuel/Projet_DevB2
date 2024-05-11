@@ -64,7 +64,8 @@ function registerAutoEcole(data, file) {
                     newAutoEcole[key] = data[key];
                 }
             }
-            newAutoEcole.pics = file.buffer.toString('base64');
+            // @ts-ignore
+            newAutoEcole.pics = Buffer.from(file.buffer).toString('base64');
             newAutoEcole.note = 0;
             newAutoEcole.noteCount = 0;
             yield newAutoEcole.save();

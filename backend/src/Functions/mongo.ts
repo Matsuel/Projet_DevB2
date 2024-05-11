@@ -21,12 +21,10 @@ function connectToMongo() {
 }
 
 export async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
-    console.log("registerAutoEcole", data);
     // ajouter champ pour les anciens élèves
     // pour chaque élève, on crééra un mot de passe et on enverra un mail pour qu'il puisse se connecter
     const autoEcole = await AutoEcole.findOne({ $or: [{ email: data.mail }, { nom: data.name }] });
     if (autoEcole) {
-        console.log("autoecole déjà enregistrée");
         return { register: false };
     } else {
         typeof data.monitors === 'string' ? data.monitors = JSON.parse(data.monitors) : null;
@@ -47,13 +45,13 @@ export async function registerAutoEcole(data: AutoEcoleInterface, file: any) {
                 newAutoEcole[key] = data[key];
             }
         }
-        newAutoEcole.pics = file.buffer.toString('base64');
+        // @ts-ignore
+        newAutoEcole.pics = Buffer.from(file.buffer).toString('base64');
         newAutoEcole.note = 0;
         newAutoEcole.noteCount = 0;
         await newAutoEcole.save();
         await registerStudents(data.mail);
         await createReviewsCollections(data.mail);
-        console.log("autoecole enregistrée");
         return { register: true, id: newAutoEcole._id };
     }
 }
@@ -88,7 +86,6 @@ export async function registerNewDriver(data: UserInterface) {
 export async function registerStudents(emailAutoEcole: string) {
     const autoEcole = await AutoEcole.findOne({ email: emailAutoEcole });
     const autoEcoleId = autoEcole._id;
-    console.log(autoEcole.students);
     const studentsToSave = [];
     for (const student of autoEcole.students) {
         if (await studentAlreadySave(student as string) === false) {
