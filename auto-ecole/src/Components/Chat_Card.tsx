@@ -17,7 +17,7 @@ const Carte: React.FC<CarteProps> = ({ id, message, date, position, ref }) => {
   }
 
   return (
-    <div className={`${styles.main} ${cardClass}`} ref={ref}>
+    <div className={`${styles.main} ${cardClass}`} ref={ref} key={id}>
       {/* <h2>{id}</h2> */}
       <h3 className={styles.messageText}>{message}</h3>
       <h3 className={styles.messageDate}>

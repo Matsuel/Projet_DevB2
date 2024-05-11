@@ -270,7 +270,7 @@ const Compte: React.FC = () => {
                 <p>Elèves</p>
                 {students.map((student: string) => {
                   return (
-                    <div>
+                    <div key={students.indexOf(student)}>
                       <p>{student}</p>
                       <button
                         onClick={() => deleteStudent(students.indexOf(student))}
@@ -329,7 +329,7 @@ const Compte: React.FC = () => {
             {reviews.length > 0 && <h2>Commentaires</h2>}
             {reviews.map((review: ReviewAutoEcole) => {
               return (
-                <div>
+                <div key={reviews.indexOf(review)}>
                   <p>{review.comment}</p>
                   <p>{review.rate}</p>
                 </div>
@@ -344,12 +344,12 @@ const Compte: React.FC = () => {
           <div>
             {monitorsReviews.map((monitor: ReviewsMonitor) => {
               return (
-                <div>
+                <div key={monitorsReviews.indexOf(monitor)}>
                   {/* @ts-ignore */}
                   <h2>{monitor.monitor}</h2>
                   {monitor.reviews.map((review: ReviewMonitor) => {
                     return (
-                      <div>
+                      <div key={monitor.reviews.indexOf(review)}>
                         <p>{review.comment}</p>
                         <p>{review.stars}</p>
                       </div>

@@ -67,7 +67,7 @@ const Add: React.FC = () => {
         <Header />
         <div className={styles.main}>
           <form className={styles.form}>
-            <h1 className={styles.title}>Super nom d'auto ecole</h1>
+            <h1 className={styles.title}>Super nom d&apos;auto ecole</h1>
             <ReactStars
               className={styles.stars}
               count={5}
@@ -77,7 +77,7 @@ const Add: React.FC = () => {
               onChange={(newRating) => setAutoecoleReview({ ...autoecoleReview, stars: newRating })}
             />
             <textarea id="autoecole-comment" placeholder='Commentaire' className={styles.inputText} required onChange={(e) => setAutoecoleReview({ ...autoecoleReview, comment: e.target.value })} />
-            <button className={styles.buttonadd} type="button" onClick={() => handleSubmitAutoecole(router, autoecoleReview, token as string)}>Poster l'avis sur l'auto ecole</button>
+            <button className={styles.buttonadd} type="button" onClick={() => handleSubmitAutoecole(router, autoecoleReview, token as string)}>Poster l&apos;avis sur l&apos;auto ecole</button>
 
             {monitorsReview.map((monitor, index) => {
               return (
@@ -100,7 +100,7 @@ const Add: React.FC = () => {
                     newMonitorsReview[index].comment = e.target.value;
                     setMonitorsReview(newMonitorsReview);
                   }} />
-                  <button type="button" onClick={() => handleSubmitMonitor(monitor, token as string, router)} className={styles.buttonadd}>Poster l'avis prof1</button>
+                  <button type="button" onClick={() => handleSubmitMonitor(monitor, token as string, router)} className={styles.buttonadd}>Poster l&apos;avis prof1</button>
                 </div>
               )
             })}

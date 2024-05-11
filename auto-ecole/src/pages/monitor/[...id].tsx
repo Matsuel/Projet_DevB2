@@ -56,7 +56,7 @@ const Monitor = ({ }: MonitorProps) => {
             </ul>
             </>
             : <>
-            <h2>Pas de commentaires pour l'instant</h2>
+            <h2>Pas de commentaires pour l&apos;instant</h2>
             
             </>}
             

@@ -69,6 +69,7 @@ const Chat: React.FC = () => {
                     id={conversation._id}
                     message={conversation.lastMessage}
                     handleConversationActive={handleConversationActive}
+                    key={conversation._id}
                   />
                 );
               })
@@ -79,7 +80,7 @@ const Chat: React.FC = () => {
             <div>
               {messagesList.map((message,index) => {
                 return (
-                  <ChatCard id={message.senderId} message={message.content} date={message.date.toString()} position={message.senderId === userId ? 'right' : 'left'} ref={index === messagesList.length - 1 ? ref : undefined} />
+                  <ChatCard id={message.senderId} message={message.content} date={message.date.toString()} position={message.senderId === userId ? 'right' : 'left'} ref={index === messagesList.length - 1 ? ref : undefined} key={message._id} />
                 );
               })}
             </div>

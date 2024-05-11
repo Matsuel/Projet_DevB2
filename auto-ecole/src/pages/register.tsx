@@ -43,7 +43,6 @@ const Register: React.FC = () => {
   }, [register]);
 
   socket.on('registerAutoEcole', (data: any) => {
-    console.log(data);
     if (data.register) {
       setRegister(true);
       setToken(data.token);

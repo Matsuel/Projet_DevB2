@@ -10,7 +10,7 @@ interface CarteProps {
 
 const Carte: React.FC<CarteProps> = ({ id, message, date, handleConversationActive }) => {
   return (
-    <div className={styles.main} onClick={() => handleConversationActive(id)}>
+    <div className={styles.main} onClick={() => handleConversationActive(id)} key={id}>
       <h2>{id}</h2>
       <h3>{message}</h3>
       <h3>
