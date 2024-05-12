@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '@/styles/Carte.module.css'; 
+import styles from '@/styles/Carte.module.scss'; 
 import ReactStars from 'react-stars';
 
 interface CarteProps {

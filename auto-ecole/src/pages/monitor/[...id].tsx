@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import styles from '@/styles/monitor.module.css';
+import styles from '@/styles/monitor.module.scss';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import axios from 'axios';

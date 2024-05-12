@@ -1,0 +1,68 @@
+.Compte_container {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.inputText {
+    width: 45%;
+    height: 50px;
+    margin-bottom: 20px;
+    margin-left: 1%;
+    border-radius: 12px;
+    border: 1px solid #d3d3d3;
+    padding: 10px;
+}
+
+.inputText:focus {
+    outline: none;
+    border: 1px solid #007bff;
+}
+
+.button {
+    width: 150px;
+    height: 50px;
+    border-radius: 12px;
+    background-color: #ebf3ff;
+    border: none;
+    cursor: pointer;
+}
+
+.inputCheckbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkboxLabel {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.inputContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 20px;
+}
+
+.formationsContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

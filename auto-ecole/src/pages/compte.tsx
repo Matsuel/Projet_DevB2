@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from "@/Components/Header";
-import styles from '@/styles/Compte.module.css';
+import styles from '@/styles/Compte.module.scss';
 import { useForm, SubmitHandler } from "react-hook-form"
 import { deleteAccount, editAccount, editAutoEcoleInfos, editAutoEcolePersonnelFormations, editNotifications } from '@/Functions/Compte';
 import { AccountInputs, NotificationsInputs, UserInfos, AutoEcoleInfosInputs } from '@/types/Compte';
@@ -160,29 +160,34 @@ const Compte: React.FC = () => {
         <div className={styles.Compte_container}>
           {editError && <p>Erreur lors de la modification, les mots de passe ne correspondent pas, ou le mot de passe actuel est incorrect</p>}
           {notificationsEdit && <p>Notifications modifiées</p>}
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
             <input
+              className={styles.inputText}
               type="email"
               placeholder={data.email}
               {...register("email")}
             />
             <input
+              className={styles.inputText}
               type="password"
               placeholder="Mot de passe actuel"
               {...register("password")}
               required
             />
             <input
+              className={styles.inputText}
               type="password"
               placeholder="Nouveau mot de passe"
               {...register("newPassword")}
             />
             <input
+              className={styles.inputText}
               type="password"
               placeholder="Confirmer le nouveau mot de passe"
               {...register("newPasswordConfirm")}
             />
             <button
+              className={styles.button}
               type="submit"
             >
               Modifier
@@ -198,8 +203,9 @@ const Compte: React.FC = () => {
 
                     return (
                       <>
-                        <label htmlFor={key}>{key}</label>
+                        <label className={styles.checkboxLabel} htmlFor={key}>{key}</label>
                         <input
+                          className={styles.inputCheckbox}
                           type="checkbox"
                           id={key}
                           defaultChecked={value as boolean}
@@ -213,20 +219,22 @@ const Compte: React.FC = () => {
                 {data?.address &&
                   Object.entries(data).filter(([key, value]) => typeof value !== 'boolean' && typeof value === "string" && key.toString() !== "_id" && key !== "email" || key === "zip").map(([key, value]) => {
                     return (
-                      <>
+                      <div key={key} className={styles.inputContainer}>
                         <label htmlFor={key}>{key}</label>
                         <input
+                          className={styles.inputText}
                           type="text"
                           id={key}
                           defaultValue={value as string}
                           {...registerAutoEcoleInfos(key.toString() as keyof AutoEcoleInfosInputs)}
                         />
-                      </>
+                      </div>
                     )
                   })
                 }
 
                 <button
+                  className={styles.button}
                   type="submit"
                 >
                   Modifier les informations de votre auto-école
@@ -239,15 +247,16 @@ const Compte: React.FC = () => {
           }
 
           {data?.address ?
-            <div>
+            <>
               {/* Formations de l'auto-école */}
-              <div>
+              <div className={styles.formationsContainer}>
                 <p>Formations</p>
                 {formations.map((formation: string, index: number) => {
                   return (
                     <>
                       <p key={index}>{formation}</p>
                       <button
+                        className={styles.button}
                         onClick={() => deleteFormation(index)}
                       >
                         Supprimer
@@ -256,6 +265,7 @@ const Compte: React.FC = () => {
                   )
                 })}
                 <input
+                  className={styles.inputText}
                   type="text"
                   id="newFormation"
                   onKeyDown={(e) => {
@@ -266,21 +276,23 @@ const Compte: React.FC = () => {
 
 
               {/* Elèves de l'auto-école */}
-              <div>
+              <div className={styles.formationsContainer}>
                 <p>Elèves</p>
                 {students.map((student: string) => {
                   return (
-                    <div key={students.indexOf(student)}>
+                    <>
                       <p>{student}</p>
                       <button
+                        className={styles.button}
                         onClick={() => deleteStudent(students.indexOf(student))}
                       >
                         Supprimer
                       </button>
-                    </div>
+                    </>
                   )
                 })}
                 <input
+                  className={styles.inputText}  
                   type="email"
                   id="newStudent"
                   onKeyDown={(e) => {
@@ -293,15 +305,17 @@ const Compte: React.FC = () => {
 
 
               <button
+                className={styles.button}
                 onClick={() => editAutoEcolePersonnelFormations(data._id, { formations, students })}
               >
                 Modifier les formations, moniteurs et élèves
               </button>
-            </div>
+            </>
             : null}
 
-            <form onSubmit={handleSubmitNotifications(onSubmitNotifications)}>
+            <form onSubmit={handleSubmitNotifications(onSubmitNotifications)} className={styles.form}>
               <input
+                className={styles.inputCheckbox}
                 type="checkbox"
                 id="acceptNotifications"
                 {...registerNotifications("acceptNotifications")}
@@ -309,6 +323,7 @@ const Compte: React.FC = () => {
               />
               <label htmlFor="acceptNotifications">Accepter les notifications</label>
               <button
+                className={styles.button}
                 type="submit"
               >
                 Modifier
@@ -316,6 +331,7 @@ const Compte: React.FC = () => {
             </form>
 
           <button
+            className={styles.button}
             onClick={() => handleDeleteAccount()}
           >
             Supprimer le compte

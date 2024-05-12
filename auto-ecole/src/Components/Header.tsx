@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import styles from '@/styles/Header.module.css'; // Assuming you have a CSS module for styling
+import styles from '@/styles/Header.module.scss'; // Assuming you have a CSS module for styling
 
 const Header: React.FC = () => {
 
