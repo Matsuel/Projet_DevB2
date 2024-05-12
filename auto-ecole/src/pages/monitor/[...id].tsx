@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 
 import styles from '@/styles/monitor.module.scss';
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
 import axios from 'axios';
 import { MonitorInfos } from '@/types/Monitor';
 import Head from 'next/head';
 import { handleAutoEcoleClick } from '@/Functions/Router';
 import { socket } from '../_app';
-
-const fetcher = (url: string) => axios.get(url).then(res => res.data)
 
 interface MonitorProps {
 
