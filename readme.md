@@ -133,6 +133,8 @@ npm run dev
 
 ![image4](https://github.com/Matsuel/Projet_DevB2/assets/112950582/71137558-e56a-4bab-a66a-d19137e655e6)
 
+![account](https://github.com/Matsuel/Projet_DevB2/assets/75479794/874cdca8-5f77-487d-b194-877dd90f991c)
+
 ## 👥 Auteurs
 
 ### 👤 [Ninjawill543](https://github.com/ninjawill543): Front-End
